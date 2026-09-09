@@ -1,1115 +1,815 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">ESULTAN HAY DAY</title>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-    <style>
-        :root {
-            --primary: #22c55e;
-            --primary-hover: #16a34a;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --border-color: #334155;
-            --text: #f8fafc;
-            --gray: #94a3b8;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 40px;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .logo {
-            font-size: 26px;
-            font-weight: 800;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            text-shadow: 0 2px 10px rgba(34, 197, 94, 0.2);
-        }
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .nav-btns button, .profile-trigger-btn, .header-custom-btn {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 9px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.3s ease;
-        }
-        .header-custom-btn {
-            background: #162032;
-            color: var(--primary);
-            border: 1px solid var(--primary);
-        }
-        .header-custom-btn:hover, .nav-btns button:hover {
-            background: var(--primary-hover);
-            color: #fff;
-            transform: translateY(-1px);
-        }
-        .profile-trigger-btn {
-            background: var(--card-bg);
-            color: var(--text);
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 6px 14px;
-            border-radius: 30px;
-        }
-        .profile-trigger-btn:hover {
-            border-color: var(--primary);
-        }
-        .profile-avatar-small {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--primary);
-        }
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const sqlite3 = require('sqlite3').verbose();
 
-        .categories-bar {
-            background: #111827;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding: 0 30px;
-            scroll-behavior: smooth;
-        }
-        .categories-bar::-webkit-scrollbar {
-            height: 4px;
-        }
-        .categories-bar::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 2px;
-        }
-        .category-tab {
-            padding: 18px 24px;
-            color: var(--gray);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 15px;
-            border-bottom: 3px solid transparent;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .category-tab:hover {
-            color: var(--text);
-        }
-        .category-tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: rgba(34, 197, 94, 0.03);
-        }
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 
-        .container {
-            max-width: 1300px;
-            margin: 30px auto;
-            padding: 0 25px;
-        }
+app.use(express.json({ limit: '50mb' }));
 
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .modal-content {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 550px;
-            border-radius: 16px;
-            padding: 35px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-            border: 1px solid var(--border-color);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
+// قاعدة بيانات SQLite لتخزين كل شيء
+const db = new sqlite3.Database('./hayday_ultimate.db', (err) => {
+    if (err) console.error('خطأ في قاعدة البيانات', err);
+    else console.log('تم الاتصال بقاعدة البيانات بنجاح.');
+});
 
-        .admin-menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .admin-menu-btn {
-            background: #162032;
-            color: white;
-            border: 1px solid var(--border-color);
-            padding: 18px 22px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: right;
-            transition: 0.3s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .admin-menu-btn:hover {
-            border-color: var(--primary);
-            background: #1e293b;
-            transform: translateX(-4px);
-        }
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        email TEXT UNIQUE,
+        password TEXT,
+        role TEXT DEFAULT 'user'
+    )`);
+    db.run(`CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE)`);
+    db.run(`CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, quantity INTEGER, price TEXT, category TEXT, images TEXT)`);
+    
+    db.run(`CREATE TABLE IF NOT EXISTS groups_channels (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        type TEXT, 
+        name TEXT UNIQUE,
+        description TEXT,
+        image TEXT,
+        owner TEXT,
+        status TEXT DEFAULT 'pending', 
+        privacy TEXT DEFAULT 'public', 
+        subscribers_count INTEGER DEFAULT 0,
+        subscribers_list TEXT DEFAULT '[]',
+        admins_list TEXT DEFAULT '[]',
+        link TEXT UNIQUE,
+        chat_closed INTEGER DEFAULT 0
+    )`);
 
-        .admin-sub-section {
-            background: #131d31;
-            padding: 24px;
-            border-radius: 12px;
-            margin-top: 15px;
-            border: 1px solid var(--border-color);
-        }
-        .back-to-menu {
-            background: #1e293b;
-            color: white;
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
+    db.run(`CREATE TABLE IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        target_id TEXT, 
+        sender TEXT,
+        text TEXT,
+        pinned INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
 
-        input, textarea, select {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0 20px 0;
-            background: #111827;
-            border: 1px solid var(--border-color);
-            color: white;
-            border-radius: 8px;
-            font-size: 15px;
-        }
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+    db.run(`CREATE TABLE IF NOT EXISTS profiles (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        friends TEXT DEFAULT '[]',
+        blocked TEXT DEFAULT '[]',
+        reviews TEXT DEFAULT '[]'
+    )`);
 
-        button.action-btn {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            font-weight: 700;
-            margin-top: 10px;
-            transition: 0.3s;
+    // المشرف الافتراضي
+    db.get("SELECT * FROM users WHERE email = ?", ["gojoesultan@gmail.com"], (err, row) => {
+        if (!row) {
+            db.run("INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)", 
+            ["AdminGojo", "gojoesultan@gmail.com", "ahmedgojo123456789", "admin"]);
         }
-        button.action-btn:hover {
-            background: var(--primary-hover);
-        }
-        .hidden {
-            display: none !important;
-        }
+    });
+});
 
-        .community-hub-container {
-            display: flex;
-            gap: 20px;
-            height: calc(100vh - 180px);
-        }
-        .hub-sidebar {
-            width: 320px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .hub-main-chat {
-            flex-grow: 1;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .hub-actions-top {
-            display: flex;
-            padding: 15px;
-            gap: 10px;
-            border-bottom: 1px solid var(--border-color);
-            background: #111827;
-        }
-        .hub-action-icon-btn {
-            flex: 1;
-            background: #162032;
-            color: var(--text);
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-            font-size: 13px;
-        }
-        .hub-list-section {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
-        .hub-item-row {
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 8px;
-            background: #111827;
-            border: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .hub-item-row.active {
-            background: rgba(34, 197, 94, 0.1);
-            border-color: var(--primary);
-        }
-    </style>
-</head>
-<body oncontextmenu="return false;">
+// دالة فحص الروابط لمنعها تماماً
+function containsLink(text) {
+    if (!text) return false;
+    const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|([a-zA-Z0-9-]+\.[a-zA-Z0-9-]+\/[^\s]+)/gi;
+    return urlRegex.test(text);
+}
+
+// الواجهة الأمامية بالكامل
+app.get('/', (req, res) => {
+    res.send(`
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>متجر ومجتمع هاي داي المتكامل</title>
+        <style>
+            :root { --primary: #2e7d32; --accent: #ffb300; --bg: #f4f6f0; --card: #fff; --text: #333; }
+            body { font-family: Tahoma, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+            header { background: var(--primary); color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+            .logo { font-size: 22px; font-weight: bold; color: var(--accent); cursor: pointer; }
+            nav { display: flex; gap: 15px; align-items: center; }
+            .nav-link { color: #fff; text-decoration: none; font-weight: bold; cursor: pointer; }
+            .nav-link:hover { color: var(--accent); }
+            .btn { background: var(--accent); border: none; padding: 8px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; color: #333; }
+            .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+            .hidden { display: none !important; }
+            
+            .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+            .card { background: var(--card); border-radius: 10px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+            .admin-panel { background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px dashed var(--primary); }
+            
+            .img-upload-box { display: flex; gap: 10px; flex-wrap: wrap; }
+            .box-item { width: 70px; height: 70px; border: 2px dashed #aaa; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; background: #fafafa; overflow: hidden; }
+            .box-item img { width: 100%; height: 100%; object-fit: cover; }
+
+            .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
+            .modal-content { background: #fff; padding: 25px; border-radius: 10px; width: 450px; max-height: 90vh; overflow-y: auto; position: relative; }
+            .close-btn { position: absolute; top: 10px; left: 15px; font-size: 20px; cursor: pointer; color: red; }
+            input, textarea, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+            
+            .community-layout { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
+            .sidebar-list { background: #fff; border-radius: 10px; padding: 15px; height: 75vh; overflow-y: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+            .chat-area { background: #fff; border-radius: 10px; padding: 15px; height: 75vh; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+            .chat-messages { flex: 1; overflow-y: auto; padding: 10px; border: 1px solid #eee; border-radius: 5px; margin-bottom: 10px; background: #fafafa; }
+            .pinned-bar { background: #fffde7; border: 1px solid #ffd54f; padding: 8px; border-radius: 5px; margin-bottom: 10px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+            .item-row { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-radius: 5px; }
+            .item-row:hover { background: #f1f8e9; }
+            .badge { background: var(--primary); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+        </style>
+        <script src="/socket.io/socket.io.js"></script>
+    </head>
+    <body>
 
     <header>
-        <div class="logo" id="siteLogoText">esultan hay day</div>
-        <div class="header-controls">
-            <button class="header-custom-btn" onclick="proceedSectionClick('sec_community')">مجتمع هاي داي</button>
-            <button class="header-custom-btn" onclick="proceedSectionClick('sec_chats')">دردشاتي</button>
-
-            <button id="adminNavBtn" class="hidden" onclick="openAdminPanel()" style="background:#162032; color:var(--primary); border:1px solid var(--primary); padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer;">لوحة المشرف</button>
-            <button id="suggestionUserBtn" class="hidden" onclick="showSuggestionModal()" style="background:#162032; color:var(--text); border:1px solid var(--border-color); padding:8px 16px; border-radius:8px; font-weight:600; cursor:pointer;">اقتراحك</button>
-            
-            <div id="authNavButtons" class="nav-btns" style="display: flex; align-items: center; gap: 10px;">
-                <button id="loginNavBtn" onclick="showAuth('login')">تسجيل الدخول</button>
-                <button id="registerNavBtn" onclick="showAuth('register')" style="background:transparent; color:var(--text); border:1px solid var(--border-color);">إنشاء حساب</button>
+        <div class="logo" onclick="switchTab('store')">🌾 هاي داي المتكامل</div>
+        <nav>
+            <span class="nav-link" onclick="switchTab('store')">المتجر الرئيسي</span>
+            <span class="nav-link" onclick="switchTab('community')">مجتمع هاي داي</span>
+            <span class="nav-link" onclick="switchTab('myChats')">محادثاتي <span id="chatsBadge" class="badge">0</span></span>
+            <div id="authNavBtns">
+                <button class="btn" onclick="openModal('loginModal')">تسجيل الدخول</button>
+                <button class="btn" onclick="openModal('regModal')">انشاء حساب</button>
             </div>
-            
-            <button id="profileTriggerBtn" class="profile-trigger-btn hidden" onclick="openProfileModal()">
-                <img id="headerUserAvatar" src="" class="profile-avatar-small" alt="Avatar">
-                <span id="headerUserEmailName">حسابي</span>
-            </button>
-        </div>
+        </nav>
     </header>
 
-    <div class="categories-bar" id="categoriesBar"></div>
-
     <div class="container">
+        <!-- 1. قسم المتجر -->
+        <div id="storeTab">
+            <div id="adminPanelContainer"></div>
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; overflow-x: auto;" id="catFilterBar"></div>
+            <div class="products-grid" id="productsGrid"></div>
+        </div>
 
-        <div id="authModalOverlay" class="modal-overlay hidden">
-            <div class="modal-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2 id="authTitle" style="color: var(--primary);">تسجيل الدخول</h2>
-                    <button onclick="closeAuthModal()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
+        <!-- 2. قسم مجتمع هاي داي -->
+        <div id="communityTab" class="hidden">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                <button class="btn" onclick="switchCommunityType('groups')">الجروبات</button>
+                <button class="btn" onclick="switchCommunityType('channels')">القنوات</button>
+                <button class="btn" style="background:var(--primary); color:#fff;" onclick="openModal('createGroupModal')">+ إنشاء جروب / قناة</button>
+                <input type="text" id="communitySearch" placeholder="بحث عن جروب أو قناة..." oninput="filterCommunity()" style="margin:0; flex:1; min-width: 200px;">
+            </div>
+            <div class="community-layout">
+                <div class="sidebar-list" id="communityList"></div>
+                <div class="chat-area" id="communityChatArea">
+                    <div style="text-align:center; color:#777; margin:auto;">اختر جروب أو قناة لبدء الدردشة والتفاعل</div>
                 </div>
-                <input type="text" id="authEmail" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" placeholder="البريد الإلكتروني">
-                <input type="password" id="authPassword" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" placeholder="كلمة المرور">
-                <button class="action-btn" onclick="handleAuth()">دخول</button>
-                <p id="authSwitchText" style="margin-top: 20px; text-align: center; cursor: pointer; color: var(--gray); font-size: 14px;" onclick="toggleAuthMode()">ليس لديك حساب؟ إنشاء حساب جديد</p>
             </div>
         </div>
 
-        <div id="suggestionBoxContainer" class="auth-box hidden" style="background:var(--card-bg); padding:35px; border-radius:14px; border:1px solid var(--border-color); margin-bottom:30px;">
-            <h2 style="margin-bottom: 15px; color: var(--primary);">أرسل اقتراحك للمشرف</h2>
-            <textarea id="userSuggestionInput" placeholder="اكتب اقتراحك هنا..." style="height: 120px;"></textarea>
-            <button class="action-btn" onclick="submitSuggestion()">إرسال الاقتراح</button>
-            <button class="action-btn" style="background: #1e293b; color: #fff; margin-top: 10px;" onclick="document.getElementById('suggestionBoxContainer').classList.add('hidden')">إلغاء</button>
-        </div>
-
-        <div id="profileModalOverlay" class="modal-overlay hidden">
-            <div class="modal-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                    <h2 style="color: var(--primary);">الملف الشخصي وإعدادات الحساب</h2>
-                    <button onclick="closeProfileModal()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
+        <!-- 3. قسم محادثاتي (شات فردي) -->
+        <div id="myChatsTab" class="hidden">
+            <h2>المحادثات الفردية الشخصية</h2>
+            <div class="community-layout">
+                <div class="sidebar-list" id="privateChatsList"></div>
+                <div class="chat-area" id="privateChatArea">
+                    <div style="text-align:center; color:#777; margin:auto;">اختر محادثة فردية</div>
                 </div>
-                <div style="text-align: center; margin-bottom: 25px;">
-                    <img id="profileModalAvatarImg" src="" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 12px;" alt="User Avatar">
-                    <h3 id="profileModalEmailText" style="font-size: 16px; color: var(--text);">user@email.com</h3>
-                    <p id="profileModalGameNameText" style="font-size: 14px; color: var(--primary); margin-top: 5px;"></p>
-                </div>
-                <button class="action-btn" style="background: rgba(229,9,20,0.15); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3);" onclick="confirmLogout()">تسجيل الخروج</button>
             </div>
         </div>
-
-        <div id="createHubModal" class="modal-overlay hidden">
-            <div class="modal-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                    <h2 id="createHubModalTitle" style="color: var(--primary);">إنشاء جديد</h2>
-                    <button onclick="closeCreateHubModal()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
-                </div>
-                <input type="text" id="newHubTitle" placeholder="اسم الجروب أو القناة">
-                <textarea id="newHubDesc" placeholder="وصف موجز..."></textarea>
-                <div style="margin-bottom: 20px;">
-                    <label style="font-size: 14px; color: var(--gray); display: block; margin-bottom: 8px;">نوع الخصوصية:</label>
-                    <select id="newHubPrivacySelect">
-                        <option value="public">عام</option>
-                        <option value="private">خاص</option>
-                    </select>
-                </div>
-                <button class="action-btn" onclick="submitCreateHub()">إنشاء (بانتظار موافقة المشرف)</button>
-            </div>
-        </div>
-
-        <div id="passwordPromptModal" class="modal-overlay hidden">
-            <div class="modal-content" style="max-width: 400px; text-align: center;">
-                <h3 style="color: var(--primary); margin-bottom: 15px;">هذا العنصر محمي بكلمة مرور</h3>
-                <p style="color: var(--gray); font-size: 13px; margin-bottom: 15px;">الرجاء إدخال كلمة المرور للمتابعة:</p>
-                <input type="password" id="promptPasswordInput" placeholder="كلمة المرور">
-                <button class="action-btn" onclick="verifyPasswordAndUnlock()">دخول</button>
-                <button class="action-btn" style="background: #1e293b; color: #fff; margin-top: 10px;" onclick="document.getElementById('passwordPromptModal').classList.add('hidden')">إلغاء</button>
-            </div>
-        </div>
-
-        <div id="adminOverlay" class="modal-overlay hidden">
-            <div class="modal-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                    <h2 style="color: var(--primary);">لوحة تحكم المشرف</h2>
-                    <button onclick="closeAdminPanel()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
-                </div>
-
-                <div id="adminMenuButtons" class="admin-menu-buttons">
-                    <button class="admin-menu-btn" onclick="openAdminSection('adminCredentialsManager')">
-                        <span>إدارة إيميل وباسورد المشرف</span>
-                        <span style="color: var(--primary);">⚙️</span>
-                    </button>
-                    <button class="admin-menu-btn" onclick="openAdminSection('pendingHubsManager')">
-                        <span>مراجعة وقبول الجروبات والقنوات الجديدة</span>
-                        <span style="color: var(--primary);">📋</span>
-                    </button>
-                    <button class="admin-menu-btn" onclick="openAdminSection('groupLockManager')">
-                        <span>قفل الجروبات والقنوات والأقسام بكلمة مرور</span>
-                        <span style="color: var(--primary);">🔒</span>
-                    </button>
-                </div>
-
-                <div id="subSectionAdminCredentialsManager" class="admin-sub-section hidden">
-                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
-                    <h3 style="color: var(--primary); margin-bottom: 15px;">تعديل بريد وكلمة مرور المشرف المعتمد</h3>
-                    <label style="font-size: 13px; color: var(--gray);">البريد الإلكتروني للمشرف:</label>
-                    <input type="email" id="adminSettingEmailInput" placeholder="admin@email.com">
-                    <label style="font-size: 13px; color: var(--gray);">كلمة المرور الجديدة (أو الباسورد الخاص بالصلاحية):</label>
-                    <input type="password" id="adminSettingPasswordInput" placeholder="كلمة المرور">
-                    <button class="action-btn" onclick="saveAdminCredentialsSetting()">حفظ بيانات المشرف</button>
-                </div>
-
-                <div id="subSectionPendingHubsManager" class="admin-sub-section hidden">
-                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
-                    <h3 style="color: var(--primary); margin-bottom: 15px;">الجروبات والقنوات بانتظار الموافقة</h3>
-                    <div id="pendingHubsListContainer"></div>
-                </div>
-
-                <div id="subSectionGroupLockManager" class="admin-sub-section hidden">
-                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
-                    <h3 style="color: var(--primary); margin-bottom: 15px;">قفل الأقسام، الجروبات، أو القنوات بكلمة مرور</h3>
-                    <label style="font-size: 13px; color: var(--gray);">اختر نوع العنصر المراد حمايته:</label>
-                    <select id="lockItemTypeSelect" style="margin-top:5px; margin-bottom:15px;" onchange="populateLockTargetSelect()">
-                        <option value="section">قسم رئيسي</option>
-                        <option value="group">جروب / قناة</option>
-                    </select>
-
-                    <label style="font-size: 13px; color: var(--gray);">اختر العنصر المحدد:</label>
-                    <select id="lockTargetItemSelect" style="margin-top:5px; margin-bottom:15px;"></select>
-
-                    <input type="password" id="adminNewPasswordInput" placeholder="كلمة المرور الجديدة (أتركه فارغاً للإلغاء)">
-                    <button class="action-btn" onclick="saveItemPasswordLock()">حفظ الحماية</button>
-                </div>
-
-            </div>
-        </div>
-
-        <div id="mainContentArea"></div>
-
     </div>
 
-    <div id="gameNicknameModal" class="modal-overlay hidden">
-        <div class="modal-content" style="max-width: 450px; text-align: center;">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">أدخل اسمك المستعار في اللعبة</h3>
-            <input type="text" id="gameNicknameInput" placeholder="الاسم المستعار في اللعبة">
-            <button class="action-btn" onclick="saveGameNickname()">تأكيد ودخول</button>
+    <!-- Modal تسجيل الدخول -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
+            <h3>تسجيل الدخول</h3>
+            <input type="email" id="loginEmail" placeholder="البريد الإلكتروني">
+            <input type="password" id="loginPassword" placeholder="كلمة المرور">
+            <button class="btn" style="width:100%; margin-top:10px;" onclick="login()">دخول</button>
+        </div>
+    </div>
+
+    <!-- Modal إنشاء حساب -->
+    <div class="modal" id="regModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('regModal')">&times;</span>
+            <h3>إنشاء حساب جديد</h3>
+            <input type="text" id="regUsername" placeholder="اسم المستخدم (فريد وغير مكرر)">
+            <input type="email" id="regEmail" placeholder="البريد الإلكتروني">
+            <input type="password" id="regPassword" placeholder="كلمة المرور">
+            <button class="btn" style="width:100%; margin-top:10px;" onclick="register()">تسجيل وحفظ</button>
+        </div>
+    </div>
+
+    <!-- Modal إنشاء جروب / قناة -->
+    <div class="modal" id="createGroupModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('createGroupModal')">&times;</span>
+            <h3>إنشاء جروب أو قناة جديدة</h3>
+            <select id="cgType"><option value="group">جروب</option><option value="channel">قناة</option></select>
+            <input type="text" id="cgName" placeholder="اسم الجروب / القناة (إلزامي وغير مكرر)*">
+            <textarea id="cgDesc" placeholder="الوصف (اختياري - ممنوع الروابط)"></textarea>
+            <input type="text" id="cgImage" placeholder="رابط الصورة (اختياري)">
+            <select id="cgPrivacy"><option value="public">علني (يظهر للجميع)</option><option value="private">خاص (للمشتركين وأنا فقط)</option></select>
+            <button class="btn" style="width:100%; margin-top:10px;" onclick="createGroupChannel()">إرسال للمراجعة</button>
         </div>
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDk1tZq8lX8...", // مفتاحك الحقيقي
-            authDomain: "esultan-hayday.firebaseapp.com",
-            projectId: "esultan-hayday",
-            storageBucket: "esultan-hayday.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123:web:abc"
-        };
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
+        const socket = io();
         let currentUser = null;
-        let userProfileData = null;
-        let isLoginMode = true;
-        let activeSectionId = 'sec_1';
-        const unlockedItems = new Set();
-        let currentHubType = 'groups';
-        let pendingUnlockCallback = null;
-        let messagesUnsubscribe = null;
+        let activeTab = 'store';
+        let currentCommType = 'groups';
+        let currentActiveChatId = null;
+        let currentActiveChatType = null;
+        let currentProductImages = [];
 
-        window.onload = async function() {
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    currentUser = user;
-                    await fetchUserProfile(user.uid);
-                } else {
-                    currentUser = null;
-                    userProfileData = null;
-                }
-                checkAuthUI();
-                renderCategoriesBar();
-                renderAppContent();
-            });
-        };
-
-        async function fetchUserProfile(uid) {
-            try {
-                let doc = await db.collection('users').doc(uid).get();
-                if (doc.exists) {
-                    userProfileData = doc.data();
-                }
-            } catch(e) { console.error(e); }
+        function switchTab(tab) {
+            ['storeTab', 'communityTab', 'myChatsTab'].forEach(t => document.getElementById(t).classList.add('hidden'));
+            document.getElementById(tab + 'Tab').classList.remove('hidden');
+            activeTab = tab;
+            if (tab === 'community') loadCommunityItems();
+            if (tab === 'myChats') loadPrivateChatsList();
         }
 
-        function getSectionsList() {
-            return [
-                { id: 'sec_1', name: 'حسابات هاي داي', locked: false, password: localStorage.getItem('lock_sec_sec_1') || '' },
-                { id: 'sec_2', name: 'بيع أدوات وتوسيع', locked: false, password: localStorage.getItem('lock_sec_sec_2') || '' },
-                { id: 'sec_3', name: 'عروض وخصومات مميزة', locked: false, password: localStorage.getItem('lock_sec_sec_3') || '' }
-            ];
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        async function register() {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const res = await fetch('/api/register', { method: 'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username, email, password}) });
+            const data = await res.json();
+            if(data.success) { alert('تم التسجيل بنجاح!'); closeModal('regModal'); }
+            else alert(data.error);
         }
 
-        function renderCategoriesBar() {
-            const bar = document.getElementById('categoriesBar');
-            bar.innerHTML = '';
-            let sections = getSectionsList();
-
-            sections.forEach(sec => {
-                const tab = document.createElement('div');
-                tab.className = `category-tab ${sec.id === activeSectionId ? 'active' : ''}`;
-                tab.innerHTML = `${sec.name} ${sec.password ? '🔒' : ''}`;
-                tab.onclick = function() {
-                    if (sec.password && !unlockedItems.has(sec.id)) {
-                        triggerPasswordPrompt(sec.password, () => {
-                            unlockedItems.add(sec.id);
-                            proceedSectionClick(sec.id);
-                        });
-                        return;
-                    }
-                    proceedSectionClick(sec.id);
-                };
-                bar.appendChild(tab);
-            });
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const res = await fetch('/api/login', { method: 'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email, password}) });
+            const data = await res.json();
+            if(data.success) {
+                currentUser = data.user;
+                alert('مرحباً بك يا ' + currentUser.username);
+                closeModal('loginModal');
+                updateAuthUI();
+                loadStore();
+            } else alert(data.error);
         }
 
-        function proceedSectionClick(secId) {
-            if (secId === 'sec_community') {
-                if (!currentUser) {
-                    showAuth('login');
-                    return;
-                }
-                if (!userProfileData || !userProfileData.gameNickname) {
-                    document.getElementById('gameNicknameModal').classList.remove('hidden');
-                    return;
-                }
-            }
-            if (messagesUnsubscribe) {
-                messagesUnsubscribe();
-                messagesUnsubscribe = null;
-            }
-            activeSectionId = secId;
-            renderCategoriesBar();
-            renderAppContent();
-        }
-
-        function triggerPasswordPrompt(correctPassword, onSuccessCallback) {
-            window.currentCorrectPassword = correctPassword;
-            pendingUnlockCallback = onSuccessCallback;
-            document.getElementById('promptPasswordInput').value = '';
-            document.getElementById('passwordPromptModal').classList.remove('hidden');
-        }
-
-        function verifyPasswordAndUnlock() {
-            let entered = document.getElementById('promptPasswordInput').value;
-            if (entered === window.currentCorrectPassword) {
-                document.getElementById('passwordPromptModal').classList.add('hidden');
-                if (pendingUnlockCallback) pendingUnlockCallback();
-            } else {
-                alert('كلمة المرور غير صحيحة!');
+        function updateAuthUI() {
+            if(!currentUser) return;
+            document.getElementById('authNavBtns').innerHTML = '<span>أهلاً، ' + currentUser.username + '</span>';
+            if(currentUser.email === 'gojoesultan@gmail.com') {
+                renderAdminPanel();
             }
         }
 
-        async function saveGameNickname() {
-            let nick = document.getElementById('gameNicknameInput').value.trim();
-            if (!nick) return alert('الرجاء إدخال الاسم المستعار');
+        function renderAdminPanel() {
+            const container = document.getElementById('adminPanelContainer');
+            container.innerHTML = \`
+                <div class="admin-panel">
+                    <h2>👑 لوحة تحكم المشرف الأساسية</h2>
+                    <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                        <button class="btn" onclick="showAdminSub('products')">إدارة السلع</button>
+                        <button class="btn" onclick="showAdminSub('categories')">إدارة الأقسام</button>
+                        <button class="btn" onclick="showAdminSub('approvals')">مراجعة الجروبات المعلقة</button>
+                        <button class="btn" style="background:var(--accent);" onclick="showAdminSub('rush')">⚡ لوحة الرشق والمتابعين</button>
+                    </div>
+                    <div id="adminSubContent"></div>
+                </div>
+            \`;
+            showAdminSub('products');
+        }
+
+        async function showAdminSub(sub) {
+            const content = document.getElementById('adminSubContent');
+            if(sub === 'products') {
+                content.innerHTML = \`
+                    <h3>إضافة سلعة هاي داي جديدة</h3>
+                    <input type="text" id="pTitle" placeholder="عنوان السلعة">
+                    <select id="pCategory"></select>
+                    <label>صور السلعة (اضغط + للإضافة):</label>
+                    <div class="img-upload-box" id="pImagesBox">
+                        <div class="box-item" onclick="triggerImgInput(this)">+<input type="file" accept="image/*" style="display:none" onchange="handleImgFile(this)"></div>
+                    </div>
+                    <textarea id="pDesc" placeholder="وصف السلعة"></textarea>
+                    <input type="number" id="pQty" placeholder="الكمية المحدودة" value="1">
+                    <input type="text" id="pPrice" placeholder="السعر (مقابل ذيل سرطان البحر)">
+                    <button class="btn" onclick="addProduct()">نشر في المتجر</button>
+                \`;
+                loadCategoriesForSelect();
+            } else if(sub === 'categories') {
+                content.innerHTML = \`
+                    <h3>إدارة الأقسام (إضافة وحذف)</h3>
+                    <input type="text" id="newCatName" placeholder="اسم القسم الجديد">
+                    <button class="btn" onclick="addCategory()">إضافة قسم</button>
+                    <div id="adminCatsList" style="margin-top:10px;"></div>
+                \`;
+                loadAdminCategories();
+            } else if(sub === 'approvals') {
+                content.innerHTML = '<h3>الجروبات والقنوات بانتظار الموافقة</h3><div id="pendingGroupsList"></div>';
+                loadPendingGroups();
+            } else if(sub === 'rush') {
+                content.innerHTML = \`
+                    <h3>⚡ لوحة الرشق (إضافة متابعين وهميين لأي قناة/جروب)</h3>
+                    <select id="rushTargetSelect"></select>
+                    <input type="number" id="rushAmount" placeholder="عدد المتابعين المراد رشقه">
+                    <button class="btn" onclick="executeRush()">تنفيذ الرشق فوراً</button>
+                \`;
+                loadRushTargets();
+            }
+        }
+
+        function triggerImgInput(el) { el.querySelector('input').click(); }
+        function handleImgFile(input) {
+            if(input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const box = input.parentElement;
+                    box.innerHTML = '<img src="' + e.target.result + '"><input type="file" accept="image/*" style="display:none" onchange="handleImgFile(this)">';
+                    currentProductImages.push(e.target.result);
+                    
+                    const container = document.getElementById('pImagesBox');
+                    const newBox = document.createElement('div');
+                    newBox.className = 'box-item';
+                    newBox.innerHTML = '+<input type="file" accept="image/*" style="display:none" onchange="handleImgFile(this)">';
+                    newBox.onclick = function() { triggerImgInput(this); };
+                    container.appendChild(newBox);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function loadCategoriesForSelect() {
+            const res = await fetch('/api/categories');
+            const cats = await res.json();
+            const sel = document.getElementById('pCategory');
+            if(sel) sel.innerHTML = cats.map(c => '<option value="' + c.name + '">' + c.name + '</option>').join('');
+        }
+
+        async function loadAdminCategories() {
+            const res = await fetch('/api/categories');
+            const cats = await res.json();
+            const list = document.getElementById('adminCatsList');
+            if(list) list.innerHTML = cats.map(c => '<div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #eee;"><span>' + c.name + '</span><button class="btn" style="background:red; color:#fff;" onclick="deleteCategory(' + c.id + ')">حذف</button></div>').join('');
+        }
+
+        async function addCategory() {
+            const name = document.getElementById('newCatName').value;
+            if(!name) return;
+            await fetch('/api/categories', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})});
+            showAdminSub('categories');
+        }
+
+        async function deleteCategory(id) {
+            await fetch('/api/categories/' + id, {method:'DELETE'});
+            showAdminSub('categories');
+        }
+
+        async function addProduct() {
+            const title = document.getElementById('pTitle').value;
+            const description = document.getElementById('pDesc').value;
+            const quantity = document.getElementById('pQty').value;
+            const price = document.getElementById('pPrice').value;
+            const category = document.getElementById('pCategory').value;
+            await fetch('/api/products', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({title, description, quantity, price, category, images: currentProductImages})});
+            alert('تم نشر السلعة بنجاح!');
+            currentProductImages = [];
+            loadStore();
+        }
+
+        async function loadPendingGroups() {
+            const res = await fetch('/api/admin/pending');
+            const items = await res.json();
+            const list = document.getElementById('pendingGroupsList');
+            if(list) list.innerHTML = items.length === 0 ? '<p>لا توجد طلبات معلقة</p>' : items.map(i => \`
+                <div style="background:#f9f9f9; padding:10px; margin:5px 0; display:flex; justify-content:space-between; align-items:center;">
+                    <div><b>\${i.name}</b> (\${i.type}) - المالك: \${i.owner}</div>
+                    <div>
+                        <button class="btn" onclick="approveGroup(\${i.id}, true)">موافقة</button>
+                        <button class="btn" style="background:red; color:#fff;" onclick="approveGroup(\${i.id}, false)">رفض</button>
+                    </div>
+                </div>
+            \`).join('');
+        }
+
+        async function approveGroup(id, approve) {
+            await fetch('/api/admin/approve', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id, approve})});
+            loadPendingGroups();
+        }
+
+        async function loadRushTargets() {
+            const res = await fetch('/api/community/all-approved');
+            const items = await res.json();
+            const sel = document.getElementById('rushTargetSelect');
+            if(sel) sel.innerHTML = items.map(i => '<option value="' + i.id + '">' + i.name + ' (' + i.type + ')</option>').join('');
+        }
+
+        async function executeRush() {
+            const id = document.getElementById('rushTargetSelect').value;
+            const amount = document.getElementById('rushAmount').value;
+            await fetch('/api/admin/rush', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id, amount})});
+            alert('تم رشق المتابعين بنجاح!');
+        }
+
+        async function loadStore() {
+            const resCat = await fetch('/api/categories');
+            const cats = await resCat.json();
+            const bar = document.getElementById('catFilterBar');
+            bar.innerHTML = '<button class="btn" onclick="filterStore(\\'all\\')">الكل</button>' + cats.map(c => '<button class="btn" onclick="filterStore(\\'' + c.name + '\\')">' + c.name + '</button>').join('');
             
-            try {
-                await db.collection('users').doc(currentUser.uid).set({
-                    email: currentUser.email,
-                    gameNickname: nick,
-                    badgeType: 'مضمون'
-                }, { merge: true });
-
-                await fetchUserProfile(currentUser.uid);
-                document.getElementById('gameNicknameModal').classList.add('hidden');
-                activeSectionId = 'sec_community';
-                renderCategoriesBar();
-                renderAppContent();
-            } catch(e) {
-                alert('حدث خطأ أثناء حفظ الاسم: ' + e.message);
-            }
+            const resProd = await fetch('/api/products');
+            const products = await resProd.json();
+            renderProducts(products);
         }
 
-        function showAuth(mode) {
-            document.getElementById('suggestionBoxContainer').classList.add('hidden');
-            document.getElementById('authModalOverlay').classList.remove('hidden');
-            isLoginMode = (mode === 'login');
-            document.getElementById('authTitle').innerText = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
+        function renderProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = products.map(p => \`
+                <div class="card">
+                    <div>
+                        <div style="display:flex; gap:5px; overflow-x:auto; margin-bottom:10px;">
+                            \${JSON.parse(p.images || '[]').map(img => '<img src="' + img + '" style="width:70px; height:70px; object-fit:cover; border-radius:5px;">').join('')}
+                        </div>
+                        <h3>\${p.title}</h3>
+                        <p>\${p.description || ''}</p>
+                    </div>
+                    <div>
+                        <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:10px;">
+                            <span style="color:red;">السعر: \${p.price} ذيل سرطان البحر</span>
+                            <span>الكمية: \${p.quantity}</span>
+                        </div>
+                        <button class="btn" style="width:100%;" onclick="alert('قم بالتواصل عبر الشات الفردي لشراء السلعة مقابل ذيل سرطان البحر')">شراء الحساب</button>
+                    </div>
+                </div>
+            \`).join('');
+        }
+
+        async function filterStore(cat) {
+            const res = await fetch('/api/products');
+            const products = await res.json();
+            if(cat === 'all') renderProducts(products);
+            else renderProducts(products.filter(p => p.category === cat));
+        }
+
+        function switchCommunityType(type) {
+            currentCommType = type;
+            loadCommunityItems();
+        }
+
+        async function loadCommunityItems() {
+            const search = document.getElementById('communitySearch').value;
+            const res = await fetch('/api/community/list?type=' + currentCommType + '&search=' + search);
+            const items = await res.json();
+            const list = document.getElementById('communityList');
             
-            const emailInput = document.getElementById('authEmail');
-            const passInput = document.getElementById('authPassword');
-            emailInput.value = '';
-            passInput.value = '';
-            emailInput.setAttribute('readonly', 'readonly');
-            passInput.setAttribute('readonly', 'readonly');
-        }
-
-        function closeAuthModal() {
-            document.getElementById('authModalOverlay').classList.add('hidden');
-        }
-
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            showAuth(isLoginMode ? 'login' : 'register');
-        }
-
-        async function handleAuth() {
-            const email = document.getElementById('authEmail').value.trim();
-            const password = document.getElementById('authPassword').value.trim();
-            if (!email || !password) return alert('أدخل البريد وكلمة المرور');
-
-            try {
-                if (isLoginMode) {
-                    await auth.signInWithEmailAndPassword(email, password);
-                } else {
-                    let cred = await auth.createUserWithEmailAndPassword(email, password);
-                    await db.collection('users').doc(cred.user.uid).set({
-                        email: email,
-                        gameNickname: '',
-                        badgeType: 'مضمون'
-                    });
-                }
-                closeAuthModal();
-                checkAuthUI();
-            } catch (error) {
-                alert('خطأ في المصادقة: ' + error.message);
-            }
-        }
-
-        function confirmLogout() {
-            if (confirm('هل تريد تسجيل الخروج؟')) {
-                auth.signOut().then(() => {
-                    currentUser = null;
-                    userProfileData = null;
-                    if (messagesUnsubscribe) {
-                        messagesUnsubscribe();
-                        messagesUnsubscribe = null;
-                    }
-                    closeAdminPanel();
-                    closeProfileModal();
-                    checkAuthUI();
-                    activeSectionId = 'sec_1';
-                    renderCategoriesBar();
-                    renderAppContent();
-                });
-            }
-        }
-
-        async function isAdminUser(user) {
-            if (!user) return false;
-            if (user.email === 'gojoesultan@gmail.com') return true;
-            try {
-                let doc = await db.collection('settings').doc('admin_config').get();
-                if (doc.exists && doc.data().email === user.email) {
-                    return true;
-                }
-            } catch(e) {}
-            return false;
-        }
-
-        async function checkAuthUI() {
-            const profileBtn = document.getElementById('profileTriggerBtn');
-            const adminBtn = document.getElementById('adminNavBtn');
-            const suggestionUserBtn = document.getElementById('suggestionUserBtn');
-            const authNavButtons = document.getElementById('authNavButtons');
-
-            if (currentUser) {
-                authNavButtons.classList.add('hidden');
-                profileBtn.classList.remove('hidden');
-                document.getElementById('headerUserAvatar').src = currentUser.photoURL || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
-                document.getElementById('headerUserEmailName').innerText = userProfileData?.gameNickname || currentUser.email.split('@')[0];
-
-                let adminCheck = await isAdminUser(currentUser);
-                if (adminCheck) {
-                    adminBtn.classList.remove('hidden');
-                    suggestionUserBtn.classList.add('hidden');
-                } else {
-                    adminBtn.classList.add('hidden');
-                    suggestionUserBtn.classList.remove('hidden');
-                }
-            } else {
-                authNavButtons.classList.remove('hidden');
-                profileBtn.classList.add('hidden');
-                adminBtn.classList.add('hidden');
-                suggestionUserBtn.classList.add('hidden');
-            }
-        }
-
-        function openProfileModal() {
-            if (!currentUser) return showAuth('login');
-            document.getElementById('profileModalOverlay').classList.remove('hidden');
-            document.getElementById('profileModalEmailText').innerText = currentUser.email;
-            document.getElementById('profileModalGameNameText').innerText = 'الاسم المستعار: ' + (userProfileData?.gameNickname || 'غير محدد');
-            document.getElementById('profileModalAvatarImg').src = currentUser.photoURL || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
-        }
-
-        function closeProfileModal() { document.getElementById('profileModalOverlay').classList.add('hidden'); }
-
-        async function openAdminPanel() {
-            let adminCheck = await isAdminUser(currentUser);
-            if (!currentUser || !adminCheck) {
-                return alert('غير مسموح بالدخول لوحة المشرف إلا لحساب المشرف المعتمد!');
-            }
-            document.getElementById('adminOverlay').classList.remove('hidden');
-            backToAdminMenu();
-        }
-
-        function closeAdminPanel() { document.getElementById('adminOverlay').classList.add('hidden'); }
-
-        async function openAdminSection(sectionName) {
-            ['adminMenuButtons', 'subSectionAdminCredentialsManager', 'subSectionPendingHubsManager', 'subSectionGroupLockManager'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
-            if (sectionName === 'adminCredentialsManager') {
-                document.getElementById('subSectionAdminCredentialsManager').classList.remove('hidden');
-                try {
-                    let doc = await db.collection('settings').doc('admin_config').get();
-                    if (doc.exists) {
-                        document.getElementById('adminSettingEmailInput').value = doc.data().email || '';
-                        document.getElementById('adminSettingPasswordInput').value = doc.data().password || '';
-                    }
-                } catch(e) {}
-            } else if (sectionName === 'pendingHubsManager') {
-                document.getElementById('subSectionPendingHubsManager').classList.remove('hidden');
-                loadPendingHubsList();
-            } else if(sectionName === 'groupLockManager') {
-                document.getElementById('subSectionGroupLockManager').classList.remove('hidden');
-                populateLockTargetSelect();
-            }
-        }
-
-        function backToAdminMenu() {
-            ['subSectionAdminCredentialsManager', 'subSectionPendingHubsManager', 'subSectionGroupLockManager'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
-            document.getElementById('adminMenuButtons').classList.remove('hidden');
-        }
-
-        async function saveAdminCredentialsSetting() {
-            let email = document.getElementById('adminSettingEmailInput').value.trim();
-            let password = document.getElementById('adminSettingPasswordInput').value.trim();
-            if(!email) return alert('الرجاء إدخال البريد الإلكتروني للمشرف');
-
-            try {
-                await db.collection('settings').doc('admin_config').set({
-                    email: email,
-                    password: password
-                }, { merge: true });
-                alert('تم حفظ إيميل وباسورد المشرف بنجاح وتحديث صلاحيات لوحة التحكم!');
-                closeAdminPanel();
-                checkAuthUI();
-            } catch(e) {
-                alert('خطأ أثناء الحفظ: ' + e.message);
-            }
-        }
-
-        async function loadPendingHubsList() {
-            let container = document.getElementById('pendingHubsListContainer');
-            container.innerHTML = 'جاري التحميل...';
-            try {
-                let snap = await db.collection('hubs').where('status', '==', 'pending').get();
-                if (snap.empty) {
-                    container.innerHTML = '<p style="color:var(--gray);">لا توجد جروبات أو قنوات بانتظار الموافقة حالياً.</p>';
-                    return;
-                }
-                container.innerHTML = '';
-                snap.forEach(doc => {
-                    let data = doc.data();
-                    let div = document.createElement('div');
-                    div.style.cssText = 'background:#111827; border:1px solid var(--border-color); padding:15px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;';
-                    div.innerHTML = `
+            list.innerHTML = items.map(item => {
+                let countFormatted = item.subscribers_count >= 1000 ? (item.subscribers_count/1000).toFixed(1) + 'K' : item.subscribers_count;
+                return \`
+                    <div class="item-row" onclick="openChat(\${item.id}, '\${item.type}')">
                         <div>
-                            <div style="font-weight:bold; color:var(--text);">${data.title} (${data.type === 'group' ? 'جروب' : 'قناة'})</div>
-                            <div style="font-size:12px; color:var(--gray);">${data.desc || ''}</div>
+                            <b>\${item.name}</b>
+                            <div style="font-size:12px; color:#777;">رابط: \${item.link || 'لا يوجد'}</div>
                         </div>
-                        <div style="display:flex; gap:10px;">
-                            <button onclick="approveHub('${doc.id}')" style="background:var(--primary); color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">موافقة ونشر</button>
-                            <button onclick="rejectHub('${doc.id}')" style="background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">رفض وحذف</button>
-                        </div>
-                    `;
-                    container.appendChild(div);
-                });
-            } catch(e) {
-                container.innerHTML = '<p style="color:#ef4444;">خطأ في جلب البيانات</p>';
-            }
-        }
-
-        async function approveHub(hubId) {
-            try {
-                await db.collection('hubs').doc(hubId).update({ status: 'approved' });
-                alert('تمت الموافقة ونشر الجروب/القناة بنجاح!');
-                loadPendingHubsList();
-            } catch(e) {
-                alert('خطأ: ' + e.message);
-            }
-        }
-
-        async function rejectHub(hubId) {
-            if (confirm('هل أنت متأكد من رفض وحذف هذا العنصر؟')) {
-                try {
-                    await db.collection('hubs').doc(hubId).delete();
-                    alert('تم الرفض والحذف بنجاح.');
-                    loadPendingHubsList();
-                } catch(e) {
-                    alert('خطأ: ' + e.message);
-                }
-            }
-        }
-
-        async function populateLockTargetSelect() {
-            let type = document.getElementById('lockItemTypeSelect').value;
-            let targetSelect = document.getElementById('lockTargetItemSelect');
-            targetSelect.innerHTML = '';
-
-            if (type === 'section') {
-                let allSecs = [
-                    { id: 'sec_community', name: 'مجتمع هاي داي' },
-                    { id: 'sec_chats', name: 'دردشاتي' },
-                    { id: 'sec_1', name: 'حسابات هاي داي' },
-                    { id: 'sec_2', name: 'بيع أدوات وتوسيع' },
-                    { id: 'sec_3', name: 'عروض وخصومات مميزة' }
-                ];
-                allSecs.forEach(sec => {
-                    targetSelect.innerHTML += `<option value="${sec.id}">${sec.name}</option>`;
-                });
-            } else {
-                let snap = await db.collection('hubs').where('status', '==', 'approved').get();
-                snap.forEach(doc => {
-                    let data = doc.data();
-                    targetSelect.innerHTML += `<option value="${doc.id}">${data.title} (${data.type})</option>`;
-                });
-            }
-        }
-
-        async function saveItemPasswordLock() {
-            let type = document.getElementById('lockItemTypeSelect').value;
-            let targetId = document.getElementById('lockTargetItemSelect').value;
-            let newPass = document.getElementById('adminNewPasswordInput').value.trim();
-
-            if (!targetId) return alert('الرجاء اختيار عنصر');
-
-            if (type === 'section') {
-                localStorage.setItem(`lock_sec_${targetId}`, newPass);
-                alert('تم تحديث كلمة مرور القسم بنجاح!');
-            } else {
-                await db.collection('hubs').doc(targetId).update({ password: newPass });
-                alert('تم تحديث كلمة مرور الجروب/القناة بنجاح!');
-            }
-            closeAdminPanel();
-            renderCategoriesBar();
-        }
-
-        function showSuggestionModal() { document.getElementById('suggestionBoxContainer').classList.toggle('hidden'); }
-
-        async function submitSuggestion() {
-            const text = document.getElementById('userSuggestionInput').value.trim();
-            if (!text) return alert('اكتب اقتراحك');
-            try {
-                await db.collection('suggestions').add({
-                    user: currentUser.email,
-                    text: text,
-                    date: new Date().toLocaleDateString()
-                });
-                alert('تم الإرسال بنجاح');
-                document.getElementById('userSuggestionInput').value = '';
-                document.getElementById('suggestionBoxContainer').classList.add('hidden');
-            } catch(e) { alert(e.message); }
-        }
-
-        let activeHubId = null;
-
-        function renderAppContent() {
-            const area = document.getElementById('mainContentArea');
-            area.innerHTML = '';
-
-            if (activeSectionId === 'sec_community') {
-                renderCommunityHub(area);
-            } else if (activeSectionId === 'sec_chats') {
-                renderDirectChats(area);
-            } else {
-                renderStandardSection(area);
-            }
-        }
-
-        function renderCommunityHub(container) {
-            container.innerHTML = `
-                <div class="community-hub-container">
-                    <div class="hub-sidebar">
-                        <div class="hub-actions-top">
-                            <button class="hub-action-icon-btn" onclick="openCreateHubModalForm('group')">+ إنشاء جروب</button>
-                            <button class="hub-action-icon-btn" onclick="openCreateHubModalForm('channel')">+ إنشاء قناة</button>
-                        </div>
-                        <div style="padding: 10px; display: flex; gap: 10px; border-bottom: 1px solid var(--border-color);">
-                            <button class="action-btn" id="btnTabGroups" style="padding:6px; font-size:13px; margin:0;" onclick="switchHubTypeTab('groups')">الجروبات</button>
-                            <button class="action-btn" id="btnTabChannels" style="padding:6px; font-size:13px; margin:0; background:#1e293b;" onclick="switchHubTypeTab('channels')">القنوات</button>
-                        </div>
-                        <div class="hub-list-section" id="hubItemsListContainer"></div>
+                        <span class="badge">\${countFormatted} مشترك</span>
                     </div>
-                    <div class="hub-main-chat" id="hubMainChatArea">
-                        <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--gray);">
-                            اختر جروب أو قناة من القائمة للبدء
-                        </div>
+                \`;
+            }).join('');
+        }
+
+        function filterCommunity() { loadCommunityItems(); }
+
+        async function createGroupChannel() {
+            if(!currentUser) return alert('يجب تسجيل الدخول أولاً');
+            const type = document.getElementById('cgType').value;
+            const name = document.getElementById('cgName').value;
+            const description = document.getElementById('cgDesc').value;
+            const image = document.getElementById('cgImage').value;
+            const privacy = document.getElementById('cgPrivacy').value;
+
+            if(!name) return alert('اسم الجروب إلزامي!');
+            if(containsLink(description)) return alert('ممنوع وضع أي روابط في الوصف!');
+
+            const res = await fetch('/api/community/create', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({type, name, description, image, privacy, owner: currentUser.username})});
+            const data = await res.json();
+            if(data.success) { alert('تم إنشاء الجروب وإرساله للمشرف للمراجعة والنشر!'); closeModal('createGroupModal'); }
+            else alert(data.error);
+        }
+
+        async function openChat(id, type) {
+            currentActiveChatId = id;
+            currentActiveChatType = type;
+            socket.emit('joinRoom', id);
+
+            const res = await fetch('/api/community/item/' + id);
+            const item = await res.json();
+
+            const area = document.getElementById('communityChatArea');
+            let isOwnerOrAdmin = currentUser && (currentUser.username === item.owner || JSON.parse(item.admins_list || '[]').includes(currentUser.username));
+
+            area.innerHTML = \`
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
+                    <div>
+                        <h3 style="margin:0; cursor:pointer;" onclick="openGroupSettings(\${item.id})">⚙️ \${item.name}</h3>
+                        <span style="font-size:12px; color:#777;">المالك: \${item.owner} | الخصوصية: \${item.privacy}</span>
+                    </div>
+                    <div>
+                        \${currentUser && !JSON.parse(item.subscribers_list || '[]').includes(currentUser.username) ? '<button class="btn" onclick="subscribeItem(' + item.id + ')">انضمام</button>' : ''}
                     </div>
                 </div>
-            `;
-            renderHubLists();
+                <div id="pinnedMessagesContainer"></div>
+                <div class="chat-messages" id="chatMessagesBox"></div>
+                \${item.chat_closed && !isOwnerOrAdmin ? '<div style="color:red; text-align:center;">المحادثة مغلقة من قبل المشرف</div>' : \`
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="chatInputMsg" placeholder="اكتب رسالتك (ممنوع الروابط)..." style="margin:0; flex:1;">
+                        <button class="btn" onclick="sendGroupMessage(\${item.id})">إرسال</button>
+                    </div>
+                \`}
+            \`;
+            loadMessages(id);
         }
 
-        function switchHubTypeTab(type) {
-            currentHubType = type;
-            const btnGroups = document.getElementById('btnTabGroups');
-            const btnChannels = document.getElementById('btnTabChannels');
-            if(type === 'groups') {
-                btnGroups.style.background = 'var(--primary)';
-                btnChannels.style.background = '#1e293b';
-            } else {
-                btnChannels.style.background = 'var(--primary)';
-                btnGroups.style.background = '#1e293b';
-            }
-            renderHubLists();
+        async function subscribeItem(id) {
+            if(!currentUser) return alert('سجل دخولك أولاً');
+            await fetch('/api/community/subscribe', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id, username: currentUser.username})});
+            openChat(id, currentActiveChatType);
+            loadCommunityItems();
         }
 
-        async function renderHubLists() {
-            const container = document.getElementById('hubItemsListContainer');
-            if (!container) return;
-            container.innerHTML = 'جارٍ التحميل...';
-
-            try {
-                let typeFilter = (currentHubType === 'groups') ? 'group' : 'channel';
-                let snap = await db.collection('hubs')
-                    .where('type', '==', typeFilter)
-                    .where('status', '==', 'approved')
-                    .get();
-
-                container.innerHTML = snap.empty ? '<p style="color:var(--gray); text-align:center; padding:20px;">لا توجد عناصر مضافة</p>' : '';
-                
-                snap.forEach(doc => {
-                    let data = doc.data();
-                    let div = document.createElement('div');
-                    div.className = `hub-item-row ${activeHubId === doc.id ? 'active' : ''}`;
-                    div.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div>
-                                <div style="font-weight:600; font-size:14px;">${data.title} ${data.password ? '🔒' : ''}</div>
-                                <div style="font-size:11px; color:var(--gray);">${data.privacy === 'public' ? 'عام' : 'خاص'}</div>
-                            </div>
-                        </div>
-                    `;
-                    div.onclick = () => {
-                        if (data.password && !unlockedItems.has(doc.id)) {
-                            triggerPasswordPrompt(data.password, () => {
-                                unlockedItems.add(doc.id);
-                                loadHubChat(doc.id);
-                            });
-                            return;
-                        }
-                        loadHubChat(doc.id);
-                    };
-                    container.appendChild(div);
-                });
-            } catch(e) {
-                container.innerHTML = '<p style="color:#ff4d4d">خطأ في جلب البيانات</p>';
-            }
+        async function loadMessages(id) {
+            const res = await fetch('/api/messages/' + id);
+            const data = await res.json();
+            renderMessages(data.messages, data.pinned);
         }
 
-        function openCreateHubModalForm(type) {
-            window.targetHubCreationType = type;
-            document.getElementById('newHubTitle').value = '';
-            document.getElementById('newHubDesc').value = '';
-            document.getElementById('createHubModalTitle').innerText = type === 'group' ? 'إنشاء جروب جديد' : 'إنشاء قناة جديدة';
-            document.getElementById('createHubModal').classList.remove('hidden');
-        }
+        function renderMessages(messages, pinned) {
+            const box = document.getElementById('chatMessagesBox');
+            const pinnedBox = document.getElementById('pinnedMessagesContainer');
 
-        function closeCreateHubModal() { document.getElementById('createHubModal').classList.add('hidden'); }
+            pinnedBox.innerHTML = pinned.map(p => {
+                const firstWord = p.text.split(' ')[0];
+                return \`
+                    <div class="pinned-bar" onclick="scrollToMsg(\${p.id})">
+                        <span>📌 مثبت: \${firstWord}...</span>
+                        <span style="font-size:12px; color:#555;">الضغط للانتقال</span>
+                    </div>
+                \`;
+            }).join('');
 
-        async function submitCreateHub() {
-            let title = document.getElementById('newHubTitle').value.trim();
-            let desc = document.getElementById('newHubDesc').value.trim();
-            let privacy = document.getElementById('newHubPrivacySelect').value;
-
-            if (!title) return alert('أدخل العنوان');
-
-            try {
-                await db.collection('hubs').add({
-                    type: window.targetHubCreationType,
-                    title,
-                    desc,
-                    privacy,
-                    status: 'pending',
-                    password: '',
-                    ownerUid: currentUser.uid,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                closeCreateHubModal();
-                alert('تم إرسال طلب إنشاء الجروب/القناة بنجاح وهو بانتظار مراجعة وموافقة المشرف.');
-            } catch(e) {
-                alert('خطأ: ' + e.message);
-            }
-        }
-
-        async function loadHubChat(hubId) {
-            activeHubId = hubId;
-            renderHubLists();
-            const chatArea = document.getElementById('hubMainChatArea');
-            
-            let docSnap = await db.collection('hubs').doc(hubId).get();
-            if(!docSnap.exists) return;
-            let hubData = docSnap.data();
-
-            let adminCheck = await isAdminUser(currentUser);
-            let isOwnerOrAdmin = currentUser && (adminCheck || hubData.ownerUid === currentUser.uid);
-            let canSend = (hubData.type === 'group') || (hubData.type === 'channel' && isOwnerOrAdmin);
-
-            chatArea.innerHTML = `
-                <div style="padding:15px; background:#111827; border-bottom:1px solid var(--border-color);">
-                    <div style="font-weight:700;">${hubData.title}</div>
-                    <div style="font-size:12px; color:var(--gray);">${hubData.desc || ''}</div>
+            box.innerHTML = messages.map(m => \`
+                <div id="msg-\${m.id}" style="margin:8px 0; padding:8px; background:#fff; border-radius:5px; border:1px solid #eee;">
+                    <b>\${m.sender}:</b> \${m.text}
+                    \${(currentUser && (currentUser.username === m.sender || currentUser.email==='gojoesultan@gmail.com')) ? '<button style="float:left; font-size:10px;" onclick="pinMessage(' + m.id + ')">تثبيت</button>' : ''}
                 </div>
-                <div id="messagesContainer" style="flex-grow:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;"></div>
-                ${canSend ? `
-                <div style="padding:15px; background:#111827; border-top:1px solid var(--border-color); display:flex; gap:10px;">
-                    <input type="text" id="chatMessageInput" placeholder="اكتب رسالة..." style="margin:0;" onkeypress="if(event.key === 'Enter') sendHubMessage('${hubId}')">
-                    <button class="action-btn" style="width:auto; margin:0;" onclick="sendHubMessage('${hubId}')">إرسال</button>
-                </div>` : `<div style="padding:12px; text-align:center; background:#111827; color:var(--gray); font-size:13px;">هذه قناة، المشرفون فقط من يمكنهم النشر فيها.</div>`}
-            `;
-
-            if (messagesUnsubscribe) messagesUnsubscribe();
-
-            messagesUnsubscribe = db.collection('hubs').doc(hubId).collection('messages')
-                .orderBy('createdAt', 'asc')
-                .onSnapshot(snapshot => {
-                    let msgContainer = document.getElementById('messagesContainer');
-                    if (!msgContainer) return;
-                    msgContainer.innerHTML = '';
-                    snapshot.forEach(doc => {
-                        let m = doc.data();
-                        let d = document.createElement('div');
-                        let isMe = currentUser && m.senderUid === currentUser.uid;
-                        d.style.cssText = `max-width:70%; padding:10px 14px; border-radius:10px; background:${isMe ? '#166534' : '#1e293b'}; align-self:${isMe ? 'flex-end' : 'flex-start'}; border:1px solid var(--border-color);`;
-                        d.innerHTML = `
-                            <div style="font-size:11px; color:var(--primary); margin-bottom:3px; font-weight:bold;">${m.senderName || 'مستخدم'}</div>
-                            <div style="font-size:14px; word-break:break-word;">${m.text}</div>
-                        `;
-                        msgContainer.appendChild(d);
-                    });
-                    msgContainer.scrollTop = msgContainer.scrollHeight;
-                });
+            \`).join('');
+            box.scrollTop = box.scrollHeight;
         }
 
-        async function sendHubMessage(hubId) {
-            let input = document.getElementById('chatMessageInput');
-            if(!input) return;
-            let text = input.value.trim();
-            if (!text) return;
+        function scrollToMsg(id) {
+            const el = document.getElementById('msg-' + id);
+            if(el) { el.scrollIntoView({behavior:'smooth'}); el.style.background = '#ffffe0'; }
+        }
 
-            try {
-                await db.collection('hubs').doc(hubId).collection('messages').add({
-                    text,
-                    senderUid: currentUser.uid,
-                    senderName: userProfileData?.gameNickname || currentUser.email.split('@')[0],
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                input.value = '';
-            } catch(e) {
-                alert('خطأ في إرسال الرسالة: ' + e.message);
+        async function sendGroupMessage(id) {
+            const text = document.getElementById('chatInputMsg').value;
+            if(!text) return;
+            if(containsLink(text)) return alert('ممنوع إرسال أي روابط في الشات!');
+
+            await fetch('/api/messages', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({target_id: id, sender: currentUser.username, text})});
+            document.getElementById('chatInputMsg').value = '';
+        }
+
+        async function pinMessage(msgId) {
+            await fetch('/api/messages/pin', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({msgId, target_id: currentActiveChatId})});
+            loadMessages(currentActiveChatId);
+        }
+
+        async function openGroupSettings(id) {
+            const res = await fetch('/api/community/item/' + id);
+            const item = await res.json();
+            let isOwner = currentUser && currentUser.username === item.owner;
+
+            let newPriv = prompt('اختر الخصوصية (public أو private):', item.privacy);
+            let closeChat = confirm('هل تريد إغلاق الشات نهائياً للأعضاء؟ (موافق للإغلاق، إلغاء لفتحه)');
+            let newAdmin = isOwner ? prompt('اكتب اسم عضو لرفعه كمشرف:') : null;
+
+            await fetch('/api/community/settings', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({id, privacy: newPriv || item.privacy, chat_closed: closeChat ? 1 : 0, newAdmin})});
+            alert('تم تحديث إعدادات الجروب بنجاح');
+            openChat(id, item.type);
+        }
+
+        async function loadPrivateChatsList() {
+            if(!currentUser) return alert('سجل دخولك أولاً');
+            const res = await fetch('/api/private/users?username=' + currentUser.username);
+            const users = await res.json();
+            const list = document.getElementById('privateChatsList');
+            list.innerHTML = users.map(u => \`
+                <div class="item-row" onclick="openPrivateChat('\${u.username}')">
+                    <b>\${u.username}</b>
+                    <span style="font-size:12px; color:green;">فتح الشات</span>
+                </div>
+            \`).join('');
+        }
+
+        async function openPrivateChat(otherUser) {
+            currentActiveChatId = otherUser;
+            currentActiveChatType = 'private';
+            const area = document.getElementById('privateChatArea');
+            area.innerHTML = \`
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
+                    <h3 style="margin:0; cursor:pointer;" onclick="openUserProfile('\${otherUser}')">👤 خصائص المستخدم: \${otherUser}</h3>
+                </div>
+                <div class="chat-messages" id="privateMsgBox"></div>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="privateInputMsg" placeholder="اكتب رسالة فردية..." style="margin:0; flex:1;">
+                    <button class="btn" onclick="sendPrivateMsg('\${otherUser}')">إرسال</button>
+                </div>
+            \`;
+            const res = await fetch('/api/private/messages?user1=' + currentUser.username + '&user2=' + otherUser);
+            const msgs = await res.json();
+            const box = document.getElementById('privateMsgBox');
+            box.innerHTML = msgs.map(m => '<div style="margin:5px 0;"><b>' + m.sender + ':</b> ' + m.text + '</div>').join('');
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function openUserProfile(username) {
+            let action = prompt('اختر الإجراء مع المستخدم ' + username + ':\\n1. إضافة صديق\\n2. حظر المستخدم\\n3. إضافة تقييم كتابي (نصاب / مضمون)');
+            if(action === '1' || action === 'إضافة صديق') {
+                await fetch('/api/user/friend', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user: currentUser.username, target: username})});
+                alert('تمت الإضافة بنجاح');
+            } else if(action === '2' || action === 'حظر') {
+                await fetch('/api/user/block', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user: currentUser.username, target: username})});
+                alert('تم حظر المستخدم');
+            } else if(action === '3' || action === 'تقييم') {
+                let reviewText = prompt('اكتب تقييمك (مثال: مضمون جداً أو نصاب):');
+                let reviewType = prompt('هل هو (مضمون) أم (نصاب)؟');
+                await fetch('/api/user/review', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({target: username, by: currentUser.username, text: reviewText, type: reviewType})});
+                alert('تم إضافة التقييم بنجاح');
             }
         }
 
-        function renderDirectChats(container) {
-            container.innerHTML = `
-                <div style="background:var(--card-bg); padding:35px; border-radius:14px; border:1px solid var(--border-color);">
-                    <h2 style="color:var(--primary); margin-bottom:15px;">دردشاتي الخاصة</h2>
-                    <p style="color:var(--gray);">هنا تظهر محادثاتك الخاصة مع الأصدقاء.</p>
-                </div>
-            `;
+        async function sendPrivateMsg(receiver) {
+            const text = document.getElementById('privateInputMsg').value;
+            if(!text) return;
+            await fetch('/api/private/messages', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sender: currentUser.username, receiver, text})});
+            document.getElementById('privateInputMsg').value = '';
+            openPrivateChat(receiver);
         }
 
-        function renderStandardSection(container) {
-            container.innerHTML = `
-                <div style="background:var(--card-bg); padding:35px; border-radius:14px; border:1px solid var(--border-color);">
-                    <h2 style="color:var(--primary); margin-bottom:15px;">محتوى القسم</h2>
-                    <p style="color:var(--gray);">تصفح محتوى هاي داي المميز.</p>
-                </div>
-            `;
-        }
+        socket.on('newMessage', (msg) => {
+            if(currentActiveChatId == msg.target_id) {
+                loadMessages(currentActiveChatId);
+            }
+        });
+
+        window.onload = () => { loadStore(); };
     </script>
-</body>
-</html>
+    </body>
+    </html>
+    `);
+});
+
+// المسارات الخلفية (Backend APIs)
+app.post('/api/register', (req, res) => {
+    const { username, email, password } = req.body;
+    db.run("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", [username, email, password], function(err) {
+        if(err) return res.json({success: false, error: 'اسم المستخدم أو الإيميل مأخوذ مسبقاً!'});
+        db.run("INSERT INTO profiles (username) VALUES (?)", [username]);
+        res.json({success: true});
+    });
+});
+
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+    db.get("SELECT * FROM users WHERE email = ? AND password = ?", [email, password], (err, row) => {
+        if(!row) return res.json({success: false, error: 'بيانات الدخول غير صحيحة'});
+        res.json({success: true, user: {username: row.username, email: row.email, role: row.role}});
+    });
+});
+
+app.get('/api/categories', (req, res) => { db.all("SELECT * FROM categories", [], (e, r) => res.json(r)); });
+app.post('/api/categories', (req, res) => { db.run("INSERT INTO categories (name) VALUES (?)", [req.body.name], () => res.json({success:true})); });
+app.delete('/api/categories/:id', (req, res) => { db.run("DELETE FROM categories WHERE id = ?", [req.params.id], () => res.json({success:true})); });
+
+app.get('/api/products', (req, res) => { db.all("SELECT * FROM products", [], (e, r) => res.json(r)); });
+app.post('/api/products', (req, res) => {
+    const { title, description, quantity, price, category, images } = req.body;
+    db.run("INSERT INTO products (title, description, quantity, price, category, images) VALUES (?, ?, ?, ?, ?, ?)", 
+    [title, description, quantity, price, category, JSON.stringify(images)], () => res.json({success:true}));
+});
+
+app.post('/api/community/create', (req, res) => {
+    const { type, name, description, image, privacy, owner } = req.body;
+    if(containsLink(description)) return res.json({success:false, error:'ممنوع الروابط'});
+    const link = 'hayday.me/' + name.replace(/\s+/g, '_');
+    db.run("INSERT INTO groups_channels (type, name, description, image, privacy, owner, link) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    [type, name, description, image, privacy, owner, link], function(err) {
+        if(err) return res.json({success:false, error:'هذا الاسم مملوك ومأخوذ مسبقاً!'});
+        res.json({success:true});
+    });
+});
+
+app.get('/api/admin/pending', (req, res) => {
+    db.all("SELECT * FROM groups_channels WHERE status = 'pending'", [], (e, r) => res.json(r));
+});
+
+app.post('/api/admin/approve', (req, res) => {
+    const { id, approve } = req.body;
+    const status = approve ? 'approved' : 'rejected';
+    db.run("UPDATE groups_channels SET status = ? WHERE id = ?", [status, id], () => res.json({success:true}));
+});
+
+app.post('/api/admin/rush', (req, res) => {
+    const { id, amount } = req.body;
+    db.run("UPDATE groups_channels SET subscribers_count = subscribers_count + ? WHERE id = ?", [parseInt(amount), id], () => res.json({success:true}));
+});
+
+app.get('/api/community/list', (req, res) => {
+    const { type, search } = req.query;
+    let query = "SELECT * FROM groups_channels WHERE type = ? AND status = 'approved'";
+    let params = [type];
+    if(search) { query += " AND name LIKE ?"; params.push('%' + search + '%'); }
+    query += " ORDER BY subscribers_count DESC";
+    db.all(query, params, (e, rows) => res.json(rows));
+});
+
+app.get('/api/community/all-approved', (req, res) => {
+    db.all("SELECT * FROM groups_channels WHERE status = 'approved'", [], (e, r) => res.json(r));
+});
+
+app.get('/api/community/item/:id', (req, res) => {
+    db.get("SELECT * FROM groups_channels WHERE id = ?", [req.params.id], (e, row) => res.json(row));
+});
+
+app.post('/api/community/subscribe', (req, res) => {
+    const { id, username } = req.body;
+    db.get("SELECT subscribers_list, subscribers_count FROM groups_channels WHERE id = ?", [id], (e, row) => {
+        let list = JSON.parse(row.subscribers_list || '[]');
+        if(!list.includes(username)) {
+            list.push(username);
+            db.run("UPDATE groups_channels SET subscribers_list = ?, subscribers_count = subscribers_count + 1 WHERE id = ?", [JSON.stringify(list), id], () => res.json({success:true}));
+        } else res.json({success:true});
+    });
+});
+
+app.post('/api/community/settings', (req, res) => {
+    const { id, privacy, chat_closed, newAdmin } = req.body;
+    db.get("SELECT admins_list FROM groups_channels WHERE id = ?", [id], (e, row) => {
+        let admins = JSON.parse(row.admins_list || '[]');
+        if(newAdmin && !admins.includes(newAdmin)) admins.push(newAdmin);
+        db.run("UPDATE groups_channels SET privacy = ?, chat_closed = ?, admins_list = ? WHERE id = ?", [privacy, chat_closed, JSON.stringify(admins), id], () => res.json({success:true}));
+    });
+});
+
+app.get('/api/messages/:id', (req, res) => {
+    db.all("SELECT * FROM messages WHERE target_id = ? ORDER BY created_at ASC", [req.params.id], (e, msgs) => {
+        db.all("SELECT * FROM messages WHERE target_id = ? AND pinned = 1", [req.params.id], (e2, pinned) => {
+            res.json({messages: msgs, pinned});
+        });
+    });
+});
+
+app.post('/api/messages', (req, res) => {
+    const { target_id, sender, text } = req.body;
+    if(containsLink(text)) return res.json({success:false});
+    db.run("INSERT INTO messages (target_id, sender, text) VALUES (?, ?, ?)", [target_id, sender, text], function() {
+        io.to(target_id).emit('newMessage', {id: this.lastID, target_id, sender, text});
+        res.json({success:true});
+    });
+});
+
+app.post('/api/messages/pin', (req, res) => {
+    const { msgId, target_id } = req.body;
+    db.all("SELECT * FROM messages WHERE target_id = ? AND pinned = 1", [target_id], (e, rows) => {
+        if(rows.length >= 7) return res.json({success:false, error:'الحد الأقصى للتثبيت هو 7 رسائل فقط!'});
+        db.run("UPDATE messages SET pinned = 1 WHERE id = ?", [msgId], () => res.json({success:true}));
+    });
+});
+
+app.get('/api/private/users', (req, res) => {
+    db.all("SELECT username FROM users WHERE username != ?", [req.query.username], (e, r) => res.json(r));
+});
+
+app.get('/api/private/messages', (req, res) => {
+    const { user1, user2 } = req.query;
+    db.all("SELECT * FROM messages WHERE (sender = ? AND target_id = ?) OR (sender = ? AND target_id = ?) ORDER BY created_at ASC", 
+    [user1, user2, user2, user1], (e, r) => res.json(r));
+});
+
+app.post('/api/private/messages', (req, res) => {
+    const { sender, receiver, text } = req.body;
+    db.run("INSERT INTO messages (target_id, sender, text) VALUES (?, ?, ?)", [receiver, sender, text], () => res.json({success:true}));
+});
+
+app.post('/api/user/review', (req, res) => {
+    const { target, by, text, type } = req.body;
+    db.get("SELECT reviews FROM profiles WHERE username = ?", [target], (e, row) => {
+        let revs = JSON.parse(row.reviews || '[]');
+        revs.push({by, text, type});
+        db.run("UPDATE profiles SET reviews = ? WHERE username = ?", [JSON.stringify(revs), target], () => res.json({success:true}));
+    });
+});
+
+io.on('connection', (socket) => {
+    socket.on('joinRoom', (room) => { socket.join(room); });
+});
+
+const PORT = 3000;
+server.listen(PORT, () => {
+    console.log('الموقع يعمل الآن في ملف واحد على الرابط: http://localhost:' + PORT);
+});
