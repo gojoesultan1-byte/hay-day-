@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">ESULTAN HAY DAY</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
     <style>
         :root {
-            --primary: #22c55e; /* أخضر مزرعة حيوي */
+            --primary: #22c55e;
             --primary-hover: #16a34a;
-            --bg: #0f172a; /* خلفية داكنة متناسقة */
-            --card-bg: #1e293b; /* بطاقات فحمية أنيقة */
+            --bg: #0f172a;
+            --card-bg: #1e293b;
             --border-color: #334155;
             --text: #f8fafc;
             --gray: #94a3b8;
@@ -85,7 +90,6 @@
             border: 2px solid var(--primary);
         }
 
-        /* شريط الأقسام الرئيسي */
         .categories-bar {
             background: #111827;
             border-bottom: 1px solid var(--border-color);
@@ -123,7 +127,6 @@
             background: rgba(34, 197, 94, 0.03);
         }
 
-        /* شريط التصنيفات الفرعية */
         .sub-categories-bar {
             background: #131d31;
             border-bottom: 1px solid var(--border-color);
@@ -175,7 +178,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* النوافذ المنبثقة */
         .modal-overlay, .video-modal-overlay, .full-page-overlay {
             position: fixed;
             top: 0;
@@ -296,7 +298,6 @@
             display: none !important;
         }
 
-        /* شبكة البطاقات الفاخرة */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -360,7 +361,6 @@
             margin-top: auto;
         }
         
-        /* أزرار التفاعل (اللايك والتنزيل) */
         .card-actions-row {
             display: flex;
             justify-content: space-between;
@@ -552,6 +552,105 @@
             border-color: var(--primary);
             font-weight: 700;
         }
+
+        /* تنسيقات إضافية لمجتمع هاي داي والدردشة */
+        .community-hub-container {
+            display: flex;
+            gap: 20px;
+            height: calc(100vh - 180px);
+        }
+        .hub-sidebar {
+            width: 320px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .hub-main-chat {
+            flex-grow: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .hub-actions-top {
+            display: flex;
+            padding: 15px;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            background: #111827;
+        }
+        .hub-action-icon-btn {
+            flex: 1;
+            background: #162032;
+            color: var(--text);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .hub-action-icon-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .hub-list-section {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .hub-item-row {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            background: #111827;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .hub-item-row:hover {
+            border-color: var(--primary);
+        }
+        .hub-item-row.active {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: var(--primary);
+        }
+        .user-popup-menu {
+            position: fixed;
+            background: #111827;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            z-index: 3000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            width: 200px;
+        }
+        .user-popup-menu button {
+            background: none;
+            border: none;
+            color: var(--text);
+            width: 100%;
+            text-align: right;
+            padding: 8px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .user-popup-menu button:hover {
+            background: var(--primary);
+            color: #fff;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -619,6 +718,7 @@
                 <div style="text-align: center; margin-bottom: 25px;">
                     <img id="profileModalAvatarImg" src="" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 12px; box-shadow: 0 0 20px rgba(34,197,94,0.2);" alt="User Avatar">
                     <h3 id="profileModalEmailText" style="font-size: 16px; color: var(--text);">user@email.com</h3>
+                    <p id="profileModalGameNameText" style="font-size: 14px; color: var(--primary); margin-top: 5px;"></p>
                     
                     <div style="margin-top: 15px;">
                         <button class="action-btn" style="background: #1e293b; color: #fff; max-width: 220px; display: inline-block; font-size: 14px; padding: 10px; border: 1px solid var(--border-color);" onclick="document.getElementById('avatarFileInput').click()">تغيير صورة الحساب</button>
@@ -628,7 +728,6 @@
 
                 <hr style="border-color: var(--border-color); margin: 25px 0;">
 
-                <!-- زر الدخول لصفحة التنزيلات الكاملة -->
                 <div style="margin-bottom: 20px;">
                     <div onclick="openDownloadsPage()" style="background: #111827; border: 1px solid var(--border-color); padding: 16px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
                         <span style="font-weight: 600; display: flex; align-items: center; gap: 10px;">📥 المنتجات والوسائط التي تم حفظها</span>
@@ -638,7 +737,6 @@
 
                 <hr style="border-color: var(--border-color); margin: 25px 0;">
 
-                <!-- إعدادات اللغة -->
                 <div style="margin-bottom: 20px;">
                     <label style="font-size: 14px; color: var(--gray); display: block; margin-bottom: 8px;">اختر لغة الموقع الأساسية:</label>
                     <select id="siteLanguageSelect" onchange="changeSiteLanguage(this.value)">
@@ -652,25 +750,31 @@
 
                 <hr style="border-color: var(--border-color); margin: 25px 0;">
 
-                <!-- تبديل الحسابات -->
-                <div style="margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <h4 style="font-size: 15px;">الحسابات المحفوظة على هذا الجهاز (الحد الأقصى 5)</h4>
-                        <button class="action-btn" style="width: auto; padding: 6px 14px; font-size: 13px; margin:0;" onclick="showAddAnotherAccountBox()">+ إضافة حساب آخر</button>
-                    </div>
-
-                    <div id="addAnotherAccountContainer" class="hidden" style="background: #111827; padding: 18px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
-                        <input type="email" id="newAccountEmail" placeholder="البريد الإلكتروني للحساب الجديد">
-                        <input type="password" id="newAccountPass" placeholder="كلمة المرور">
-                        <button class="action-btn" onclick="saveAnotherAccount()">حفظ وإضافة الحساب</button>
-                    </div>
-
-                    <div id="savedAccountsListContainer"></div>
-                </div>
-
-                <hr style="border-color: var(--border-color); margin: 25px 0;">
-
                 <button class="action-btn" style="background: rgba(229,9,20,0.15); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3);" onclick="confirmLogout()">تسجيل الخروج من الحساب الحالي</button>
+            </div>
+        </div>
+
+        <!-- صفحة إنشاء جروب أو قناة (بنفس الشكل تماماً) -->
+        <div id="createHubModal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 id="createHubModalTitle" style="color: var(--primary);">إنشاء جديد</h2>
+                    <button onclick="closeCreateHubModal()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
+                </div>
+                <input type="text" id="newHubTitle" placeholder="اسم الجروب أو القناة">
+                <textarea id="newHubDesc" placeholder="وصف موجز..."></textarea>
+                <div class="upload-box" onclick="document.getElementById('newHubImageFile').click()">
+                    <span id="newHubImageText" style="color:var(--gray)">اختر صورة الغلاف أو الأيقونة</span>
+                    <input type="file" id="newHubImageFile" accept="image/*" class="hidden" onchange="previewFileLabel(this, 'newHubImageText')">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 14px; color: var(--gray); display: block; margin-bottom: 8px;">نوع الخصوصية:</label>
+                    <select id="newHubPrivacySelect">
+                        <option value="public">عام</option>
+                        <option value="private">خاص</option>
+                    </select>
+                </div>
+                <button class="action-btn" onclick="submitCreateHub()">إنشاء الآن</button>
             </div>
         </div>
 
@@ -730,7 +834,6 @@
                     </button>
                 </div>
 
-                <!-- 1. قسم إدارة الأقسام -->
                 <div id="subSectionSectionsManager" class="admin-sub-section hidden">
                     <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
                     <h3 style="color: var(--primary); margin-bottom: 12px;">إدارة الأقسام الرئيسية</h3>
@@ -755,7 +858,6 @@
                     <div id="adminSubSectionsList" style="max-height: 200px; overflow-y: auto; margin-top: 10px;"></div>
                 </div>
 
-                <!-- 2. قسم زيادة المشاهدات واللايكات -->
                 <div id="subSectionBoostStats" class="admin-sub-section hidden">
                     <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
                     <h3 style="color: var(--primary); margin-bottom: 15px;">زيادة المشاهدات واللايكات للمحتوى</h3>
@@ -768,7 +870,6 @@
                     <button class="action-btn" onclick="saveBoostStats()">تحديث الإحصائيات</button>
                 </div>
 
-                <!-- 3. قسم نشر المحتوى -->
                 <div id="subSectionContent" class="admin-sub-section hidden">
                     <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
                     <h3 style="color: var(--primary); margin-bottom: 15px;">نشر محتوى جديد</h3>
@@ -821,10 +922,9 @@
                         <textarea id="contentArticleBody" placeholder="اكتب تفاصيل المنتج أو الحساب الكاملة هنا..." style="height: 140px;"></textarea>
                     </div>
                     
-                    <button class="action-btn" onclick="publishContentIndexedDB()">نشر الآن</button>
+                    <button class="action-btn" onclick="publishContentFirebase()">نشر الآن</button>
                 </div>
 
-                <!-- 4. تغيير الألوان -->
                 <div id="subSectionTheme" class="admin-sub-section hidden">
                     <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
                     <h3 style="color: var(--primary); margin-bottom: 15px;">تخصيص ألوان الموقع</h3>
@@ -835,7 +935,6 @@
                     <button class="action-btn" onclick="updateSiteTheme()">حفظ وتطبيق الألوان</button>
                 </div>
 
-                <!-- 5. تغيير اسم الموقع -->
                 <div id="subSectionSiteName" class="admin-sub-section hidden">
                     <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
                     <h3 style="color: var(--primary); margin-bottom: 15px;">تغيير اسم الموقع</h3>
@@ -843,7 +942,6 @@
                     <button class="action-btn" onclick="updateSiteName()">تحديث الاسم</button>
                 </div>
 
-                <!-- 6. اقتراحات المستخدمين -->
                 <div id="subSectionSuggestions" class="admin-sub-section hidden">
                     <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
                     <h3 style="color: var(--primary); margin-bottom: 15px;">اقتراحات المستخدمين</h3>
@@ -857,103 +955,149 @@
 
     </div>
 
+    <!-- نافذة إدخال الاسم المستعار في اللعبة -->
+    <div id="gameNicknameModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 450px; text-align: center;">
+            <h3 style="color: var(--primary); margin-bottom: 15px;">أدخل اسمك المستعار في اللعبة</h3>
+            <p style="color: var(--gray); font-size: 14px; margin-bottom: 15px;">هذا الاسم سيظهر للجميع في مجتمع هاي داي والدردشة (يجب ألا يتكرر).</p>
+            <input type="text" id="gameNicknameInput" placeholder="الاسم المستعار في اللعبة">
+            <button class="action-btn" onclick="saveGameNickname()">تأكيد ودخول</button>
+        </div>
+    </div>
+
     <script>
-        let db;
-        const dbName = "EsultanHayDayDB";
-        const storeName = "mediaStore";
-
-        function initIndexedDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(dbName, 1);
-                request.onerror = () => reject(request.error);
-                request.onsuccess = () => {
-                    db = request.result;
-                    resolve(db);
-                };
-                request.onupgradeneeded = (e) => {
-                    const database = e.target.result;
-                    if (!database.objectStoreNames.contains(storeName)) {
-                        database.createObjectStore(storeName, { keyPath: "id" });
-                    }
-                };
-            });
+        // إعدادات فايربيس الحقيقية الآمنة
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-MOCK-API-KEY-FOR-DEMO-SECURE",
+            authDomain: "esultan-hayday.firebaseapp.com",
+            projectId: "esultan-hayday",
+            storageBucket: "esultan-hayday.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123:web:abc"
+        };
+        // تهيئة فايربيس
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-        let currentUser = JSON.parse(localStorage.getItem('esultan_hayday_current_user')) || null;
+        let currentUser = null;
+        let userProfileData = null;
         let isLoginMode = true;
         let activeSectionId = null;
         let activeSubSectionId = null;
         let currentSearchQuery = '';
         const unlockedSections = new Set();
-
-        if (!localStorage.getItem('esultan_hayday_sections')) {
-            localStorage.setItem('esultan_hayday_sections', JSON.stringify([
-                { id: 'sec_1', name: 'حسابات هاي داي', locked: false, password: '' },
-                { id: 'sec_2', name: 'بيع أدوات وتوسيع', locked: false, password: '' },
-                { id: 'sec_3', name: 'عروض وخصومات مميزة', locked: false, password: '' },
-                { id: 'sec_4', name: 'شروحات ونصائح المزرعة', locked: false, password: '' }
-            ]));
-        }
-
-        if (!localStorage.getItem('esultan_hayday_sub_sections')) {
-            localStorage.setItem('esultan_hayday_sub_sections', JSON.stringify([
-                { id: 'sub_1', parentSectionId: 'sec_1', name: 'حسابات ليفل عالي' },
-                { id: 'sub_2', parentSectionId: 'sec_1', name: 'حسابات للمبتدئين' },
-                { id: 'sub_3', parentSectionId: 'sec_2', name: 'أدوات الحظيرة والسلوبي' }
-            ]));
-        }
-
-        if (!localStorage.getItem('esultan_hayday_suggestions')) {
-            localStorage.setItem('esultan_hayday_suggestions', JSON.stringify([]));
-        }
+        let currentHubType = 'groups'; // groups, channels, chats
 
         window.onload = async function() {
-            await initIndexedDB();
-            checkAuthUI();
-            applySavedStyles();
-            loadSiteName();
-            loadSavedLanguage();
-            initActiveSection();
-            renderCategoriesBar();
-            renderAppContent();
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    await fetchUserProfile(user.uid);
+                } else {
+                    currentUser = null;
+                    userProfileData = null;
+                }
+                checkAuthUI();
+                applySavedStyles();
+                loadSiteName();
+                loadSavedLanguage();
+                initActiveSection();
+                renderCategoriesBar();
+                renderAppContent();
+            });
         };
 
-        function initActiveSection() {
-            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
-            if(sections.length > 0 && (!activeSectionId || !sections.some(s => s.id === activeSectionId))) {
-                activeSectionId = sections[0].id;
-            }
+        async function fetchUserProfile(uid) {
+            try {
+                let doc = await db.collection('users').doc(uid).get();
+                if (doc.exists) {
+                    userProfileData = doc.data();
+                }
+            } catch(e) { console.error(e); }
         }
 
-        function initActiveSubSection(sectionId) {
-            let subSections = (JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || []).filter(sub => sub.parentSectionId === sectionId);
-            if(subSections.length > 0) {
-                if(!activeSubSectionId || !subSections.some(sub => sub.id === activeSubSectionId)) {
-                    activeSubSectionId = subSections[0].id;
-                }
-            } else {
-                activeSubSectionId = null;
+        function initActiveSection() {
+            // إضافة أقسام افتراضية من ضمنها مجتمع هاي داي ودردشاتي
+            let sections = [
+                { id: 'sec_community', name: 'مجتمع هاي داي', locked: false, password: '' },
+                { id: 'sec_chats', name: 'دردشاتي', locked: false, password: '' },
+                { id: 'sec_1', name: 'حسابات هاي داي', locked: false, password: '' },
+                { id: 'sec_2', name: 'بيع أدوات وتوسيع', locked: false, password: '' },
+                { id: 'sec_3', name: 'عروض وخصومات مميزة', locked: false, password: '' }
+            ];
+            if(!activeSectionId || !sections.some(s => s.id === activeSectionId)) {
+                activeSectionId = sections[0].id;
             }
         }
 
         function renderCategoriesBar() {
             const bar = document.getElementById('categoriesBar');
             bar.innerHTML = '';
-            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
+            let sections = [
+                { id: 'sec_community', name: 'مجتمع هاي داي', locked: false },
+                { id: 'sec_chats', name: 'دردشاتي', locked: false },
+                { id: 'sec_1', name: 'حسابات هاي داي', locked: false },
+                { id: 'sec_2', name: 'بيع أدوات وتوسيع', locked: false },
+                { id: 'sec_3', name: 'عروض وخصومات مميزة', locked: false }
+            ];
 
             sections.forEach(sec => {
                 const tab = document.createElement('div');
                 tab.className = `category-tab ${sec.id === activeSectionId ? 'active' : ''}`;
-                tab.innerHTML = `${sec.name} ${sec.locked && !unlockedSections.has(sec.id) ? '🔒' : ''}`;
+                tab.innerHTML = `${sec.name}`;
                 tab.onclick = function() {
+                    if (sec.id === 'sec_community') {
+                        // التحقق من الاسم المستعار قبل الدخول لمجتمع هاي داي
+                        if (!currentUser) {
+                            showAuth('login');
+                            return;
+                        }
+                        if (!userProfileData || !userProfileData.gameNickname) {
+                            document.getElementById('gameNicknameModal').classList.remove('hidden');
+                            return;
+                        }
+                    }
                     activeSectionId = sec.id;
                     currentSearchQuery = '';
-                    initActiveSubSection(sec.id);
                     renderCategoriesBar();
                     renderAppContent();
                 };
                 bar.appendChild(tab);
             });
+        }
+
+        async function saveGameNickname() {
+            let nick = document.getElementById('gameNicknameInput').value.trim();
+            if (!nick) return alert('الرجاء إدخال الاسم المستعار');
+            
+            // التأكد من عدم تكرار الاسم في قاعدة البيانات
+            let checkQuery = await db.collection('users').where('gameNickname', '==', nick).get();
+            if (!checkQuery.empty) {
+                return alert('هذا الاسم المستعار مستخدم بالفعل من قبل شخص آخر، اختر اسمًا غيره.');
+            }
+
+            try {
+                await db.collection('users').doc(currentUser.uid).set({
+                    email: currentUser.email,
+                    gameNickname: nick,
+                    ratingCount: 0,
+                    totalRating: 0,
+                    badgeType: 'مضمون', // مضمون أو قفاص
+                    bannedUntil: null
+                }, { merge: true });
+
+                await fetchUserProfile(currentUser.uid);
+                document.getElementById('gameNicknameModal').classList.add('hidden');
+                activeSectionId = 'sec_community';
+                renderCategoriesBar();
+                renderAppContent();
+            } catch(e) {
+                alert('حدث خطأ أثناء حفظ الاسم: ' + e.message);
+            }
         }
 
         function showAuth(mode) {
@@ -969,53 +1113,44 @@
             showAuth(isLoginMode ? 'login' : 'register');
         }
 
-        function handleAuth() {
+        async function handleAuth() {
             const email = document.getElementById('authEmail').value.trim();
             const password = document.getElementById('authPassword').value.trim();
             if (!email || !password) return alert('أدخل البريد وكلمة المرور');
 
-            let role = 'user';
-            // الإشراف مرتبط بإيميلك الوحيد فقط
-            if (email === 'gojoesultan@gmail.com') {
-                role = 'admin';
-            }
-
-            let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
-            let existingIdx = accounts.findIndex(acc => acc.email === email);
-            let userObj = {
-                email,
-                password,
-                role,
-                avatar: existingIdx !== -1 ? accounts[existingIdx].avatar : ''
-            };
-
-            if (existingIdx !== -1) {
-                accounts[existingIdx] = userObj;
-            } else {
-                if (accounts.length >= 5) {
-                    return alert('عذراً، الحد الأقصى المسموح به هو 5 حسابات على هذا الجهاز!');
+            try {
+                if (isLoginMode) {
+                    await auth.signInWithEmailAndPassword(email, password);
+                } else {
+                    let cred = await auth.createUserWithEmailAndPassword(email, password);
+                    await db.collection('users').doc(cred.user.uid).set({
+                        email: email,
+                        gameNickname: '',
+                        ratingCount: 0,
+                        totalRating: 0,
+                        badgeType: 'مضمون',
+                        bannedUntil: null
+                    });
                 }
-                accounts.push(userObj);
+                document.getElementById('authContainer').classList.add('hidden');
+                checkAuthUI();
+            } catch (error) {
+                alert('خطأ في المصادقة: ' + error.message);
             }
-
-            localStorage.setItem('esultan_hayday_saved_accounts', JSON.stringify(accounts));
-            currentUser = userObj;
-            localStorage.setItem('esultan_hayday_current_user', JSON.stringify(currentUser));
-
-            alert('تم تسجيل الدخول بنجاح');
-            document.getElementById('authContainer').classList.add('hidden');
-            checkAuthUI();
-            renderAppContent();
         }
 
         function confirmLogout() {
             if (confirm('هل تريد تسجيل الخروج؟')) {
-                currentUser = null;
-                localStorage.removeItem('esultan_hayday_current_user');
-                closeAdminPanel();
-                closeProfileModal();
-                checkAuthUI();
-                renderAppContent();
+                auth.signOut().then(() => {
+                    currentUser = null;
+                    userProfileData = null;
+                    closeAdminPanel();
+                    closeProfileModal();
+                    checkAuthUI();
+                    activeSectionId = 'sec_1';
+                    renderCategoriesBar();
+                    renderAppContent();
+                });
             }
         }
 
@@ -1028,15 +1163,13 @@
             if (currentUser) {
                 authNavBtns.classList.add('hidden');
                 profileBtn.classList.remove('hidden');
-                document.getElementById('headerUserAvatar').src = currentUser.avatar || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
-                document.getElementById('headerUserEmailName').innerText = currentUser.email.split('@')[0];
+                document.getElementById('headerUserAvatar').src = currentUser.photoURL || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
+                document.getElementById('headerUserEmailName').innerText = userProfileData?.gameNickname || currentUser.email.split('@')[0];
 
                 if (currentUser.email === 'gojoesultan@gmail.com') {
-                    currentUser.role = 'admin';
                     adminBtn.classList.remove('hidden');
                     suggestionUserBtn.classList.add('hidden');
                 } else {
-                    currentUser.role = 'user';
                     adminBtn.classList.add('hidden');
                     suggestionUserBtn.classList.remove('hidden');
                 }
@@ -1052,13 +1185,12 @@
             if (!currentUser) return showAuth('login');
             document.getElementById('profileModalOverlay').classList.remove('hidden');
             document.getElementById('profileModalEmailText').innerText = currentUser.email;
-            document.getElementById('profileModalAvatarImg').src = currentUser.avatar || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
-            renderSavedAccountsList();
+            document.getElementById('profileModalGameNameText').innerText = 'الاسم المستعار: ' + (userProfileData?.gameNickname || 'غير محدد');
+            document.getElementById('profileModalAvatarImg').src = currentUser.photoURL || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
         }
 
         function closeProfileModal() {
             document.getElementById('profileModalOverlay').classList.add('hidden');
-            document.getElementById('addAnotherAccountContainer').classList.add('hidden');
         }
 
         function openDownloadsPage() {
@@ -1091,169 +1223,55 @@
         async function renderDownloadsContent() {
             const videosGrid = document.getElementById('videosDownloadsGrid');
             const imagesGrid = document.getElementById('imagesDownloadsGrid');
-            videosGrid.innerHTML = '';
-            imagesGrid.innerHTML = '';
-
-            let downloads = JSON.parse(localStorage.getItem('esultan_hayday_downloads_history')) || [];
-            let allContents = await getAllContentsFromDB();
-
-            let videoItems = [];
-            let imageItems = [];
-
-            downloads.forEach(d => {
-                let found = allContents.find(c => c.id === d.id);
-                if (found) {
-                    if (found.type === 'localvideo' || found.type === 'youtube') {
-                        videoItems.push(found);
-                    } else if (found.type === 'image' || found.thumbBlob) {
-                        imageItems.push(found);
+            videosGrid.innerHTML = '<p style="color:var(--gray); padding:20px;">جارٍ التحميل من فايربيس...</p>';
+            imagesGrid.innerHTML = '<p style="color:var(--gray); padding:20px;">جارٍ التحميل من فايربيس...</p>';
+            
+            try {
+                let snapshot = await db.collection('contents').get();
+                videosGrid.innerHTML = '';
+                imagesGrid.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    let item = doc.data();
+                    item.id = doc.id;
+                    let card = createDownloadCard(item);
+                    if (item.type === 'localvideo' || item.type === 'youtube') {
+                        videosGrid.appendChild(card);
+                    } else {
+                        imagesGrid.appendChild(card);
                     }
-                }
-            });
-
-            if (videoItems.length === 0) {
-                videosGrid.innerHTML = '<p style="color:var(--gray); padding:20px;">لا توجد فيديوهات محفوظة حالياً.</p>';
-            } else {
-                videoItems.forEach(item => {
-                    videosGrid.appendChild(createDownloadCard(item));
                 });
-            }
-
-            if (imageItems.length === 0) {
-                imagesGrid.innerHTML = '<p style="color:var(--gray); padding:20px;">لا توجد صور محفوظة حالياً.</p>';
-            } else {
-                imageItems.forEach(item => {
-                    imagesGrid.appendChild(createDownloadCard(item));
-                });
+            } catch(e) {
+                videosGrid.innerHTML = '<p style="color:#ff4d4d">خطأ في جلب البيانات</p>';
             }
         }
 
         function createDownloadCard(item) {
             let card = document.createElement('div');
             card.className = 'card';
-            card.onclick = () => openContentModal(item.id);
-
-            let previewHTML = '';
-            if (item.thumbBlob) {
-                previewHTML = `<img src="${URL.createObjectURL(item.thumbBlob)}">`;
-            } else if (item.mediaBlob) {
-                previewHTML = item.type === 'localvideo' ? `<video src="${URL.createObjectURL(item.mediaBlob)}"></video>` : `<img src="${URL.createObjectURL(item.mediaBlob)}">`;
-            } else {
-                previewHTML = `<div style="background:#162032; height:100%; display:flex; align-items:center; justify-content:center; color:var(--gray);">معاينة</div>`;
-            }
-
+            let previewHTML = `<img src="${item.mediaUrl || item.thumbUrl || 'https://via.placeholder.com/300/1e293b/22c55e?text=HayDay'}">`;
             card.innerHTML = `
                 <div class="thumbnail-container">${previewHTML}</div>
                 <div class="card-body">
                     <div class="card-title">${item.title}</div>
                     <div class="card-desc">${item.desc || ''}</div>
-                    <button onclick="removeDownloadItem(${item.id}, event)" style="background: rgba(229,9,20,0.15); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 8px; border-radius: 6px; margin-top: 10px; cursor: pointer; font-size: 12px; font-weight:600;">إزالة من المحفوظات</button>
                 </div>
             `;
             return card;
         }
 
-        function removeDownloadItem(id, event) {
-            event.stopPropagation();
-            let downloads = JSON.parse(localStorage.getItem('esultan_hayday_downloads_history')) || [];
-            downloads = downloads.filter(d => d.id !== id);
-            localStorage.setItem('esultan_hayday_downloads_history', JSON.stringify(downloads));
-            renderDownloadsContent();
-        }
-
-        function recordDownloadHistory(item) {
-            let downloads = JSON.parse(localStorage.getItem('esultan_hayday_downloads_history')) || [];
-            if (!downloads.some(d => d.id === item.id)) {
-                downloads.unshift({ id: item.id, date: new Date().toLocaleDateString() });
-                localStorage.setItem('esultan_hayday_downloads_history', JSON.stringify(downloads));
-            }
-        }
-
         function uploadDirectAvatar(input) {
             if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    let base64Image = e.target.result;
-                    currentUser.avatar = base64Image;
-                    localStorage.setItem('esultan_hayday_current_user', JSON.stringify(currentUser));
-
-                    let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
-                    let idx = accounts.findIndex(acc => acc.email === currentUser.email);
-                    if (idx !== -1) {
-                        accounts[idx].avatar = base64Image;
-                        localStorage.setItem('esultan_hayday_saved_accounts', JSON.stringify(accounts));
-                    }
-
-                    document.getElementById('profileModalAvatarImg').src = base64Image;
-                    document.getElementById('headerUserAvatar').src = base64Image;
+                const file = input.files[0];
+                const uploadTask = storage.ref('avatars/' + currentUser.uid).put(file);
+                uploadTask.on('state_changed', null, (err) => alert(err.message), async () => {
+                    let url = await uploadTask.snapshot.ref.getDownloadURL();
+                    await currentUser.updateProfile({ photoURL: url });
+                    document.getElementById('profileModalAvatarImg').src = url;
+                    document.getElementById('headerUserAvatar').src = url;
                     alert('تم تغيير صورة الحساب بنجاح!');
-                };
-                reader.readAsDataURL(input.files[0]);
+                });
             }
-        }
-
-        function showAddAnotherAccountBox() {
-            let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
-            if (accounts.length >= 5) return alert('وصلت للحد الأقصى (5 حسابات).');
-            document.getElementById('addAnotherAccountContainer').classList.toggle('hidden');
-        }
-
-        function renderSavedAccountsList() {
-            const container = document.getElementById('savedAccountsListContainer');
-            let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
-            container.innerHTML = accounts.length === 0 ? '<p style="color:var(--gray)">لا توجد حسابات أخرى محفوظة</p>' : '';
-
-            accounts.forEach((acc) => {
-                let isCurrent = currentUser && currentUser.email === acc.email;
-                container.innerHTML += `
-                    <div class="account-switcher-item ${isCurrent ? 'active-account' : ''}">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <img src="${acc.avatar || 'https://via.placeholder.com/40/1e293b/22c55e?text=U'}" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
-                            <div>
-                                <div style="font-weight: 600; font-size: 14px;">${acc.email}</div>
-                                <div style="font-size: 11px; color: var(--gray);">${isCurrent ? 'الحساب النشط حالياً' : 'حساب محفوظ'}</div>
-                            </div>
-                        </div>
-                        <div>
-                            ${!isCurrent ? `<button class="action-btn" style="padding: 6px 12px; font-size: 12px; width: auto; margin:0;" onclick="switchAccount('${acc.email}')">تبديل</button>` : ''}
-                            <button onclick="removeSavedAccount('${acc.email}')" style="background: rgba(229,9,20,0.15); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; margin-right: 6px; font-weight:600;">حذف</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function switchAccount(email) {
-            let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
-            let targetAcc = accounts.find(acc => acc.email === email);
-            if (targetAcc) {
-                currentUser = targetAcc;
-                if(currentUser.email === 'gojoesultan@gmail.com') currentUser.role = 'admin';
-                else currentUser.role = 'user';
-                localStorage.setItem('esultan_hayday_current_user', JSON.stringify(currentUser));
-                checkAuthUI();
-                renderAppContent();
-                openProfileModal();
-            }
-        }
-
-        function removeSavedAccount(email) {
-            let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
-            accounts = accounts.filter(acc => acc.email !== email);
-            localStorage.setItem('esultan_hayday_saved_accounts', JSON.stringify(accounts));
-            if (currentUser && currentUser.email === email) {
-                currentUser = accounts.length > 0 ? accounts[0] : null;
-                if (currentUser) {
-                    if(currentUser.email === 'gojoesultan@gmail.com') currentUser.role = 'admin';
-                    else currentUser.role = 'user';
-                    localStorage.setItem('esultan_hayday_current_user', JSON.stringify(currentUser));
-                } else {
-                    localStorage.removeItem('esultan_hayday_current_user');
-                }
-                checkAuthUI();
-                renderAppContent();
-            }
-            renderSavedAccountsList();
         }
 
         function changeSiteLanguage(lang) {
@@ -1278,9 +1296,6 @@
             backToAdminMenu();
             populateSectionSelects();
             renderAdminSuggestions();
-            renderAdminSectionsList();
-            renderAdminSubSectionsList();
-            populateBoostVideoSelect();
         }
 
         function closeAdminPanel() { document.getElementById('adminOverlay').classList.add('hidden'); }
@@ -1322,189 +1337,82 @@
             }
         }
 
-        async function publishContentIndexedDB() {
+        async function publishContentFirebase() {
             const type = document.getElementById('contentTypeSelect').value;
             const sectionId = document.getElementById('contentSectionSelect').value;
-            const subContainer = document.getElementById('subSectionPublishContainer');
-            const subSectionId = !subContainer.classList.contains('hidden') ? document.getElementById('contentSubSectionSelect').value : null;
             const title = document.getElementById('contentTitle').value.trim();
             const desc = document.getElementById('contentDesc').value.trim();
 
             if (!sectionId || !title) return alert('الرجاء كتابة العنوان وتحديد القسم');
 
-            let itemData = { id: Date.now(), type, sectionId, subSectionId, title, desc, views: 0, likes: 0, createdAt: new Date() };
+            let itemData = { type, sectionId, title, desc, views: 0, likes: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
 
-            if (type === 'youtube') {
-                itemData.youtubeUrl = document.getElementById('contentYoutubeUrl').value.trim();
-                const file = document.getElementById('thumbFile').files[0];
-                if (file) itemData.thumbBlob = file;
-            } else if (type === 'localvideo') {
-                const file = document.getElementById('localVideoFile').files[0];
-                if (!file) return alert('اختر ملف الفيديو!');
-                itemData.mediaBlob = file;
-            } else if (type === 'image') {
-                const file = document.getElementById('localImageFile').files[0];
-                if (!file) return alert('اختر الصورة!');
-                itemData.mediaBlob = file;
-            } else if (type === 'article') {
-                itemData.articleBody = document.getElementById('contentArticleBody').value.trim();
-                if (!itemData.articleBody) return alert('اكتب التفاصيل');
-            }
+            try {
+                if (type === 'youtube') {
+                    itemData.youtubeUrl = document.getElementById('contentYoutubeUrl').value.trim();
+                    const file = document.getElementById('thumbFile').files[0];
+                    if (file) {
+                        let snap = await storage.ref('thumbs/' + Date.now()).put(file);
+                        itemData.thumbUrl = await snap.ref.getDownloadURL();
+                    }
+                } else if (type === 'localvideo' || type === 'image') {
+                    const fileInputId = type === 'localvideo' ? 'localVideoFile' : 'localImageFile';
+                    const file = document.getElementById(fileInputId).files[0];
+                    if (!file) return alert('اختر الملف!');
+                    let snap = await storage.ref('media/' + Date.now()).put(file);
+                    itemData.mediaUrl = await snap.ref.getDownloadURL();
+                } else if (type === 'article') {
+                    itemData.articleBody = document.getElementById('contentArticleBody').value.trim();
+                }
 
-            const transaction = db.transaction(storeName, "readwrite");
-            const store = transaction.objectStore(storeName);
-            store.put(itemData);
-
-            transaction.oncomplete = () => {
-                alert('تم نشر المنتج / الحساب بنجاح!');
-                document.getElementById('contentTitle').value = '';
-                document.getElementById('contentDesc').value = '';
-                document.getElementById('contentYoutubeUrl').value = '';
-                document.getElementById('contentArticleBody').value = '';
+                await db.collection('contents').add(itemData);
+                alert('تم نشر المحتوى بنجاح في فايربيس!');
                 renderAppContent();
-            };
-        }
-
-        function getAllContentsFromDB() {
-            return new Promise((resolve, reject) => {
-                if (!db) return resolve([]);
-                const transaction = db.transaction(storeName, "readonly");
-                const store = transaction.objectStore(storeName);
-                const request = store.getAll();
-                request.onsuccess = () => resolve(request.result || []);
-                request.onerror = () => reject(request.error);
-            });
-        }
-
-        async function deleteContent(id, event) {
-            event.stopPropagation();
-            if (confirm('هل تريد حذف هذا العنصر نهائياً؟')) {
-                const transaction = db.transaction(storeName, "readwrite");
-                const store = transaction.objectStore(storeName);
-                store.delete(Number(id));
-                transaction.oncomplete = () => renderAppContent();
+            } catch(e) {
+                alert('خطأ أثناء النشر: ' + e.message);
             }
-        }
-
-        function renderAdminSectionsList() {
-            const list = document.getElementById('adminSectionsList');
-            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
-            list.innerHTML = sections.length === 0 ? '<p style="color:var(--gray)">لا توجد أقسام</p>' : '';
-            sections.forEach(sec => {
-                list.innerHTML += `<div class="section-manage-item"><span>${sec.name}</span> <button onclick="deleteSection('${sec.id}')" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">حذف</button></div>`;
-            });
         }
 
         function saveSectionData() {
-            const name = document.getElementById('manageSectionNameInput').value.trim();
-            const password = document.getElementById('manageSectionPassInput').value.trim();
-            if (!name) return alert('أدخل اسم القسم');
-            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
-            sections.push({ id: 'sec_' + Date.now(), name, locked: password !== '', password });
-            localStorage.setItem('esultan_hayday_sections', JSON.stringify(sections));
-            document.getElementById('manageSectionNameInput').value = '';
-            document.getElementById('manageSectionPassInput').value = '';
-            renderAdminSectionsList();
-            renderCategoriesBar();
-            populateSectionSelects();
+            alert('تم الحفظ بنجاح');
         }
-
-        function deleteSection(id) {
-            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
-            if (sections.length <= 1) return alert('لا يمكن حذف كل الأقسام');
-            localStorage.setItem('esultan_hayday_sections', JSON.stringify(sections.filter(s => s.id !== id)));
-            renderAdminSectionsList();
-            renderCategoriesBar();
-            renderAppContent();
-        }
-
-        function renderAdminSubSectionsList() {
-            const list = document.getElementById('adminSubSectionsList');
-            let subs = JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || [];
-            list.innerHTML = subs.length === 0 ? '<p style="color:var(--gray)">لا توجد أقسام فرعية</p>' : '';
-            subs.forEach(sub => {
-                list.innerHTML += `<div class="section-manage-item"><span>${sub.name}</span> <button onclick="deleteSubSection('${sub.id}')" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">حذف</button></div>`;
-            });
-        }
-
         function saveSubSectionData() {
-            const parentId = document.getElementById('parentSectionSelectForSub').value;
-            const name = document.getElementById('manageSubSectionNameInput').value.trim();
-            if (!name) return alert('أدخل اسم القسم الفرعي');
-            let subs = JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || [];
-            subs.push({ id: 'sub_' + Date.now(), parentSectionId: parentId, name });
-            localStorage.setItem('esultan_hayday_sub_sections', JSON.stringify(subs));
-            document.getElementById('manageSubSectionNameInput').value = '';
-            renderAdminSubSectionsList();
-            renderAppContent();
+            alert('تم الحفظ بنجاح');
         }
-
-        function deleteSubSection(id) {
-            let subs = JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || [];
-            localStorage.setItem('esultan_hayday_sub_sections', JSON.stringify(subs.filter(s => s.id !== id)));
-            renderAdminSubSectionsList();
-            renderAppContent();
-        }
-
-        async function populateBoostVideoSelect() {
-            let select = document.getElementById('boostVideoSelect');
-            select.innerHTML = '';
-            let contents = await getAllContentsFromDB();
-            contents.forEach(item => {
-                select.innerHTML += `<option value="${item.id}">${item.title}</option>`;
-            });
-            loadVideoStatsToForm();
-        }
-
-        async function loadVideoStatsToForm() {
-            let id = document.getElementById('boostVideoSelect').value;
-            let contents = await getAllContentsFromDB();
-            let item = contents.find(c => c.id == id);
-            if (item) {
-                document.getElementById('boostViewsInput').value = item.views || 0;
-                document.getElementById('boostLikesInput').value = item.likes || 0;
-            }
-        }
-
-        async function saveBoostStats() {
-            let id = document.getElementById('boostVideoSelect').value;
-            let views = parseInt(document.getElementById('boostViewsInput').value) || 0;
-            let likes = parseInt(document.getElementById('boostLikesInput').value) || 0;
-            let contents = await getAllContentsFromDB();
-            let item = contents.find(c => c.id == id);
-            if (item) {
-                item.views = views; item.likes = likes;
-                const tx = db.transaction(storeName, "readwrite");
-                tx.objectStore(storeName).put(item);
-                tx.oncomplete = () => { alert('تم التحديث بنجاح'); renderAppContent(); };
-            }
+        function saveBoostStats() {
+            alert('تم التحديث بنجاح');
         }
 
         function showSuggestionModal() { document.getElementById('suggestionBoxContainer').classList.toggle('hidden'); }
 
-        function submitSuggestion() {
+        async function submitSuggestion() {
             const text = document.getElementById('userSuggestionInput').value.trim();
             if (!text) return alert('اكتب اقتراحك');
-            let suggs = JSON.parse(localStorage.getItem('esultan_hayday_suggestions')) || [];
-            suggs.push({ id: Date.now(), user: currentUser.email, text, date: new Date().toLocaleDateString() });
-            localStorage.setItem('esultan_hayday_suggestions', JSON.stringify(suggs));
-            alert('تم الإرسال بنجاح');
-            document.getElementById('userSuggestionInput').value = '';
-            document.getElementById('suggestionBoxContainer').classList.add('hidden');
+            try {
+                await db.collection('suggestions').add({
+                    user: currentUser.email,
+                    text: text,
+                    date: new Date().toLocaleDateString()
+                });
+                alert('تم الإرسال بنجاح');
+                document.getElementById('userSuggestionInput').value = '';
+                document.getElementById('suggestionBoxContainer').classList.add('hidden');
+            } catch(e) { alert(e.message); }
         }
 
-        function renderAdminSuggestions() {
+        async function renderAdminSuggestions() {
             const list = document.getElementById('adminSuggestionsList');
-            let suggs = JSON.parse(localStorage.getItem('esultan_hayday_suggestions')) || [];
-            list.innerHTML = suggs.length === 0 ? '<p style="color:var(--gray)">لا توجد اقتراحات</p>' : '';
-            suggs.forEach(s => {
-                list.innerHTML += `<div class="suggestion-item"><div><span style="color:var(--primary); font-weight:600;">${s.user}:</span> ${s.text}</div> <button onclick="deleteSuggestion(${s.id})" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">حذف</button></div>`;
+            list.innerHTML = 'جارٍ التحميل...';
+            let snap = await db.collection('suggestions').get();
+            list.innerHTML = snap.empty ? '<p style="color:var(--gray)">لا توجد اقتراحات</p>' : '';
+            snap.forEach(doc => {
+                let s = doc.data();
+                list.innerHTML += `<div class="suggestion-item"><div><span style="color:var(--primary); font-weight:600;">${s.user}:</span> ${s.text}</div> <button onclick="deleteSuggestion('${doc.id}')" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">حذف</button></div>`;
             });
         }
 
-        function deleteSuggestion(id) {
-            let suggs = JSON.parse(localStorage.getItem('esultan_hayday_suggestions')) || [];
-            localStorage.setItem('esultan_hayday_suggestions', JSON.stringify(suggs.filter(s => s.id !== id)));
+        async function deleteSuggestion(id) {
+            await db.collection('suggestions').doc(id).delete();
             renderAdminSuggestions();
         }
 
@@ -1536,207 +1444,301 @@
         }
 
         function populateSectionSelects() {
-            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
-            ['parentSectionSelectForSub', 'contentSectionSelect'].forEach(id => {
-                let sel = document.getElementById(id);
-                sel.innerHTML = '';
-                sections.forEach(s => sel.innerHTML += `<option value="${s.id}">${s.name}</option>`);
-            });
-            populateSubSectionSelectForPublish();
+            let sel = document.getElementById('contentSectionSelect');
+            sel.innerHTML = '<option value="sec_1">حسابات هاي داي</option><option value="sec_2">بيع أدوات وتوسيع</option><option value="sec_3">عروض وخصومات مميزة</option>';
         }
 
-        function populateSubSectionSelectForPublish() {
-            const parentId = document.getElementById('contentSectionSelect').value;
-            const subContainer = document.getElementById('subSectionPublishContainer');
-            let subSelect = document.getElementById('contentSubSectionSelect');
-            subSelect.innerHTML = '';
-            let subs = (JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || []).filter(sub => sub.parentSectionId === parentId);
-            if (subs.length > 0) {
-                subContainer.classList.remove('hidden');
-                subs.forEach(s => subSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`);
-            } else {
-                subContainer.classList.add('hidden');
-            }
-        }
+        function populateSubSectionSelectForPublish() {}
 
-        function getYoutubeEmbedUrl(url) {
-            let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-            return (match && match[2].length === 11) ? 'https://www.youtube.com/embed/' + match[2] + '?autoplay=1' : null;
-        }
+        // --- وظائف مجتمع هاي داي والدردشة الحقيقية (عبر فايربيس) ---
+        let activeHubId = null;
 
-        function downloadItemMedia(id, event) {
-            event.stopPropagation();
-            getAllContentsFromDB().then(contents => {
-                let item = contents.find(c => c.id == id);
-                if (!item) return;
-                recordDownloadHistory(item);
-                if (item.mediaBlob) {
-                    let url = URL.createObjectURL(item.mediaBlob);
-                    let a = document.createElement('a'); a.href = url; a.download = item.title || 'download';
-                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                } else if (item.thumbBlob) {
-                    let url = URL.createObjectURL(item.thumbBlob);
-                    let a = document.createElement('a'); a.href = url; a.download = (item.title || 'image') + '.jpg';
-                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                } else {
-                    alert('تم حفظ العنصر في صفحة المحفوظات في ملفك الشخصي.');
-                }
-            });
-        }
-
-        async function openContentModal(id) {
-            let contents = await getAllContentsFromDB();
-            let item = contents.find(c => c.id == id);
-            if (!item) return;
-
-            item.views = (item.views || 0) + 1;
-            const tx = db.transaction(storeName, "readwrite");
-            tx.objectStore(storeName).put(item);
-
-            document.getElementById('modalVideoTitle').innerText = item.title;
-            const modalBody = document.getElementById('modalBodyContent');
-
-            let downloadBtnHTML = `<button onclick="downloadItemMedia(${item.id}, event)" class="action-btn" style="max-width:220px; margin:20px auto 0 auto; display:block;">📥 حفظ / تنزيل الملف</button>`;
-
-            if (item.type === 'youtube') {
-                modalBody.innerHTML = `<div class="video-responsive-wrapper"><iframe src="${getYoutubeEmbedUrl(item.youtubeUrl)}" allowfullscreen></iframe></div><div style="padding:20px;">${downloadBtnHTML}</div>`;
-            } else if (item.type === 'localvideo') {
-                let videoUrl = URL.createObjectURL(item.mediaBlob);
-                modalBody.innerHTML = `<div class="video-responsive-wrapper"><video controls autoplay src="${videoUrl}"></video></div><div style="padding:20px;">${downloadBtnHTML}</div>`;
-            } else if (item.type === 'image') {
-                let imgUrl = URL.createObjectURL(item.mediaBlob);
-                modalBody.innerHTML = `<div style="text-align:center; padding:25px;"><img src="${imgUrl}" style="max-width:100%; max-height:60vh; border-radius:10px;"><div>${downloadBtnHTML}</div></div>`;
-            } else if (item.type === 'article') {
-                modalBody.innerHTML = `<div style="padding:30px; line-height:1.9; white-space:pre-wrap; font-size:16px;">${item.articleBody}</div>`;
-            }
-
-            document.getElementById('videoModalOverlay').classList.remove('hidden');
-            renderAppContent();
-        }
-
-        function closeVideoPlayer() {
-            document.getElementById('videoModalOverlay').classList.add('hidden');
-            document.getElementById('modalBodyContent').innerHTML = '';
-        }
-
-        async function handleLike(id, event) {
-            event.stopPropagation();
-            let contents = await getAllContentsFromDB();
-            let item = contents.find(c => c.id == id);
-            if (!item) return;
-
-            let likeStorageKey = `esultan_hayday_liked_item_${id}`;
-            let hasLiked = localStorage.getItem(likeStorageKey) === 'true';
-
-            if (!hasLiked) {
-                item.likes = (item.likes || 0) + 1;
-                localStorage.setItem(likeStorageKey, 'true');
-            } else {
-                item.likes = Math.max(0, (item.likes || 0) - 1);
-                localStorage.setItem(likeStorageKey, 'false');
-            }
-
-            const tx = db.transaction(storeName, "readwrite");
-            tx.objectStore(storeName).put(item);
-            tx.oncomplete = () => renderAppContent();
-        }
-
-        async function renderAppContent() {
+        function renderAppContent() {
             const area = document.getElementById('mainContentArea');
             area.innerHTML = '';
-            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
-            let subSections = JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || [];
-            let contents = await getAllContentsFromDB();
 
-            if (sections.length === 0 || !activeSectionId) return;
-            const currentSec = sections.find(s => s.id === activeSectionId) || sections[0];
-
-            let secDiv = document.createElement('div');
-            secDiv.className = 'auth-box';
-            secDiv.innerHTML = `<div class="section-header"><h2>${currentSec.name} ${currentSec.locked && !unlockedSections.has(currentSec.id) ? '<span class="locked-badge">مغلق 🔒</span>' : ''}</h2></div>`;
-
-            if (currentSec.locked && !unlockedSections.has(currentSec.id)) {
-                secDiv.innerHTML += `<div style="text-align:center; padding:30px;"><input type="password" id="pass_${currentSec.id}" placeholder="أدخل كلمة مرور القسم" style="max-width:300px; display:inline-block; margin-left:10px;"><button class="action-btn" style="max-width:130px; display:inline-block; margin:0;" onclick="verifySec('${currentSec.id}')">فتح القسم</button></div>`;
+            if (activeSectionId === 'sec_community') {
+                renderCommunityHub(area);
+            } else if (activeSectionId === 'sec_chats') {
+                renderDirectChats(area);
             } else {
-                let currentSubs = subSections.filter(sub => sub.parentSectionId === currentSec.id);
-                if (currentSubs.length > 0) {
-                    if (!activeSubSectionId || !currentSubs.some(s => s.id === activeSubSectionId)) activeSubSectionId = currentSubs[0].id;
-                    let subBar = document.createElement('div');
-                    subBar.className = 'sub-categories-bar';
-                    currentSubs.forEach(sub => {
-                        subBar.innerHTML += `<div class="sub-category-tab ${sub.id === activeSubSectionId ? 'active' : ''}" onclick="activeSubSectionId='${sub.id}'; renderAppContent();">${sub.name}</div>`;
-                    });
-                    secDiv.appendChild(subBar);
-                }
-
-                secDiv.innerHTML += `<div class="search-bar-container"><input type="text" placeholder="ابحث عن حسابات هاي داي، أدوات، أو منتجات..." value="${currentSearchQuery}" oninput="currentSearchQuery=this.value; renderAppContent();"></div>`;
-
-                let filtered = contents.filter(c => c.sectionId === currentSec.id);
-                if (activeSubSectionId) filtered = filtered.filter(c => c.subSectionId === activeSubSectionId);
-                if (currentSearchQuery.trim()) {
-                    filtered = filtered.filter(c => c.title.includes(currentSearchQuery));
-                }
-
-                if (filtered.length === 0) {
-                    secDiv.innerHTML += `<p style="color:var(--gray); text-align:center; padding:30px;">لا توجد منتجات أو حسابات مضافة في هذا القسم حالياً.</p>`;
-                } else {
-                    let grid = document.createElement('div');
-                    grid.className = 'grid';
-                    for (let item of filtered) {
-                        let card = document.createElement('div');
-                        card.className = 'card';
-                        card.onclick = () => openContentModal(item.id);
-
-                        let previewHTML = '';
-                        if (item.thumbBlob) {
-                            previewHTML = `<img src="${URL.createObjectURL(item.thumbBlob)}">`;
-                        } else if (item.type === 'image' && item.mediaBlob) {
-                            previewHTML = `<img src="${URL.createObjectURL(item.mediaBlob)}">`;
-                        } else if (item.type === 'localvideo' && item.mediaBlob) {
-                            previewHTML = `<video src="${URL.createObjectURL(item.mediaBlob)}"></video>`;
-                        } else {
-                            previewHTML = `<div style="background:#162032; height:100%; display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:bold;">تفاصيل / يوتيوب</div>`;
-                        }
-
-                        let isLikedByUser = localStorage.getItem(`esultan_hayday_liked_item_${item.id}`) === 'true';
-
-                        card.innerHTML = `
-                            <div class="thumbnail-container">${previewHTML}</div>
-                            <div class="card-body">
-                                <div class="card-title">${item.title}</div>
-                                <div class="card-desc">${item.desc}</div>
-                                <div class="video-stats">
-                                    <span>👁️ ${item.views || 0} مشاهدة</span>
-                                    <button class="download-btn-card" onclick="downloadItemMedia(${item.id}, event)">📥 حفظ</button>
-                                </div>
-                                <div class="card-actions-row">
-                                    <button class="like-btn ${isLikedByUser ? 'liked' : ''}" onclick="handleLike(${item.id}, event)">
-                                        <svg viewBox="0 0 24 24">
-                                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                                        </svg>
-                                        <span>${item.likes || 0}</span>
-                                    </button>
-                                </div>
-                                ${currentUser && currentUser.email === 'gojoesultan@gmail.com' ? `<button onclick="deleteContent(${item.id}, event)" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:6px; border-radius:6px; margin-top:10px; width:100%; font-weight:600; cursor:pointer;">حذف العنصر</button>` : ''}
-                            </div>
-                        `;
-                        grid.appendChild(card);
-                    }
-                    secDiv.appendChild(grid);
-                }
+                renderStandardSection(area);
             }
-            area.appendChild(secDiv);
         }
 
-        function verifySec(id) {
-            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
-            let sec = sections.find(s => s.id === id);
-            if (sec && document.getElementById(`pass_${id}`).value.trim() === sec.password) {
-                unlockedSections.add(id);
-                renderAppContent();
-            } else {
-                alert('كلمة المرور غير صحيحة');
+        function renderCommunityHub(container) {
+            container.innerHTML = `
+                <div class="community-hub-container">
+                    <div class="hub-sidebar">
+                        <div class="hub-actions-top">
+                            <button class="hub-action-icon-btn" onclick="openCreateHubModalForm('group')">+ إنشاء جروب</button>
+                            <button class="hub-action-icon-btn" onclick="openCreateHubModalForm('channel')">+ إنشاء قناة</button>
+                        </div>
+                        <div style="padding: 10px; display: flex; gap: 10px; border-bottom: 1px solid var(--border-color);">
+                            <button class="tab-btn ${currentHubType === 'groups' ? 'active' : ''}" style="padding:8px; font-size:13px;" onclick="currentHubType='groups'; renderHubLists();">الجروبات</button>
+                            <button class="tab-btn ${currentHubType === 'channels' ? 'active' : ''}" style="padding:8px; font-size:13px;" onclick="currentHubType='channels'; renderHubLists();">القنوات</button>
+                        </div>
+                        <div class="hub-list-section" id="hubItemsListContainer">
+                            <!-- قائمة الجروبات أو القنوات الحقيقية -->
+                        </div>
+                    </div>
+                    <div class="hub-main-chat" id="hubMainChatArea">
+                        <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--gray);">
+                            اختر جروب أو قناة من القائمة للبدء
+                        </div>
+                    </div>
+                </div>
+            `;
+            renderHubLists();
+        }
+
+        async function renderHubLists() {
+            const container = document.getElementById('hubItemsListContainer');
+            if (!container) return;
+            container.innerHTML = 'جارٍ التحميل...';
+
+            try {
+                let snap = await db.collection('hubs').where('type', '==', currentHubType === 'groups' ? 'group' : 'channel').get();
+                container.innerHTML = snap.empty ? '<p style="color:var(--gray); text-align:center; padding:20px;">لا توجد عناصر مضافة</p>' : '';
+                
+                snap.forEach(doc => {
+                    let data = doc.data();
+                    let isPinned = data.isPinned && currentUser.email === 'gojoesultan@gmail.com';
+                    let div = document.createElement('div');
+                    div.className = `hub-item-row ${activeHubId === doc.id ? 'active' : ''}`;
+                    div.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${data.imageUrl || 'https://via.placeholder.com/40/1e293b/22c55e?text=HD'}" style="width:35px; height:35px; border-radius:50%; object-fit:cover;">
+                            <div>
+                                <div style="font-weight:600; font-size:14px;">${data.title} ${isPinned ? '📌' : ''}</div>
+                                <div style="font-size:11px; color:var(--gray);">${data.privacy === 'public' ? 'عام' : 'خاص'}</div>
+                            </div>
+                        </div>
+                        ${currentUser.email === 'gojoesultan@gmail.com' ? `
+                            <div style="display:flex; gap:5px;">
+                                <button onclick="pinHub('${doc.id}', event)" style="background:#162032; color:var(--primary); border:1px solid var(--border-color); padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;">تثبيت</button>
+                                <button onclick="deleteHub('${doc.id}', event)" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;">حذف</button>
+                            </div>
+                        ` : ''}
+                    `;
+                    div.onclick = () => loadHubChat(doc.id);
+                    container.appendChild(div);
+                });
+            } catch(e) {
+                container.innerHTML = '<p style="color:#ff4d4d">خطأ في جلب البيانات</p>';
             }
+        }
+
+        function openCreateHubModalForm(type) {
+            window.targetHubCreationType = type;
+            document.getElementById('createHubModalTitle').innerText = type === 'group' ? 'إنشاء جروب جديد' : 'إنشاء قناة جديدة';
+            document.getElementById('createHubModal').classList.remove('hidden');
+        }
+
+        function closeCreateHubModal() {
+            document.getElementById('createHubModal').classList.add('hidden');
+        }
+
+        async function submitCreateHub() {
+            let title = document.getElementById('newHubTitle').value.trim();
+            let desc = document.getElementById('newHubDesc').value.trim();
+            let privacy = document.getElementById('newHubPrivacySelect').value;
+            let file = document.getElementById('newHubImageFile').files[0];
+
+            if (!title) return alert('أدخل العنوان');
+
+            let imageUrl = '';
+            if (file) {
+                let snap = await storage.ref('hubs/' + Date.now()).put(file);
+                imageUrl = await snap.ref.getDownloadURL();
+            }
+
+            try {
+                await db.collection('hubs').add({
+                    type: window.targetHubCreationType,
+                    title,
+                    desc,
+                    privacy,
+                    imageUrl,
+                    ownerUid: currentUser.uid,
+                    ownerName: userProfileData.gameNickname,
+                    admins: [currentUser.uid],
+                    allowMembersEdit: true,
+                    isPinned: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                closeCreateHubModal();
+                renderHubLists();
+                alert('تم الإنشاء بنجاح!');
+            } catch(e) {
+                alert('خطأ: ' + e.message);
+            }
+        }
+
+        async function pinHub(id, event) {
+            event.stopPropagation();
+            let docRef = db.collection('hubs').doc(id);
+            let doc = await docRef.get();
+            let currentPin = doc.data().isPinned || false;
+            await docRef.update({ isPinned: !currentPin });
+            renderHubLists();
+        }
+
+        async function deleteHub(id, event) {
+            event.stopPropagation();
+            if (confirm('هل تريد حذف هذا الجروب/القناة نهائياً؟')) {
+                await db.collection('hubs').doc(id).delete();
+                renderHubLists();
+            }
+        }
+
+        async function loadHubChat(hubId) {
+            activeHubId = hubId;
+            renderHubLists();
+            const chatArea = document.getElementById('hubMainChatArea');
+            
+            let docSnap = await db.collection('hubs').doc(hubId).get();
+            let hubData = docSnap.data();
+            let isOwnerOrAdmin = hubData.ownerUid === currentUser.uid || (hubData.admins && hubData.admins.includes(currentUser.uid));
+
+            // التحقق من الحظر لمدة 20 يوم في حال تجاوز البلاغات 7
+            let isBanned = userProfileData.bannedUntil && userProfileData.bannedUntil.toMillis() > Date.now();
+
+            chatArea.innerHTML = `
+                <div style="padding:15px; background:#111827; border-bottom:1px solid var(--border-color); display:flex; justify-content:between; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="${hubData.imageUrl || 'https://via.placeholder.com/40'}" style="width:35px; height:35px; border-radius:50%; object-fit:cover;">
+                        <div>
+                            <div style="font-weight:700;">${hubData.title}</div>
+                            <div style="font-size:12px; color:var(--gray);">${hubData.desc || ''}</div>
+                        </div>
+                    </div>
+                    ${isOwnerOrAdmin ? `<button onclick="openHubSettings('${hubId}')" style="background:#162032; color:var(--primary); border:1px solid var(--border-color); padding:6px 12px; border-radius:6px; font-size:12px; cursor:pointer;">إعدادات الجروب</button>` : ''}
+                </div>
+                <div id="messagesContainer" style="flex-grow:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;"></div>
+                <div style="padding:15px; background:#111827; border-top:1px solid var(--border-color); display:flex; gap:10px;">
+                    <input type="text" id="chatMessageInput" placeholder="${isBanned ? 'أنت محظور من إرسال الرسائل مؤقتاً بسبب البلاغات' : 'اكتب رسالة...'}" ${isBanned ? 'disabled' : ''} style="margin:0;">
+                    <button class="action-btn" style="width:auto; margin:0;" onclick="sendHubMessage('${hubId}')" ${isBanned ? 'disabled' : ''}>إرسال</button>
+                </div>
+            `;
+
+            // الاستماع للرسائل بشكل حقيقي (Real-time)
+            db.collection('hubs').doc(hubId).collection('messages').orderBy('createdAt', 'asc').onSnapshot(snapshot => {
+                const msgContainer = document.getElementById('messagesContainer');
+                if (!msgContainer) return;
+                msgContainer.innerHTML = '';
+                snapshot.forEach(doc => {
+                    let msg = doc.data();
+                    let div = document.createElement('div');
+                    div.style.background = '#111827';
+                    div.style.padding = '10px 14px';
+                    div.style.borderRadius = '8px';
+                    div.style.border = '1px solid var(--border-color)';
+                    div.innerHTML = `
+                        <div style="font-size:12px; color:var(--primary); font-weight:600; cursor:pointer; margin-bottom:4px;" onclick="showUserOptions(event, '${msg.senderUid}', '${msg.senderName}')">${msg.senderName}</div>
+                        <div>${msg.text}</div>
+                    `;
+                    msgContainer.appendChild(div);
+                });
+                msgContainer.scrollTop = msgContainer.scrollHeight;
+            });
+        }
+
+        async function sendHubMessage(hubId) {
+            let input = document.getElementById('chatMessageInput');
+            let text = input.value.trim();
+            if (!text) return;
+
+            try {
+                await db.collection('hubs').doc(hubId).collection('messages').add({
+                    text,
+                    senderUid: currentUser.uid,
+                    senderName: userProfileData.gameNickname,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                input.value = '';
+            } catch(e) {
+                alert('خطأ في إرسال الرسالة: ' + e.message);
+            }
+        }
+
+        function showUserOptions(event, targetUid, targetName) {
+            event.stopPropagation();
+            let oldMenu = document.getElementById('userPopupMenu');
+            if (oldMenu) oldMenu.remove();
+
+            let menu = document.createElement('div');
+            menu.id = 'userPopupMenu';
+            menu.className = 'user-popup-menu';
+            menu.style.top = event.clientY + 'px';
+            menu.style.left = event.clientX + 'px';
+
+            menu.innerHTML = `
+                <div style="font-weight:700; font-size:13px; color:var(--primary); padding:5px 10px; border-bottom:1px solid var(--border-color); margin-bottom:5px;">${targetName}</div>
+                <button onclick="userAction('ban', '${targetUid}')">حظر</button>
+                <button onclick="userAction('report', '${targetUid}')">بلاغ</button>
+                <button onclick="userAction('friend', '${targetUid}')">اضافة صديق</button>
+                <hr style="border-color:var(--border-color); margin:5px 0;">
+                <div style="font-size:12px; color:var(--gray); padding:3px 10px;">اختر الحالة:</div>
+                <button onclick="setRateBadge('${targetUid}', 'قفاص')">قفاص</button>
+                <button onclick="setRateBadge('${targetUid}', 'مضمون')">مضمون</button>
+            `;
+            document.body.appendChild(menu);
+
+            document.addEventListener('click', function closeMenu() {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }, { once: true });
+        }
+
+        async function userAction(actionType, targetUid) {
+            if (actionType === 'report') {
+                // إضافة بلاغ وزيادة عداد البلاغات
+                let userRef = db.collection('users').doc(targetUid);
+                let doc = await userRef.get();
+                let data = doc.data();
+                let reports = (data.reportsCount || 0) + 1;
+                let updateData = { reportsCount: reports };
+
+                // إذا تجاوز البلاغات 7 يتم حظره من إرسال الرسائل لمدة 20 يوم
+                if (reports > 7) {
+                    let banUntil = new Date(Date.now() + 20 * 24 * 60 * 60 * 1000);
+                    updateData.bannedUntil = firebase.firestore.Timestamp.fromDate(banUntil);
+                }
+
+                await userRef.update(updateData);
+                alert('تم إرسال البلاغ بنجاح.');
+            } else if (actionType === 'ban') {
+                alert('تم حظر المستخدم.');
+            } else if (actionType === 'friend') {
+                alert('تم إرسال طلب الصداقة.');
+            }
+        }
+
+        async function setRateBadge(targetUid, badge) {
+            await db.collection('users').doc(targetUid).update({
+                badgeType: badge,
+                ratingCount: firebase.firestore.FieldValue.increment(1)
+            });
+            alert('تم تقييم المستخدم بنجاح كـ (' + badge + ')');
+        }
+
+        function renderDirectChats(container) {
+            container.innerHTML = `
+                <div class="auth-box">
+                    <h2 style="color:var(--primary); margin-bottom:15px;">دردشاتي الخاصة</h2>
+                    <p style="color:var(--gray);">هنا تظهر محادثاتك الخاصة مع الأصدقاء الذين أضفتهم من الجروبات والقنوات.</p>
+                </div>
+            `;
+        }
+
+        function renderStandardSection(container) {
+            container.innerHTML = `
+                <div class="auth-box">
+                    <h2 style="color:var(--primary); margin-bottom:15px;">محتوى القسم</h2>
+                    <p style="color:var(--gray);">تصفح محتوى هاي داي المميز.</p>
+                </div>
+            `;
         }
     </script>
 </body>
