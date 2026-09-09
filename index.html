@@ -3,902 +3,1740 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مجتمع هاي داي - المنصة المتكاملة</title>
+    <title id="pageTitle">ESULTAN HAY DAY</title>
     <style>
         :root {
-            --bg-color: #f4f4f9;
-            --text-color: #333333;
-            --primary-color: #2c3e50;
-            --card-bg: #ffffff;
-            --accent-color: #27ae60;
-            --danger-color: #c0392b;
+            --primary: #22c55e; /* أخضر مزرعة حيوي */
+            --primary-hover: #16a34a;
+            --bg: #0f172a; /* خلفية داكنة متناسقة */
+            --card-bg: #1e293b; /* بطاقات فحمية أنيقة */
+            --border-color: #334155;
+            --text: #f8fafc;
+            --gray: #94a3b8;
         }
-
-        body {
-            font-family: 'Cairo', Tahoma, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            transition: 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
         header {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 18px 40px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-
-        .header-title-area {
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 10px rgba(34, 197, 94, 0.2);
+        }
+        .header-controls {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
-
-        .my-chats-badge {
-            font-size: 14px;
-            background: rgba(255,255,255,0.2);
-            padding: 6px 12px;
-            border-radius: 6px;
+        .nav-btns button, .profile-trigger-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 9px 20px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: 0.2s;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        .nav-btns button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        .profile-trigger-btn {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 14px;
+            border-radius: 30px;
+        }
+        .profile-trigger-btn:hover {
+            border-color: var(--primary);
+        }
+        .profile-avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
         }
 
-        .my-chats-badge:hover {
-            background: rgba(255,255,255,0.3);
+        /* شريط الأقسام الرئيسي */
+        .categories-bar {
+            background: #111827;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 0 30px;
+            scroll-behavior: smooth;
+        }
+        .categories-bar::-webkit-scrollbar {
+            height: 4px;
+        }
+        .categories-bar::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        .category-tab {
+            padding: 18px 24px;
+            color: var(--gray);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            border-bottom: 3px solid transparent;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category-tab:hover {
+            color: var(--text);
+        }
+        .category-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: rgba(34, 197, 94, 0.03);
+        }
+
+        /* شريط التصنيفات الفرعية */
+        .sub-categories-bar {
+            background: #131d31;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 0 30px;
+            margin-bottom: 25px;
+            scroll-behavior: smooth;
+        }
+        .sub-categories-bar::-webkit-scrollbar {
+            height: 3px;
+        }
+        .sub-categories-bar::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        .sub-category-tab {
+            padding: 12px 20px;
+            color: var(--gray);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            border-bottom: 2px solid transparent;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sub-category-tab:hover {
+            color: var(--text);
+        }
+        .sub-category-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
         }
 
         .container {
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 20px;
+            max-width: 1300px;
+            margin: 30px auto;
+            padding: 0 25px;
         }
-
-        .search-bar {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 15px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 10px;
-        }
-
-        .tab-btn {
-            background: #e0e0e0;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 15px;
-            transition: 0.2s;
-        }
-
-        .tab-btn.active {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .card {
+        .auth-box {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            margin-bottom: 15px;
+            padding: 35px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--border-color);
         }
 
-        .btn {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 18px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-family: inherit;
-        }
-
-        .pinned-ticker {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 14px;
-        }
-
-        .modal-overlay {
+        /* النوافذ المنبثقة */
+        .modal-overlay, .video-modal-overlay, .full-page-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: white;
-            width: 85%;
-            max-width: 750px;
-            max-height: 85vh;
-            border-radius: 10px;
-            padding: 25px;
+            padding: 20px;
             overflow-y: auto;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            position: relative;
+        }
+        .modal-content, .video-modal-content {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 750px;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            border: 1px solid var(--border-color);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-content::-webkit-scrollbar, .video-modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-content::-webkit-scrollbar-thumb, .video-modal-content::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
         }
 
-        .close-modal-btn {
-            background: var(--danger-color);
+        .admin-menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .admin-menu-btn {
+            background: #162032;
             color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            padding: 18px 22px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            float: left;
-            font-weight: bold;
+            text-align: right;
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-menu-btn:hover {
+            border-color: var(--primary);
+            background: #1e293b;
+            transform: translateX(-4px);
         }
 
+        .admin-sub-section {
+            background: #131d31;
+            padding: 24px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 1px solid var(--border-color);
+        }
+        .back-to-menu {
+            background: #1e293b;
+            color: white;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .back-to-menu:hover {
+            background: #334155;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0 20px 0;
+            background: #111827;
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+        }
+
+        button.action-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            font-weight: 700;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        button.action-btn:hover {
+            background: var(--primary-hover);
+        }
         .hidden {
             display: none !important;
         }
+
+        /* شبكة البطاقات الفاخرة */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.15);
+        }
+        .thumbnail-container {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            background: #000;
+        }
+        .thumbnail-container img, .thumbnail-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .card-body {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .card-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        .card-desc {
+            color: var(--gray);
+            font-size: 13px;
+            margin-bottom: 15px;
+            flex-grow: 1;
+            line-height: 1.5;
+        }
+        .video-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--gray);
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            margin-top: auto;
+        }
+        
+        /* أزرار التفاعل (اللايك والتنزيل) */
+        .card-actions-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+        .like-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray);
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .like-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: #ffffff;
+            stroke: #ffffff;
+            stroke-width: 1.5;
+            transition: fill 0.3s ease, transform 0.2s;
+        }
+        .like-btn:hover svg {
+            transform: scale(1.1);
+        }
+        .like-btn.liked svg {
+            fill: #22c55e;
+            stroke: #22c55e;
+        }
+        .like-btn.liked span {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .download-btn-card {
+            background: #162032;
+            color: white;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .download-btn-card:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .locked-badge {
+            background: rgba(229, 9, 20, 0.15);
+            color: #ff4d4d;
+            border: 1px solid rgba(229, 9, 20, 0.3);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .suggestion-item, .section-manage-item {
+            background: #111827;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .search-bar-container {
+            margin-bottom: 25px;
+        }
+
+        .video-modal-content {
+            background: #1e293b;
+            max-width: 950px;
+            padding: 0;
+            overflow: hidden;
+        }
+        .video-responsive-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: #000;
+        }
+        .video-responsive-wrapper iframe, .video-responsive-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .upload-box {
+            background: #111827;
+            border: 2px dashed var(--border-color);
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin: 10px 0 20px 0;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .upload-box:hover {
+            border-color: var(--primary);
+            background: rgba(34, 197, 94, 0.02);
+        }
+
+        .account-switcher-item, .downloaded-item-row {
+            background: #111827;
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+        }
+        .account-switcher-item.active-account {
+            border-color: var(--primary);
+            background: rgba(34, 197, 94, 0.05);
+        }
+        
+        .full-page-overlay {
+            background-color: var(--bg);
+            z-index: 9999;
+            padding: 30px;
+            display: none;
+        }
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .page-header button {
+            background: #162032;
+            color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .tabs-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+        .tab-btn {
+            flex: 1;
+            background: #1e293b;
+            color: var(--gray);
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+            font-weight: 700;
+        }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
+    <!-- الهيدر الفخم -->
     <header>
-        <div class="header-title-area">
-            <h1 style="margin:0; font-size: 22px;">مجتمع هاي داي</h1>
-            <span class="my-chats-badge" onclick="openMyChatsModal()">محادثاتي</span>
-        </div>
-        <div>
-            <span id="user-display-info" style="margin-left: 15px; font-weight: bold;"></span>
-            <button class="btn" id="auth-btn" onclick="toggleAuthModal()" style="background:#e67e22;">تسجيل / دخول</button>
+        <div class="logo" id="siteLogoText">esultan hay day</div>
+        <div class="header-controls">
+            <div id="authNavButtons" class="nav-btns">
+                <button id="loginNavBtn" onclick="showAuth('login')">تسجيل الدخول</button>
+                <button id="registerNavBtn" onclick="showAuth('register')" style="background:transparent; color:var(--text); border:1px solid var(--border-color);">إنشاء حساب</button>
+            </div>
+            <!-- زر الملف الشخصي -->
+            <button id="profileTriggerBtn" class="profile-trigger-btn hidden" onclick="openProfileModal()">
+                <img id="headerUserAvatar" src="" class="profile-avatar-small" alt="Avatar">
+                <span id="headerUserEmailName">حسابي</span>
+            </button>
+            <button id="adminNavBtn" class="hidden" onclick="openAdminPanel()" style="background:#162032; color:var(--primary); border:1px solid var(--primary); padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer;">لوحة المشرف</button>
+            <button id="suggestionUserBtn" class="hidden" onclick="showSuggestionModal()" style="background:#162032; color:var(--text); border:1px solid var(--border-color); padding:8px 16px; border-radius:8px; font-weight:600; cursor:pointer;">اقتراحك</button>
         </div>
     </header>
 
+    <!-- شريط الأقسام الرئيسي -->
+    <div class="categories-bar" id="categoriesBar"></div>
+
     <div class="container">
-        <!-- شريط البحث العام -->
-        <input type="text" id="global-search" class="search-bar" placeholder="ابحث عن قناة أو جروب معين..." oninput="filterContent()">
 
-        <!-- التبويبات الرئيسية -->
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('groups')">الجروبات</button>
-            <button class="tab-btn" onclick="switchTab('channels')">القنوات</button>
-            <button class="tab-btn hidden" id="admin-tab-btn" onclick="switchTab('admin')">لوحة المشرف العام</button>
+        <!-- واجهة تسجيل الدخول -->
+        <div id="authContainer" class="auth-box hidden">
+            <h2 id="authTitle" style="margin-bottom: 20px; color: var(--primary);">تسجيل الدخول</h2>
+            <input type="email" id="authEmail" placeholder="البريد الإلكتروني">
+            <input type="password" id="authPassword" placeholder="كلمة المرور">
+            <button class="action-btn" onclick="handleAuth()">دخول</button>
+            <p id="authSwitchText" style="margin-top: 20px; text-align: center; cursor: pointer; color: var(--gray); font-size: 14px;" onclick="toggleAuthMode()">ليس لديك حساب؟ إنشاء حساب جديد</p>
         </div>
 
-        <!-- محتوى الجروبات -->
-        <div id="tab-groups" class="tab-content">
-            <button class="btn" onclick="openCreateGroupModal()" style="margin-bottom: 20px;">إنشاء جروب جديد</button>
-            <div id="groups-list"></div>
+        <!-- صندوق إرسال اقتراح للمستخدمين -->
+        <div id="suggestionBoxContainer" class="auth-box hidden">
+            <h2 style="margin-bottom: 15px; color: var(--primary);">أرسل اقتراحك للمشرف</h2>
+            <p style="color: var(--gray); margin-bottom: 15px; font-size: 14px;">شاركنا برأيك أو اقتراحك لمنتجات أو حسابات حابب نضيفها للموقع:</p>
+            <textarea id="userSuggestionInput" placeholder="اكتب اقتراحك هنا..." style="height: 120px;"></textarea>
+            <button class="action-btn" onclick="submitSuggestion()">إرسال الاقتراح</button>
+            <button class="action-btn" style="background: #1e293b; color: #fff; margin-top: 10px;" onclick="document.getElementById('suggestionBoxContainer').classList.add('hidden')">إلغاء</button>
         </div>
 
-        <!-- محتوى القنوات -->
-        <div id="tab-channels" class="tab-content hidden">
-            <button class="btn" onclick="openCreateChannelModal()" style="margin-bottom: 20px;">إنشاء قناة جديدة</button>
-            <div id="channels-list"></div>
-        </div>
-
-        <!-- لوحة المشرف العام -->
-        <div id="tab-admin" class="tab-content hidden">
-            <h2>لوحة التحكم والمراجعة العامة</h2>
-            <hr>
-            <h3>الجروبات قيد الانتظار للمراجعة</h3>
-            <div id="admin-pending-groups"></div>
-            
-            <h3 style="margin-top: 30px;">قسم الرشق (زيادة متابعين القنوات)</h3>
-            <div class="card">
-                <select id="rush-channel-select"></select>
-                <input type="number" id="rush-amount" placeholder="عدد المتابعين المراد إضافتهم">
-                <button class="btn" onclick="executeRush()" style="background: #8e44ad;">تنفيذ الرشق</button>
+        <!-- نافذة عرض المحتوى المنبثقة -->
+        <div id="videoModalOverlay" class="video-modal-overlay hidden">
+            <div class="video-modal-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: #111827; border-bottom: 1px solid var(--border-color);">
+                    <h3 id="modalVideoTitle" style="font-size: 18px; font-weight: 700; color: var(--primary);">عنوان المنتج / الحساب</h3>
+                    <button onclick="closeVideoPlayer()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
+                </div>
+                <div id="modalBodyContent"></div>
             </div>
         </div>
-    </div>
 
-    <!-- نافذة غرفة الجروب الداخلية والشات والأدوات -->
-    <div id="room-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button class="close-modal-btn" onclick="closeRoom()">إغلاق</button>
-            <h2 id="room-title" style="margin-top:0;">عنوان الجروب</h2>
-            <p id="room-desc" style="color: #666;"></p>
-            <div id="room-meta"></div>
-            <hr style="margin: 15px 0;">
-
-            <!-- شريط الرسائل المثبتة -->
-            <div id="pinned-messages-container"></div>
-
-            <!-- صندوق الشات الخاص بالجروب -->
-            <div id="room-chat-box" style="height: 280px; overflow-y: auto; border: 1px solid #ddd; padding: 12px; background: #fafafa; border-radius: 6px; margin-bottom: 12px;"></div>
-
-            <div id="chat-input-area">
-                <textarea id="message-input" placeholder="اكتب رسالتك هنا... (ممنوع الروابط نهائياً)" rows="2"></textarea>
-                <button class="btn" onclick="sendGroupMessage()">إرسال الرسالة</button>
-            </div>
-
-            <!-- لوحة إعدادات الجروب للمشرفين والمالك -->
-            <div id="group-settings-area" class="hidden" style="margin-top: 25px; border-top: 2px dashed #bdc3c7; padding-top: 15px;">
-                <h4 style="margin-top:0; color: #2c3e50;">إعدادات الجروب والخصوصية للمشرفين</h4>
-                <label>خصوصية الجروب:</label>
-                <select id="setting-privacy" onchange="updateGroupPrivacy()">
-                    <option value="public">علني (يظهر في القائمة للجميع)</option>
-                    <option value="private">خاص (لا يظهر إلا للمشتركين وأنا)</option>
-                </select>
-                
-                <div style="margin: 10px 0;">
-                    <label style="cursor:pointer;"><input type="checkbox" id="setting-close-chat" onchange="toggleChatClose()"> إغلاق المحادثات الخاصة بالجروب نهائياً</label>
+        <!-- نافذة الملف الشخصي الشاملة -->
+        <div id="profileModalOverlay" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 id="profileModalTitle" style="color: var(--primary);">الملف الشخصي وإعدادات الحساب</h2>
+                    <button onclick="closeProfileModal()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
                 </div>
 
-                <h5 style="margin: 15px 0 5px 0;">ترقية عضو إلى مشرف</h5>
-                <select id="promote-user-select"></select>
-                <button class="btn" onclick="promoteUserToAdmin()" style="margin-top: 5px; background: #27ae60;">تعيين مشرف جديد</button>
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <img id="profileModalAvatarImg" src="" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 12px; box-shadow: 0 0 20px rgba(34,197,94,0.2);" alt="User Avatar">
+                    <h3 id="profileModalEmailText" style="font-size: 16px; color: var(--text);">user@email.com</h3>
+                    
+                    <div style="margin-top: 15px;">
+                        <button class="action-btn" style="background: #1e293b; color: #fff; max-width: 220px; display: inline-block; font-size: 14px; padding: 10px; border: 1px solid var(--border-color);" onclick="document.getElementById('avatarFileInput').click()">تغيير صورة الحساب</button>
+                        <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="uploadDirectAvatar(this)">
+                    </div>
+                </div>
+
+                <hr style="border-color: var(--border-color); margin: 25px 0;">
+
+                <!-- زر الدخول لصفحة التنزيلات الكاملة -->
+                <div style="margin-bottom: 20px;">
+                    <div onclick="openDownloadsPage()" style="background: #111827; border: 1px solid var(--border-color); padding: 16px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+                        <span style="font-weight: 600; display: flex; align-items: center; gap: 10px;">📥 المنتجات والوسائط التي تم حفظها</span>
+                        <span style="color: var(--primary);">←</span>
+                    </div>
+                </div>
+
+                <hr style="border-color: var(--border-color); margin: 25px 0;">
+
+                <!-- إعدادات اللغة -->
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 14px; color: var(--gray); display: block; margin-bottom: 8px;">اختر لغة الموقع الأساسية:</label>
+                    <select id="siteLanguageSelect" onchange="changeSiteLanguage(this.value)">
+                        <option value="ar">العربية (Arabic)</option>
+                        <option value="en">الإنجليزية (English)</option>
+                        <option value="ja">اليابانية (Japanese - 日本語)</option>
+                        <option value="de">الألمانية (German - Deutsch)</option>
+                        <option value="fr">الفرنسية (French - Français)</option>
+                    </select>
+                </div>
+
+                <hr style="border-color: var(--border-color); margin: 25px 0;">
+
+                <!-- تبديل الحسابات -->
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="font-size: 15px;">الحسابات المحفوظة على هذا الجهاز (الحد الأقصى 5)</h4>
+                        <button class="action-btn" style="width: auto; padding: 6px 14px; font-size: 13px; margin:0;" onclick="showAddAnotherAccountBox()">+ إضافة حساب آخر</button>
+                    </div>
+
+                    <div id="addAnotherAccountContainer" class="hidden" style="background: #111827; padding: 18px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+                        <input type="email" id="newAccountEmail" placeholder="البريد الإلكتروني للحساب الجديد">
+                        <input type="password" id="newAccountPass" placeholder="كلمة المرور">
+                        <button class="action-btn" onclick="saveAnotherAccount()">حفظ وإضافة الحساب</button>
+                    </div>
+
+                    <div id="savedAccountsListContainer"></div>
+                </div>
+
+                <hr style="border-color: var(--border-color); margin: 25px 0;">
+
+                <button class="action-btn" style="background: rgba(229,9,20,0.15); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3);" onclick="confirmLogout()">تسجيل الخروج من الحساب الحالي</button>
             </div>
         </div>
-    </div>
 
-    <!-- نافذة محادثاتي الفردية -->
-    <div id="my-chats-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button class="close-modal-btn" onclick="closeMyChatsModal()">إغلاق</button>
-            <h2 style="margin-top:0;">محادثاتي الفردية (1 لـ 1)</h2>
-            <hr>
-            <div id="direct-chats-list"></div>
-        </div>
-    </div>
-
-    <!-- نافذة الشات الفردي والتقييم والحظر -->
-    <div id="dm-room-modal" class="modal-overlay hidden">
-        <div class="modal-content" style="max-width: 600px;">
-            <button class="close-modal-btn" onclick="closeDmRoom()">إغلاق</button>
-            <h3 id="dm-partner-name" style="margin-top:0;">محادثة مع</h3>
+        <!-- صفحة التنزيلات الكاملة -->
+        <div id="downloadsPage" class="full-page-overlay">
+            <div class="page-header">
+                <button onclick="closeDownloadsPage()">⬅ عودة</button>
+                <h2 style="color: var(--primary);">العناصر والوسائط المحفوظة</h2>
+            </div>
             
-            <div id="dm-actions-bar" style="margin-bottom: 12px; display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="btn" style="background:#27ae60; font-size:13px; padding:6px 12px;" onclick="addFriend()">إضافة صديق</button>
-                <button class="btn" style="background:#c0392b; font-size:13px; padding:6px 12px;" onclick="blockUser()">حظر المستخدم</button>
-                <button class="btn" style="background:#f39c12; font-size:13px; padding:6px 12px;" onclick="openRatingModal()">إضافة تقييم (نصاب / مضمون)</button>
+            <div class="tabs-container">
+                <button class="tab-btn active" onclick="switchDownloadsTab('videos', this)">الفيديوهات</button>
+                <button class="tab-btn" onclick="switchDownloadsTab('images', this)">الصور</button>
             </div>
 
-            <div id="dm-chat-box" style="height: 240px; overflow-y: auto; border: 1px solid #ddd; padding: 12px; background: #fff; border-radius: 6px; margin-bottom: 10px;"></div>
+            <div id="videosDownloadsTab" class="downloads-tab-content">
+                <div id="videosDownloadsGrid" class="grid"></div>
+            </div>
             
-            <textarea id="dm-message-input" placeholder="اكتب رسالتك الخاصة هنا..." rows="2"></textarea>
-            <button class="btn" onclick="sendDmMessage()">إرسال</button>
+            <div id="imagesDownloadsTab" class="downloads-tab-content hidden">
+                <div id="imagesDownloadsGrid" class="grid"></div>
+            </div>
         </div>
+
+        <!-- نافذة لوحة تحكم المشرف -->
+        <div id="adminOverlay" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 style="color: var(--primary);">لوحة تحكم المشرف</h2>
+                    <button onclick="closeAdminPanel()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
+                </div>
+
+                <div id="adminMenuButtons" class="admin-menu-buttons">
+                    <button class="admin-menu-btn" onclick="openAdminSection('sectionsManager')">
+                        <span>إدارة الأقسام الرئيسية والفرعية</span>
+                        <span style="color: var(--primary);">📂</span>
+                    </button>
+                    <button class="admin-menu-btn" onclick="openAdminSection('boostStats')">
+                        <span>زيادة المشاهدات واللايكات للمحتوى</span>
+                        <span style="color: var(--primary);">📈</span>
+                    </button>
+                    <button class="admin-menu-btn" onclick="openAdminSection('content')">
+                        <span>نشر محتوى جديد (يوتيوب / فيديو / صورة / مقال)</span>
+                        <span style="color: var(--primary);">🎬</span>
+                    </button>
+                    <button class="admin-menu-btn" onclick="openAdminSection('theme')">
+                        <span>تغيير ألوان وخلفية الموقع</span>
+                        <span style="color: var(--primary);">🎨</span>
+                    </button>
+                    <button class="admin-menu-btn" onclick="openAdminSection('sitename')">
+                        <span>تغيير اسم الموقع</span>
+                        <span style="color: var(--primary);">✏️</span>
+                    </button>
+                    <button class="admin-menu-btn" onclick="openAdminSection('suggestions')">
+                        <span>عرض اقتراحات المستخدمين</span>
+                        <span style="color: var(--primary);">📥</span>
+                    </button>
+                </div>
+
+                <!-- 1. قسم إدارة الأقسام -->
+                <div id="subSectionSectionsManager" class="admin-sub-section hidden">
+                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
+                    <h3 style="color: var(--primary); margin-bottom: 12px;">إدارة الأقسام الرئيسية</h3>
+                    <div style="background: #111827; padding: 18px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+                        <input type="text" id="manageSectionNameInput" placeholder="اسم القسم الرئيسي (مثال: حسابات هاي داي، أدوات وموارد)">
+                        <input type="password" id="manageSectionPassInput" placeholder="كلمة المرور الخاصة بالقسم (اختياري)">
+                        <button class="action-btn" onclick="saveSectionData()">حفظ القسم الرئيسي</button>
+                    </div>
+                    <h4 style="font-size: 14px; color: var(--gray);">الأقسام الرئيسية الحالية:</h4>
+                    <div id="adminSectionsList" style="max-height: 200px; overflow-y: auto; margin-top: 10px; margin-bottom: 20px;"></div>
+
+                    <hr style="border-color: var(--border-color); margin: 20px 0;">
+
+                    <h3 style="color: var(--primary); margin-bottom: 12px;">إدارة الأقسام الفرعية</h3>
+                    <div style="background: #111827; padding: 18px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+                        <label style="font-size:13px; color:var(--gray);">القسم الرئيسي التابع له:</label>
+                        <select id="parentSectionSelectForSub" style="margin-top:5px; margin-bottom:15px;"></select>
+                        <input type="text" id="manageSubSectionNameInput" placeholder="اسم القسم الفرعي (مثال: ليفلات عالية، أدوات توسيع)">
+                        <button class="action-btn" onclick="saveSubSectionData()">حفظ القسم الفرعي</button>
+                    </div>
+                    <h4 style="font-size: 14px; color: var(--gray);">الأقسام الفرعية الحالية:</h4>
+                    <div id="adminSubSectionsList" style="max-height: 200px; overflow-y: auto; margin-top: 10px;"></div>
+                </div>
+
+                <!-- 2. قسم زيادة المشاهدات واللايكات -->
+                <div id="subSectionBoostStats" class="admin-sub-section hidden">
+                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">زيادة المشاهدات واللايكات للمحتوى</h3>
+                    <label style="font-size: 13px; color: var(--gray);">اختر المحتوى:</label>
+                    <select id="boostVideoSelect" style="margin-top:5px; margin-bottom:15px;" onchange="loadVideoStatsToForm()"></select>
+                    <label style="font-size: 13px; color: var(--gray);">عدد المشاهدات:</label>
+                    <input type="number" id="boostViewsInput" placeholder="عدد المشاهدات">
+                    <label style="font-size: 13px; color: var(--gray);">عدد اللايكات:</label>
+                    <input type="number" id="boostLikesInput" placeholder="عدد اللايكات">
+                    <button class="action-btn" onclick="saveBoostStats()">تحديث الإحصائيات</button>
+                </div>
+
+                <!-- 3. قسم نشر المحتوى -->
+                <div id="subSectionContent" class="admin-sub-section hidden">
+                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">نشر محتوى جديد</h3>
+                    
+                    <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">نوع المحتوى:</label>
+                    <select id="contentTypeSelect" onchange="toggleContentTypeFields()" style="margin-top:5px; margin-bottom:15px;">
+                        <option value="youtube">فيديو يوتيوب (مع غلاف)</option>
+                        <option value="localvideo">فيديو من الجهاز</option>
+                        <option value="image">صورة من الجهاز</option>
+                        <option value="article">مقال نصي</option>
+                    </select>
+
+                    <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">القسم الرئيسي:</label>
+                    <select id="contentSectionSelect" onchange="populateSubSectionSelectForPublish()" style="margin-top:5px; margin-bottom:15px;"></select>
+                    
+                    <div id="subSectionPublishContainer" class="hidden">
+                        <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">القسم الفرعي:</label>
+                        <select id="contentSubSectionSelect" style="margin-top:5px; margin-bottom:15px;"></select>
+                    </div>
+
+                    <input type="text" id="contentTitle" placeholder="عنوان المنتج / الحساب">
+                    <textarea id="contentDesc" placeholder="وصف موجز يظهر في البطاقة..."></textarea>
+                    
+                    <div id="youtubeFieldsContainer">
+                        <input type="text" id="contentYoutubeUrl" placeholder="رابط يوتيوب">
+                        <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">صورة الغلاف:</label>
+                        <div class="upload-box" onclick="document.getElementById('thumbFile').click()">
+                            <span id="thumbFileText" style="color:var(--gray)">اختر صورة الغلاف</span>
+                            <input type="file" id="thumbFile" accept="image/*" class="hidden" onchange="previewFileLabel(this, 'thumbFileText')">
+                        </div>
+                    </div>
+
+                    <div id="localVideoFieldsContainer" class="hidden">
+                        <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">ملف الفيديو:</label>
+                        <div class="upload-box" onclick="document.getElementById('localVideoFile').click()">
+                            <span id="localVideoText" style="color:var(--gray)">اختر ملف الفيديو (MP4)</span>
+                            <input type="file" id="localVideoFile" accept="video/*" class="hidden" onchange="previewFileLabel(this, 'localVideoText')">
+                        </div>
+                    </div>
+
+                    <div id="imageFieldsContainer" class="hidden">
+                        <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">ملف الصورة:</label>
+                        <div class="upload-box" onclick="document.getElementById('localImageFile').click()">
+                            <span id="localImageText" style="color:var(--gray)">اختر الصورة</span>
+                            <input type="file" id="localImageFile" accept="image/*" class="hidden" onchange="previewFileLabel(this, 'localImageText')">
+                        </div>
+                    </div>
+
+                    <div id="articleFieldsContainer" class="hidden">
+                        <textarea id="contentArticleBody" placeholder="اكتب تفاصيل المنتج أو الحساب الكاملة هنا..." style="height: 140px;"></textarea>
+                    </div>
+                    
+                    <button class="action-btn" onclick="publishContentIndexedDB()">نشر الآن</button>
+                </div>
+
+                <!-- 4. تغيير الألوان -->
+                <div id="subSectionTheme" class="admin-sub-section hidden">
+                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">تخصيص ألوان الموقع</h3>
+                    <label style="font-size: 14px; color: var(--gray); display:block; margin-bottom:5px;">اللون الأساسي (الأخضر/المزرعة):</label>
+                    <input type="color" id="primaryColorPicker" value="#22c55e" style="height: 45px; cursor: pointer; padding:5px;">
+                    <label style="font-size: 14px; color: var(--gray); margin-top: 15px; display: block; margin-bottom:5px;">لون الخلفية العامة:</label>
+                    <input type="color" id="bgColorPicker" value="#0f172a" style="height: 45px; cursor: pointer; padding:5px;">
+                    <button class="action-btn" onclick="updateSiteTheme()">حفظ وتطبيق الألوان</button>
+                </div>
+
+                <!-- 5. تغيير اسم الموقع -->
+                <div id="subSectionSiteName" class="admin-sub-section hidden">
+                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">تغيير اسم الموقع</h3>
+                    <input type="text" id="newSiteNameInput" placeholder="اسم الموقع الجديد">
+                    <button class="action-btn" onclick="updateSiteName()">تحديث الاسم</button>
+                </div>
+
+                <!-- 6. اقتراحات المستخدمين -->
+                <div id="subSectionSuggestions" class="admin-sub-section hidden">
+                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">اقتراحات المستخدمين</h3>
+                    <div id="adminSuggestionsList" style="max-height: 280px; overflow-y: auto; margin-top: 10px;"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="mainContentArea"></div>
+
     </div>
 
     <script>
-        // هيكل قاعدة البيانات الكامل
-        let db = JSON.parse(localStorage.getItem('hayday_complete_db')) || {
-            users: [], // {username, password, isGlobalAdmin}
-            currentUser: null,
-            groups: [], // {id, name, desc, img, owner, admins:[], members:[], status:'pending'/'approved', privacy:'public', isClosed:false, pinnedMessages:[], messages:[]}
-            channels: [], // {id, name, desc, img, owner, followersCount, link}
-            directChats: {} // key: user1_user2 -> [messages]
-        };
+        let db;
+        const dbName = "EsultanHayDayDB";
+        const storeName = "mediaStore";
 
-        const MASTER_ADMIN = "gojoesultan@gmail.com";
-
-        window.onload = function() {
-            // ضمان وجود الحساب الأساسي للمشرف العام
-            if(!db.users.some(u => u.username === MASTER_ADMIN)) {
-                db.users.push({username: MASTER_ADMIN, password: "123", isGlobalAdmin: true});
-            }
-            checkAuthUI();
-            renderGroups();
-            renderChannels();
-            renderAdminPanel();
-        };
-
-        function saveData() {
-            localStorage.setItem('hayday_complete_db', JSON.stringify(db));
+        function initIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(dbName, 1);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                request.onupgradeneeded = (e) => {
+                    const database = e.target.result;
+                    if (!database.objectStoreNames.contains(storeName)) {
+                        database.createObjectStore(storeName, { keyPath: "id" });
+                    }
+                };
+            });
         }
 
-        // --- نظام المصادقة والأسماء الفريدة وحظر الأسماء المأخوذة ---
-        function toggleAuthModal() {
-            if(db.currentUser) {
-                if(confirm("هل تريد تسجيل الخروج؟")) {
-                    db.currentUser = null;
-                    saveData();
-                    checkAuthUI();
-                    renderGroups();
-                    renderChannels();
-                    renderAdminPanel();
+        let currentUser = JSON.parse(localStorage.getItem('esultan_hayday_current_user')) || null;
+        let isLoginMode = true;
+        let activeSectionId = null;
+        let activeSubSectionId = null;
+        let currentSearchQuery = '';
+        const unlockedSections = new Set();
+
+        if (!localStorage.getItem('esultan_hayday_sections')) {
+            localStorage.setItem('esultan_hayday_sections', JSON.stringify([
+                { id: 'sec_1', name: 'حسابات هاي داي', locked: false, password: '' },
+                { id: 'sec_2', name: 'بيع أدوات وتوسيع', locked: false, password: '' },
+                { id: 'sec_3', name: 'عروض وخصومات مميزة', locked: false, password: '' },
+                { id: 'sec_4', name: 'شروحات ونصائح المزرعة', locked: false, password: '' }
+            ]));
+        }
+
+        if (!localStorage.getItem('esultan_hayday_sub_sections')) {
+            localStorage.setItem('esultan_hayday_sub_sections', JSON.stringify([
+                { id: 'sub_1', parentSectionId: 'sec_1', name: 'حسابات ليفل عالي' },
+                { id: 'sub_2', parentSectionId: 'sec_1', name: 'حسابات للمبتدئين' },
+                { id: 'sub_3', parentSectionId: 'sec_2', name: 'أدوات الحظيرة والسلوبي' }
+            ]));
+        }
+
+        if (!localStorage.getItem('esultan_hayday_suggestions')) {
+            localStorage.setItem('esultan_hayday_suggestions', JSON.stringify([]));
+        }
+
+        window.onload = async function() {
+            await initIndexedDB();
+            checkAuthUI();
+            applySavedStyles();
+            loadSiteName();
+            loadSavedLanguage();
+            initActiveSection();
+            renderCategoriesBar();
+            renderAppContent();
+        };
+
+        function initActiveSection() {
+            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
+            if(sections.length > 0 && (!activeSectionId || !sections.some(s => s.id === activeSectionId))) {
+                activeSectionId = sections[0].id;
+            }
+        }
+
+        function initActiveSubSection(sectionId) {
+            let subSections = (JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || []).filter(sub => sub.parentSectionId === sectionId);
+            if(subSections.length > 0) {
+                if(!activeSubSectionId || !subSections.some(sub => sub.id === activeSubSectionId)) {
+                    activeSubSectionId = subSections[0].id;
                 }
             } else {
-                let username = prompt("أدخل اسم المستخدم الفريد (أو البريد الإلكتروني):");
-                if(!username) return;
-                username = username.trim();
+                activeSubSectionId = null;
+            }
+        }
 
-                let existingUser = db.users.find(u => u.username === username);
-                if(existingUser) {
-                    let pass = prompt("هذا الاسم مسجل مسبقاً. أدخل كلمة المرور الخاصة بحسابك:");
-                    if(pass === existingUser.password) {
-                        db.currentUser = existingUser.username;
-                        alert("تم تسجيل الدخول بنجاح!");
-                    } else {
-                        alert("كلمة المرور غير صحيحة!");
-                        return;
-                    }
-                } else {
-                    // منع أي شخص من استخدام اسم مأخوذ أو مشابه بطريقة خاطئة
-                    let pass = prompt("اسم مستخدم جديد. اختر كلمة مرور لتأمين حسابك:");
-                    if(!pass) return;
-                    
-                    db.users.push({
-                        username: username,
-                        password: pass,
-                        isGlobalAdmin: username === MASTER_ADMIN
-                    });
-                    db.currentUser = username;
-                    alert("تم إنشاء الحساب وتسجيل الدخول بنجاح!");
+        function renderCategoriesBar() {
+            const bar = document.getElementById('categoriesBar');
+            bar.innerHTML = '';
+            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
+
+            sections.forEach(sec => {
+                const tab = document.createElement('div');
+                tab.className = `category-tab ${sec.id === activeSectionId ? 'active' : ''}`;
+                tab.innerHTML = `${sec.name} ${sec.locked && !unlockedSections.has(sec.id) ? '🔒' : ''}`;
+                tab.onclick = function() {
+                    activeSectionId = sec.id;
+                    currentSearchQuery = '';
+                    initActiveSubSection(sec.id);
+                    renderCategoriesBar();
+                    renderAppContent();
+                };
+                bar.appendChild(tab);
+            });
+        }
+
+        function showAuth(mode) {
+            document.getElementById('suggestionBoxContainer').classList.add('hidden');
+            document.getElementById('authContainer').classList.remove('hidden');
+            isLoginMode = (mode === 'login');
+            document.getElementById('authTitle').innerText = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
+            document.getElementById('authSwitchText').innerText = isLoginMode ? 'ليس لديك حساب؟ إنشاء حساب جديد' : 'لديك حساب بالفعل؟ تسجيل الدخول';
+        }
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            showAuth(isLoginMode ? 'login' : 'register');
+        }
+
+        function handleAuth() {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            if (!email || !password) return alert('أدخل البريد وكلمة المرور');
+
+            let role = 'user';
+            // الإشراف مرتبط بإيميلك الوحيد فقط
+            if (email === 'gojoesultan@gmail.com') {
+                role = 'admin';
+            }
+
+            let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
+            let existingIdx = accounts.findIndex(acc => acc.email === email);
+            let userObj = {
+                email,
+                password,
+                role,
+                avatar: existingIdx !== -1 ? accounts[existingIdx].avatar : ''
+            };
+
+            if (existingIdx !== -1) {
+                accounts[existingIdx] = userObj;
+            } else {
+                if (accounts.length >= 5) {
+                    return alert('عذراً، الحد الأقصى المسموح به هو 5 حسابات على هذا الجهاز!');
                 }
-                saveData();
+                accounts.push(userObj);
+            }
+
+            localStorage.setItem('esultan_hayday_saved_accounts', JSON.stringify(accounts));
+            currentUser = userObj;
+            localStorage.setItem('esultan_hayday_current_user', JSON.stringify(currentUser));
+
+            alert('تم تسجيل الدخول بنجاح');
+            document.getElementById('authContainer').classList.add('hidden');
+            checkAuthUI();
+            renderAppContent();
+        }
+
+        function confirmLogout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                currentUser = null;
+                localStorage.removeItem('esultan_hayday_current_user');
+                closeAdminPanel();
+                closeProfileModal();
                 checkAuthUI();
-                renderGroups();
-                renderChannels();
-                renderAdminPanel();
+                renderAppContent();
             }
         }
 
         function checkAuthUI() {
-            let info = document.getElementById('user-display-info');
-            let authBtn = document.getElementById('auth-btn');
-            let adminTab = document.getElementById('admin-tab-btn');
+            const authNavBtns = document.getElementById('authNavButtons');
+            const profileBtn = document.getElementById('profileTriggerBtn');
+            const adminBtn = document.getElementById('adminNavBtn');
+            const suggestionUserBtn = document.getElementById('suggestionUserBtn');
 
-            if(db.currentUser) {
-                info.innerText = `مرحباً: ${db.currentUser}`;
-                authBtn.innerText = "تسجيل خروج";
-                let userObj = db.users.find(u => u.username === db.currentUser);
-                if(userObj && userObj.isGlobalAdmin) {
-                    adminTab.classList.remove('hidden');
+            if (currentUser) {
+                authNavBtns.classList.add('hidden');
+                profileBtn.classList.remove('hidden');
+                document.getElementById('headerUserAvatar').src = currentUser.avatar || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
+                document.getElementById('headerUserEmailName').innerText = currentUser.email.split('@')[0];
+
+                if (currentUser.email === 'gojoesultan@gmail.com') {
+                    currentUser.role = 'admin';
+                    adminBtn.classList.remove('hidden');
+                    suggestionUserBtn.classList.add('hidden');
                 } else {
-                    adminTab.classList.add('hidden');
+                    currentUser.role = 'user';
+                    adminBtn.classList.add('hidden');
+                    suggestionUserBtn.classList.remove('hidden');
                 }
             } else {
-                info.innerText = "";
-                authBtn.innerText = "تسجيل / دخول";
-                adminTab.classList.add('hidden');
+                authNavBtns.classList.remove('hidden');
+                profileBtn.classList.add('hidden');
+                adminBtn.classList.add('hidden');
+                suggestionUserBtn.classList.add('hidden');
             }
         }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
-            if(tabName === 'groups') {
-                document.getElementById('tab-groups').classList.remove('hidden');
-                event.target.classList.add('active');
-                renderGroups();
-            } else if(tabName === 'channels') {
-                document.getElementById('tab-channels').classList.remove('hidden');
-                event.target.classList.add('active');
-                renderChannels();
-            } else if(tabName === 'admin') {
-                document.getElementById('tab-admin').classList.remove('hidden');
-                event.target.classList.add('active');
-                renderAdminPanel();
+        function openProfileModal() {
+            if (!currentUser) return showAuth('login');
+            document.getElementById('profileModalOverlay').classList.remove('hidden');
+            document.getElementById('profileModalEmailText').innerText = currentUser.email;
+            document.getElementById('profileModalAvatarImg').src = currentUser.avatar || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
+            renderSavedAccountsList();
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModalOverlay').classList.add('hidden');
+            document.getElementById('addAnotherAccountContainer').classList.add('hidden');
+        }
+
+        function openDownloadsPage() {
+            closeProfileModal();
+            document.getElementById('downloadsPage').style.display = 'block';
+            renderDownloadsContent();
+        }
+
+        function closeDownloadsPage() {
+            document.getElementById('downloadsPage').style.display = 'none';
+        }
+
+        function switchDownloadsTab(tabName, btnElement) {
+            const videosTab = document.getElementById('videosDownloadsTab');
+            const imagesTab = document.getElementById('imagesDownloadsTab');
+            const buttons = document.querySelectorAll('#downloadsPage .tab-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            if (tabName === 'videos') {
+                videosTab.classList.remove('hidden');
+                imagesTab.classList.add('hidden');
+            } else {
+                videosTab.classList.add('hidden');
+                imagesTab.classList.remove('hidden');
             }
         }
 
-        // --- وظيفة التحقق من الروابط الممنوعة ---
-        function containsLink(text) {
-            return /(http:\/\/|https:\/\/|www\.|\.com|\.net|\.org|t\.me|wa\.me)/i.test(text);
-        }
+        async function renderDownloadsContent() {
+            const videosGrid = document.getElementById('videosDownloadsGrid');
+            const imagesGrid = document.getElementById('imagesDownloadsGrid');
+            videosGrid.innerHTML = '';
+            imagesGrid.innerHTML = '';
 
-        // --- إنشاء الجروبات مع الشروط (الاسم إجباري وغير مملوك، الوصف والصورة اختياري، بدون روابط) ---
-        function openCreateGroupModal() {
-            if(!db.currentUser) { alert("يجب تسجيل الدخول أولاً لإنشاء جروب!"); return; }
-            
-            let name = prompt("أدخل اسم الجروب (إجباري وممنوع استخدام اسم مملوك مسبقاً):");
-            if(!name) return;
-            name = name.trim();
+            let downloads = JSON.parse(localStorage.getItem('esultan_hayday_downloads_history')) || [];
+            let allContents = await getAllContentsFromDB();
 
-            // فحص عدم تكرار الاسم في الجروبات أو القنوات
-            let nameExists = db.groups.some(g => g.name === name) || db.channels.some(c => c.name === name);
-            if(nameExists) {
-                alert("عذراً، هذا الاسم مملوك مسبقاً لقناة أو جروب آخر. يجيب اختيار اسم فريد!");
-                return;
-            }
+            let videoItems = [];
+            let imageItems = [];
 
-            let desc = prompt("أدخل وصف الجروب (اختياري - ممنوع استخدام أي روابط نهائياً):") || "";
-            if(containsLink(desc)) {
-                alert("ممنوع استخدام الروابط في وصف الجروب!");
-                return;
-            }
-
-            let img = prompt("أدخل رابط صورة الجروب (اختياري):") || "";
-
-            let newGroup = {
-                id: 'g_' + Date.now(),
-                name: name,
-                desc: desc,
-                img: img,
-                owner: db.currentUser,
-                admins: [db.currentUser],
-                members: [db.currentUser],
-                status: 'pending', // معلق حتى يراجعه المشرف العام
-                privacy: 'public', // افتراضي علني
-                isClosed: false,
-                pinnedMessages: [],
-                messages: []
-            };
-
-            db.groups.push(newGroup);
-            saveData();
-            alert("تم إرسال الجروب بنجاح! بانتظار مراجعة وموافقة المشرف العام لنشره في المجتمع.");
-            renderGroups();
-        }
-
-        // --- عرض الجروبات (الأعلى هو الأكبر في المشتركين، التعامل مع الـ 1K، والجروبات الخاصة) ---
-        function renderGroups() {
-            let container = document.getElementById('groups-list');
-            let query = document.getElementById('global-search').value.toLowerCase();
-            container.innerHTML = '';
-
-            let approvedGroups = db.groups.filter(g => g.status === 'approved');
-            // ترتيب الجروبات: الأعلى هو الأكثر مشتركين
-            approvedGroups.sort((a,b) => b.members.length - a.members.length);
-
-            approvedGroups.forEach(group => {
-                if(query && !group.name.toLowerCase().includes(query) && !group.desc.toLowerCase().includes(query)) return;
-
-                let isMember = db.currentUser && group.members.includes(db.currentUser);
-                let isGlobalAdmin = db.users.find(u => u.username === db.currentUser)?.isGlobalAdmin;
-
-                // لو الجروب خاص، لا يظهر إلا للمشتركين والمشرف العام
-                if(group.privacy === 'private' && !isMember && !isGlobalAdmin) {
-                    return;
-                }
-
-                // حساب عدد المشتركين مع صيغة 1K إذا ععدوا الألف
-                let countNum = group.members.length;
-                let countDisplay = countNum >= 1000 ? (countNum / 1000).toFixed(1) + 'K' : countNum;
-
-                container.innerHTML += `
-                    <div class="card">
-                        <h3 style="margin-top:0;">${group.name} <span style="font-size:13px; color:#e67e22; font-weight:normal;">(المشتركين: ${countDisplay})</span></h3>
-                        <p style="color:#555;">${group.desc || 'بدون وصف'}</p>
-                        ${isMember ? 
-                            `<button class="btn" onclick="openGroupRoom('${group.id}')">دخول الجروب والشات</button>` : 
-                            `<button class="btn" style="background:var(--accent-color);" onclick="joinGroup('${group.id}')">انضمام للجروب</button>`
-                        }
-                    </div>
-                `;
-            });
-        }
-
-        function joinGroup(groupId) {
-            if(!db.currentUser) { alert("يجب تسجيل الدخول أولاً للانضمام!"); return; }
-            let group = db.groups.find(g => g.id === groupId);
-            if(group && !group.members.includes(db.currentUser)) {
-                group.members.push(db.currentUser);
-                saveData();
-                renderGroups();
-                openGroupRoom(groupId);
-            }
-        }
-
-        // --- غرفة الجروب والرسائل المثبتة (بحد أقصى 7 رسائل والضغط للانتقال السريع) ---
-        let activeRoomId = null;
-
-        function openGroupRoom(groupId) {
-            let group = db.groups.find(g => g.id === groupId);
-            if(!group) return;
-            activeRoomId = groupId;
-
-            document.getElementById('room-title').innerText = group.name;
-            document.getElementById('room-desc').innerText = group.desc || 'لا يوجد وصف';
-            document.getElementById('room-modal').classList.remove('hidden');
-
-            let isMod = group.admins.includes(db.currentUser) || (db.users.find(u => u.username === db.currentUser)?.isGlobalAdmin);
-            let settingsArea = document.getElementById('group-settings-area');
-
-            if(isMod) {
-                settingsArea.classList.remove('hidden');
-                document.getElementById('setting-privacy').value = group.privacy;
-                document.getElementById('setting-close-chat').checked = group.isClosed;
-
-                // تعبئة قائمة الأعضاء لترقيتهم لمشرفين
-                let promoteSelect = document.getElementById('promote-user-select');
-                promoteSelect.innerHTML = '';
-                group.members.forEach(m => {
-                    if(!group.admins.includes(m)) {
-                        promoteSelect.innerHTML += `<option value="${m}">${m}</option>`;
+            downloads.forEach(d => {
+                let found = allContents.find(c => c.id === d.id);
+                if (found) {
+                    if (found.type === 'localvideo' || found.type === 'youtube') {
+                        videoItems.push(found);
+                    } else if (found.type === 'image' || found.thumbBlob) {
+                        imageItems.push(found);
                     }
-                });
-            } else {
-                settingsArea.classList.add('hidden');
-            }
-
-            renderPinnedMessages(group);
-            renderGroupMessages(group);
-        }
-
-        function closeRoom() {
-            document.getElementById('room-modal').classList.add('hidden');
-            activeRoomId = null;
-        }
-
-        function renderPinnedMessages(group) {
-            let container = document.getElementById('pinned-messages-container');
-            container.innerHTML = '';
-            if(group.pinnedMessages && group.pinnedMessages.length > 0) {
-                group.pinnedMessages.forEach((msg, idx) => {
-                    // استخراج أول كلمة من الرسالة المثبتة
-                    let firstWord = msg.text.split(' ')[0] || '';
-                    container.innerHTML += `
-                        <div class="pinned-ticker" onclick="scrollToMessage(${idx})">
-                            <span>📌 <strong>رسالة مثبتة:</strong> ${firstWord}... (${msg.sender})</span>
-                            <span style="font-size:12px; color:#2980b9;">اضغط للقراءة</span>
-                        </div>
-                    `;
-                });
-            }
-        }
-
-        function scrollToMessage(idx) {
-            let chatBox = document.getElementById('room-chat-box');
-            let targetDiv = document.getElementById(`msg-item-${idx}`);
-            if(targetDiv) {
-                chatBox.scrollTop = targetDiv.offsetTop - chatBox.offsetTop - 20;
-            }
-        }
-
-        function renderGroupMessages(group) {
-            let chatBox = document.getElementById('room-chat-box');
-            chatBox.innerHTML = '';
-
-            let isMod = group.admins.includes(db.currentUser) || (db.users.find(u => u.username === db.currentUser)?.isGlobalAdmin);
-
-            group.messages.forEach((msg, idx) => {
-                let canPin = isMod && group.pinnedMessages.length < 7 && !group.pinnedMessages.some(p => p.text === msg.text);
-                let pinBtn = canPin ? `<button onclick="pinMessage(${idx})" style="font-size:11px; padding:2px 6px; margin-right:10px; cursor:pointer;">تثبيت</button>` : '';
-
-                chatBox.innerHTML += `
-                    <div id="msg-item-${idx}" style="margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:6px;">
-                        <strong style="cursor:pointer; color:#2980b9;" onclick="openUserProfile('${msg.sender}')">${msg.sender}:</strong> 
-                        <span>${msg.text}</span>
-                        ${pinBtn}
-                    </div>
-                `;
+                }
             });
-            chatBox.scrollTop = chatBox.scrollHeight;
 
-            // التحقق إذا كان الشات مغلقاً من قبل المشرف
-            if(group.isClosed && !isMod) {
-                document.getElementById('chat-input-area').classList.add('hidden');
-                chatBox.innerHTML += `<p style="color:var(--danger-color); text-align:center; font-weight:bold;">عذراً، محادثات هذا الجروب مغلقة من قبل المشرفين حالياً.</p>`;
+            if (videoItems.length === 0) {
+                videosGrid.innerHTML = '<p style="color:var(--gray); padding:20px;">لا توجد فيديوهات محفوظة حالياً.</p>';
             } else {
-                document.getElementById('chat-input-area').classList.remove('hidden');
-            }
-        }
-
-        function sendGroupMessage() {
-            if(!db.currentUser) return;
-            let group = db.groups.find(g => g.id === activeRoomId);
-            if(!group) return;
-
-            let text = document.getElementById('message-input').value.trim();
-            if(!text) return;
-            if(containsLink(text)) {
-                alert("ممنوع وضع أي روابط نهائياً في المحادثة!");
-                return;
+                videoItems.forEach(item => {
+                    videosGrid.appendChild(createDownloadCard(item));
+                });
             }
 
-            group.messages.push({sender: db.currentUser, text: text});
-            document.getElementById('message-input').value = '';
-            saveData();
-            renderGroupMessages(group);
-        }
-
-        function pinMessage(msgIndex) {
-            let group = db.groups.find(g => g.id === activeRoomId);
-            if(!group) return;
-            let msg = group.messages[msgIndex];
-            
-            if(group.pinnedMessages.length < 7) {
-                group.pinnedMessages.push(msg);
-                saveData();
-                renderPinnedMessages(group);
-                renderGroupMessages(group);
+            if (imageItems.length === 0) {
+                imagesGrid.innerHTML = '<p style="color:var(--gray); padding:20px;">لا توجد صور محفوظة حالياً.</p>';
             } else {
-                alert("عذراً، الحد الأقصى للرسائل المثبتة في الجروب هو 7 رسائل فقط!");
+                imageItems.forEach(item => {
+                    imagesGrid.appendChild(createDownloadCard(item));
+                });
             }
         }
 
-        // إعدادات المشرفين داخل الجروب (إغلاق الدردشة، الخصوصية، وترقية مشرفين)
-        function updateGroupPrivacy() {
-            let group = db.groups.find(g => g.id === activeRoomId);
-            if(!group) return;
-            group.privacy = document.getElementById('setting-privacy').value;
-            saveData();
-            alert("تم تحديث خصوصية الجروب بنجاح!");
+        function createDownloadCard(item) {
+            let card = document.createElement('div');
+            card.className = 'card';
+            card.onclick = () => openContentModal(item.id);
+
+            let previewHTML = '';
+            if (item.thumbBlob) {
+                previewHTML = `<img src="${URL.createObjectURL(item.thumbBlob)}">`;
+            } else if (item.mediaBlob) {
+                previewHTML = item.type === 'localvideo' ? `<video src="${URL.createObjectURL(item.mediaBlob)}"></video>` : `<img src="${URL.createObjectURL(item.mediaBlob)}">`;
+            } else {
+                previewHTML = `<div style="background:#162032; height:100%; display:flex; align-items:center; justify-content:center; color:var(--gray);">معاينة</div>`;
+            }
+
+            card.innerHTML = `
+                <div class="thumbnail-container">${previewHTML}</div>
+                <div class="card-body">
+                    <div class="card-title">${item.title}</div>
+                    <div class="card-desc">${item.desc || ''}</div>
+                    <button onclick="removeDownloadItem(${item.id}, event)" style="background: rgba(229,9,20,0.15); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 8px; border-radius: 6px; margin-top: 10px; cursor: pointer; font-size: 12px; font-weight:600;">إزالة من المحفوظات</button>
+                </div>
+            `;
+            return card;
         }
 
-        function toggleChatClose() {
-            let group = db.groups.find(g => g.id === activeRoomId);
-            if(!group) return;
-            group.isClosed = document.getElementById('setting-close-chat').checked;
-            saveData();
-            openGroupRoom(group.id);
+        function removeDownloadItem(id, event) {
+            event.stopPropagation();
+            let downloads = JSON.parse(localStorage.getItem('esultan_hayday_downloads_history')) || [];
+            downloads = downloads.filter(d => d.id !== id);
+            localStorage.setItem('esultan_hayday_downloads_history', JSON.stringify(downloads));
+            renderDownloadsContent();
         }
 
-        function promoteUserToAdmin() {
-            let group = db.groups.find(g => g.id === activeRoomId);
-            let userToPromote = document.getElementById('promote-user-select').value;
-            if(!group || !userToPromote) return;
-            
-            if(!group.admins.includes(userToPromote)) {
-                group.admins.push(userToPromote);
-                saveData();
-                alert(`تم ترقية ${userToPromote} إلى مشرف في الجروب بنجاح!`);
-                openGroupRoom(group.id);
+        function recordDownloadHistory(item) {
+            let downloads = JSON.parse(localStorage.getItem('esultan_hayday_downloads_history')) || [];
+            if (!downloads.some(d => d.id === item.id)) {
+                downloads.unshift({ id: item.id, date: new Date().toLocaleDateString() });
+                localStorage.setItem('esultan_hayday_downloads_history', JSON.stringify(downloads));
             }
         }
 
-        // --- إدارة القنوات مع الروابط الخاصة وقسم الرشق ---
-        function openCreateChannelModal() {
-            if(!db.currentUser) { alert("يجب تسجيل الدخول أولاً!"); return; }
-            let name = prompt("أدخل اسم القناة (إجباري وممنوع التكرار):");
-            if(!name) return;
-            name = name.trim();
+        function uploadDirectAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    let base64Image = e.target.result;
+                    currentUser.avatar = base64Image;
+                    localStorage.setItem('esultan_hayday_current_user', JSON.stringify(currentUser));
 
-            let nameExists = db.groups.some(g => g.name === name) || db.channels.some(c => c.name === name);
-            if(nameExists) {
-                alert("هذا الاسم مملوك مسبقاً!");
-                return;
+                    let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
+                    let idx = accounts.findIndex(acc => acc.email === currentUser.email);
+                    if (idx !== -1) {
+                        accounts[idx].avatar = base64Image;
+                        localStorage.setItem('esultan_hayday_saved_accounts', JSON.stringify(accounts));
+                    }
+
+                    document.getElementById('profileModalAvatarImg').src = base64Image;
+                    document.getElementById('headerUserAvatar').src = base64Image;
+                    alert('تم تغيير صورة الحساب بنجاح!');
+                };
+                reader.readAsDataURL(input.files[0]);
             }
-
-            let desc = prompt("أدخل وصف القناة (اختياري - بدون روابط):") || "";
-            let img = prompt("أدخل رابط صورة القناة (اختياري):") || "";
-            let customLink = 'https://hayday.comm/channel/' + Date.now();
-
-            let newChannel = {
-                id: 'c_' + Date.now(),
-                name: name,
-                desc: desc,
-                img: img,
-                owner: db.currentUser,
-                followersCount: 1,
-                link: customLink,
-                messages: []
-            };
-
-            db.channels.push(newChannel);
-            saveData();
-            alert(`تم إنشاء القناة بنجاح!\nرابط قناتك الخاص لمشاركته مع الآخرين:\n${customLink}`);
-            renderChannels();
-            renderAdminPanel();
         }
 
-        function renderChannels() {
-            let container = document.getElementById('channels-list');
-            let query = document.getElementById('global-search').value.toLowerCase();
-            container.innerHTML = '';
+        function showAddAnotherAccountBox() {
+            let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
+            if (accounts.length >= 5) return alert('وصلت للحد الأقصى (5 حسابات).');
+            document.getElementById('addAnotherAccountContainer').classList.toggle('hidden');
+        }
 
-            db.channels.forEach(channel => {
-                if(query && !channel.name.toLowerCase().includes(query) && !channel.desc.toLowerCase().includes(query)) return;
+        function renderSavedAccountsList() {
+            const container = document.getElementById('savedAccountsListContainer');
+            let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
+            container.innerHTML = accounts.length === 0 ? '<p style="color:var(--gray)">لا توجد حسابات أخرى محفوظة</p>' : '';
 
+            accounts.forEach((acc) => {
+                let isCurrent = currentUser && currentUser.email === acc.email;
                 container.innerHTML += `
-                    <div class="card">
-                        <h3 style="margin-top:0;">📢 ${channel.name} <span style="font-size:13px; color:#e67e22; font-weight:normal;">(المتابعين: ${channel.followersCount})</span></h3>
-                        <p style="color:#555;">${channel.desc || 'بدون وصف'}</p>
-                        <p style="font-size:12px; color:#2980b9;">رابط القناة الخاص: <code>${channel.link}</code></p>
-                        <button class="btn" style="background:var(--accent-color);" onclick="followChannel('${channel.id}')">متابعة القناة</button>
+                    <div class="account-switcher-item ${isCurrent ? 'active-account' : ''}">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <img src="${acc.avatar || 'https://via.placeholder.com/40/1e293b/22c55e?text=U'}" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                            <div>
+                                <div style="font-weight: 600; font-size: 14px;">${acc.email}</div>
+                                <div style="font-size: 11px; color: var(--gray);">${isCurrent ? 'الحساب النشط حالياً' : 'حساب محفوظ'}</div>
+                            </div>
+                        </div>
+                        <div>
+                            ${!isCurrent ? `<button class="action-btn" style="padding: 6px 12px; font-size: 12px; width: auto; margin:0;" onclick="switchAccount('${acc.email}')">تبديل</button>` : ''}
+                            <button onclick="removeSavedAccount('${acc.email}')" style="background: rgba(229,9,20,0.15); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; margin-right: 6px; font-weight:600;">حذف</button>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        function followChannel(channelId) {
-            let channel = db.channels.find(c => c.id === channelId);
-            if(channel) {
-                channel.followersCount++;
-                saveData();
-                renderChannels();
-                alert("تمت متابعة القناة بنجاح!");
+        function switchAccount(email) {
+            let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
+            let targetAcc = accounts.find(acc => acc.email === email);
+            if (targetAcc) {
+                currentUser = targetAcc;
+                if(currentUser.email === 'gojoesultan@gmail.com') currentUser.role = 'admin';
+                else currentUser.role = 'user';
+                localStorage.setItem('esultan_hayday_current_user', JSON.stringify(currentUser));
+                checkAuthUI();
+                renderAppContent();
+                openProfileModal();
             }
         }
 
-        // --- محادثاتي الفردية والشات الفردي (1 لـ 1) والتقييم والحظر ---
-        let activeDmUser = null;
-
-        function openUserProfile(username) {
-            if(!db.currentUser || db.currentUser === username) return;
-            activeDmUser = username;
-            document.getElementById('dm-partner-name').innerText = `محادثة فردية مع: ${username}`;
-            document.getElementById('dm-room-modal').classList.remove('hidden');
-            renderDmMessages();
+        function removeSavedAccount(email) {
+            let accounts = JSON.parse(localStorage.getItem('esultan_hayday_saved_accounts')) || [];
+            accounts = accounts.filter(acc => acc.email !== email);
+            localStorage.setItem('esultan_hayday_saved_accounts', JSON.stringify(accounts));
+            if (currentUser && currentUser.email === email) {
+                currentUser = accounts.length > 0 ? accounts[0] : null;
+                if (currentUser) {
+                    if(currentUser.email === 'gojoesultan@gmail.com') currentUser.role = 'admin';
+                    else currentUser.role = 'user';
+                    localStorage.setItem('esultan_hayday_current_user', JSON.stringify(currentUser));
+                } else {
+                    localStorage.removeItem('esultan_hayday_current_user');
+                }
+                checkAuthUI();
+                renderAppContent();
+            }
+            renderSavedAccountsList();
         }
 
-        function closeDmRoom() {
-            document.getElementById('dm-room-modal').classList.add('hidden');
-            activeDmUser = null;
+        function changeSiteLanguage(lang) {
+            localStorage.setItem('esultan_hayday_site_lang', lang);
+            document.documentElement.lang = lang;
+            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+            alert('تم تغيير لغة الموقع بنجاح');
         }
 
-        function getDmKey(u1, u2) {
-            return [u1, u2].sort().join('_');
+        function loadSavedLanguage() {
+            let lang = localStorage.getItem('esultan_hayday_site_lang') || 'ar';
+            document.getElementById('siteLanguageSelect').value = lang;
+            document.documentElement.lang = lang;
+            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
         }
 
-        function renderDmMessages() {
-            let chatBox = document.getElementById('dm-chat-box');
-            chatBox.innerHTML = '';
-            let key = getDmKey(db.currentUser, activeDmUser);
-            if(!db.directChats[key]) db.directChats[key] = [];
+        function openAdminPanel() {
+            if (!currentUser || currentUser.email !== 'gojoesultan@gmail.com') {
+                return alert('غير مسموح بالدخول لوحة المشرف إلا لمالك الإيميل المخصص فقط!');
+            }
+            document.getElementById('adminOverlay').classList.remove('hidden');
+            backToAdminMenu();
+            populateSectionSelects();
+            renderAdminSuggestions();
+            renderAdminSectionsList();
+            renderAdminSubSectionsList();
+            populateBoostVideoSelect();
+        }
 
-            db.directChats[key].forEach(msg => {
-                chatBox.innerHTML += `<div style="margin-bottom:8px;"><strong>${msg.sender}:</strong> ${msg.text}</div>`;
+        function closeAdminPanel() { document.getElementById('adminOverlay').classList.add('hidden'); }
+
+        function openAdminSection(sectionName) {
+            ['subSectionSectionsManager', 'subSectionBoostStats', 'subSectionTheme', 'subSectionSiteName', 'subSectionSuggestions', 'subSectionContent', 'adminMenuButtons'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
             });
-            chatBox.scrollTop = chatBox.scrollHeight;
+            if(sectionName === 'sectionsManager') document.getElementById('subSectionSectionsManager').classList.remove('hidden');
+            else if(sectionName === 'boostStats') document.getElementById('subSectionBoostStats').classList.remove('hidden');
+            else if(sectionName === 'content') {
+                document.getElementById('subSectionContent').classList.remove('hidden');
+                populateSectionSelects();
+                toggleContentTypeFields();
+            }
+            else if(sectionName === 'theme') document.getElementById('subSectionTheme').classList.remove('hidden');
+            else if(sectionName === 'sitename') document.getElementById('subSectionSiteName').classList.remove('hidden');
+            else if(sectionName === 'suggestions') document.getElementById('subSectionSuggestions').classList.remove('hidden');
         }
 
-        function sendDmMessage() {
-            if(!db.currentUser || !activeDmUser) return;
-            let text = document.getElementById('dm-message-input').value.trim();
-            if(!text) return;
-
-            let key = getDmKey(db.currentUser, activeDmUser);
-            if(!db.directChats[key]) db.directChats[key] = [];
-
-            db.directChats[key].push({sender: db.currentUser, text: text});
-            document.getElementById('dm-message-input').value = '';
-            saveData();
-            renderDmMessages();
+        function backToAdminMenu() {
+            ['subSectionSectionsManager', 'subSectionBoostStats', 'subSectionTheme', 'subSectionSiteName', 'subSectionSuggestions', 'subSectionContent'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById('adminMenuButtons').classList.remove('hidden');
         }
 
-        function addFriend() {
-            alert(`تم إرسال طلب صداقة إلى ${activeDmUser} بنجاح!`);
+        function toggleContentTypeFields() {
+            const type = document.getElementById('contentTypeSelect').value;
+            document.getElementById('youtubeFieldsContainer').classList.toggle('hidden', type !== 'youtube');
+            document.getElementById('localVideoFieldsContainer').classList.toggle('hidden', type !== 'localvideo');
+            document.getElementById('imageFieldsContainer').classList.toggle('hidden', type !== 'image');
+            document.getElementById('articleFieldsContainer').classList.toggle('hidden', type !== 'article');
         }
 
-        function blockUser() {
-            if(confirm(`هل أنت متأكد من حظر المستخدم ${activeDmUser}؟`)) {
-                alert("تم حظر المستخدم ولن تتمكن من مراسلته بعد الآن.");
-                closeDmRoom();
+        function previewFileLabel(input, textId) {
+            if (input.files && input.files[0]) {
+                document.getElementById(textId).innerText = 'تم اختيار الملف: ' + input.files[0].name;
             }
         }
 
-        function openRatingModal() {
-            let rating = prompt(`أدخل تقييمك للكتابة بحق ${activeDmUser} (مثال: نصاب، مضمون، محترم، صادق...):`);
-            if(rating) {
-                alert(`تم تسجيل تقييمك بنجاح بحق ${activeDmUser}: "${rating}"`);
+        async function publishContentIndexedDB() {
+            const type = document.getElementById('contentTypeSelect').value;
+            const sectionId = document.getElementById('contentSectionSelect').value;
+            const subContainer = document.getElementById('subSectionPublishContainer');
+            const subSectionId = !subContainer.classList.contains('hidden') ? document.getElementById('contentSubSectionSelect').value : null;
+            const title = document.getElementById('contentTitle').value.trim();
+            const desc = document.getElementById('contentDesc').value.trim();
+
+            if (!sectionId || !title) return alert('الرجاء كتابة العنوان وتحديد القسم');
+
+            let itemData = { id: Date.now(), type, sectionId, subSectionId, title, desc, views: 0, likes: 0, createdAt: new Date() };
+
+            if (type === 'youtube') {
+                itemData.youtubeUrl = document.getElementById('contentYoutubeUrl').value.trim();
+                const file = document.getElementById('thumbFile').files[0];
+                if (file) itemData.thumbBlob = file;
+            } else if (type === 'localvideo') {
+                const file = document.getElementById('localVideoFile').files[0];
+                if (!file) return alert('اختر ملف الفيديو!');
+                itemData.mediaBlob = file;
+            } else if (type === 'image') {
+                const file = document.getElementById('localImageFile').files[0];
+                if (!file) return alert('اختر الصورة!');
+                itemData.mediaBlob = file;
+            } else if (type === 'article') {
+                itemData.articleBody = document.getElementById('contentArticleBody').value.trim();
+                if (!itemData.articleBody) return alert('اكتب التفاصيل');
+            }
+
+            const transaction = db.transaction(storeName, "readwrite");
+            const store = transaction.objectStore(storeName);
+            store.put(itemData);
+
+            transaction.oncomplete = () => {
+                alert('تم نشر المنتج / الحساب بنجاح!');
+                document.getElementById('contentTitle').value = '';
+                document.getElementById('contentDesc').value = '';
+                document.getElementById('contentYoutubeUrl').value = '';
+                document.getElementById('contentArticleBody').value = '';
+                renderAppContent();
+            };
+        }
+
+        function getAllContentsFromDB() {
+            return new Promise((resolve, reject) => {
+                if (!db) return resolve([]);
+                const transaction = db.transaction(storeName, "readonly");
+                const store = transaction.objectStore(storeName);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result || []);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function deleteContent(id, event) {
+            event.stopPropagation();
+            if (confirm('هل تريد حذف هذا العنصر نهائياً؟')) {
+                const transaction = db.transaction(storeName, "readwrite");
+                const store = transaction.objectStore(storeName);
+                store.delete(Number(id));
+                transaction.oncomplete = () => renderAppContent();
             }
         }
 
-        function openMyChatsModal() {
-            if(!db.currentUser) { alert("يجب تسجيل الدخول أولاً لعرض محادثاتك!"); return; }
-            let list = document.getElementById('direct-chats-list');
-            list.innerHTML = '';
+        function renderAdminSectionsList() {
+            const list = document.getElementById('adminSectionsList');
+            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
+            list.innerHTML = sections.length === 0 ? '<p style="color:var(--gray)">لا توجد أقسام</p>' : '';
+            sections.forEach(sec => {
+                list.innerHTML += `<div class="section-manage-item"><span>${sec.name}</span> <button onclick="deleteSection('${sec.id}')" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">حذف</button></div>`;
+            });
+        }
 
-            let foundAny = false;
-            for(let key in db.directChats) {
-                if(key.includes(db.currentUser)) {
-                    foundAny = true;
-                    let partner = key.split('_').find(u => u !== db.currentUser);
-                    list.innerHTML += `
-                        <div class="card" style="cursor:pointer; padding:12px; margin-bottom:8px;" onclick="closeMyChatsModal(); openUserProfile('${partner}')">
-                            <h4 style="margin:0;">💬 محادثة مع: ${partner}</h4>
-                        </div>
-                    `;
+        function saveSectionData() {
+            const name = document.getElementById('manageSectionNameInput').value.trim();
+            const password = document.getElementById('manageSectionPassInput').value.trim();
+            if (!name) return alert('أدخل اسم القسم');
+            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
+            sections.push({ id: 'sec_' + Date.now(), name, locked: password !== '', password });
+            localStorage.setItem('esultan_hayday_sections', JSON.stringify(sections));
+            document.getElementById('manageSectionNameInput').value = '';
+            document.getElementById('manageSectionPassInput').value = '';
+            renderAdminSectionsList();
+            renderCategoriesBar();
+            populateSectionSelects();
+        }
+
+        function deleteSection(id) {
+            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
+            if (sections.length <= 1) return alert('لا يمكن حذف كل الأقسام');
+            localStorage.setItem('esultan_hayday_sections', JSON.stringify(sections.filter(s => s.id !== id)));
+            renderAdminSectionsList();
+            renderCategoriesBar();
+            renderAppContent();
+        }
+
+        function renderAdminSubSectionsList() {
+            const list = document.getElementById('adminSubSectionsList');
+            let subs = JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || [];
+            list.innerHTML = subs.length === 0 ? '<p style="color:var(--gray)">لا توجد أقسام فرعية</p>' : '';
+            subs.forEach(sub => {
+                list.innerHTML += `<div class="section-manage-item"><span>${sub.name}</span> <button onclick="deleteSubSection('${sub.id}')" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">حذف</button></div>`;
+            });
+        }
+
+        function saveSubSectionData() {
+            const parentId = document.getElementById('parentSectionSelectForSub').value;
+            const name = document.getElementById('manageSubSectionNameInput').value.trim();
+            if (!name) return alert('أدخل اسم القسم الفرعي');
+            let subs = JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || [];
+            subs.push({ id: 'sub_' + Date.now(), parentSectionId: parentId, name });
+            localStorage.setItem('esultan_hayday_sub_sections', JSON.stringify(subs));
+            document.getElementById('manageSubSectionNameInput').value = '';
+            renderAdminSubSectionsList();
+            renderAppContent();
+        }
+
+        function deleteSubSection(id) {
+            let subs = JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || [];
+            localStorage.setItem('esultan_hayday_sub_sections', JSON.stringify(subs.filter(s => s.id !== id)));
+            renderAdminSubSectionsList();
+            renderAppContent();
+        }
+
+        async function populateBoostVideoSelect() {
+            let select = document.getElementById('boostVideoSelect');
+            select.innerHTML = '';
+            let contents = await getAllContentsFromDB();
+            contents.forEach(item => {
+                select.innerHTML += `<option value="${item.id}">${item.title}</option>`;
+            });
+            loadVideoStatsToForm();
+        }
+
+        async function loadVideoStatsToForm() {
+            let id = document.getElementById('boostVideoSelect').value;
+            let contents = await getAllContentsFromDB();
+            let item = contents.find(c => c.id == id);
+            if (item) {
+                document.getElementById('boostViewsInput').value = item.views || 0;
+                document.getElementById('boostLikesInput').value = item.likes || 0;
+            }
+        }
+
+        async function saveBoostStats() {
+            let id = document.getElementById('boostVideoSelect').value;
+            let views = parseInt(document.getElementById('boostViewsInput').value) || 0;
+            let likes = parseInt(document.getElementById('boostLikesInput').value) || 0;
+            let contents = await getAllContentsFromDB();
+            let item = contents.find(c => c.id == id);
+            if (item) {
+                item.views = views; item.likes = likes;
+                const tx = db.transaction(storeName, "readwrite");
+                tx.objectStore(storeName).put(item);
+                tx.oncomplete = () => { alert('تم التحديث بنجاح'); renderAppContent(); };
+            }
+        }
+
+        function showSuggestionModal() { document.getElementById('suggestionBoxContainer').classList.toggle('hidden'); }
+
+        function submitSuggestion() {
+            const text = document.getElementById('userSuggestionInput').value.trim();
+            if (!text) return alert('اكتب اقتراحك');
+            let suggs = JSON.parse(localStorage.getItem('esultan_hayday_suggestions')) || [];
+            suggs.push({ id: Date.now(), user: currentUser.email, text, date: new Date().toLocaleDateString() });
+            localStorage.setItem('esultan_hayday_suggestions', JSON.stringify(suggs));
+            alert('تم الإرسال بنجاح');
+            document.getElementById('userSuggestionInput').value = '';
+            document.getElementById('suggestionBoxContainer').classList.add('hidden');
+        }
+
+        function renderAdminSuggestions() {
+            const list = document.getElementById('adminSuggestionsList');
+            let suggs = JSON.parse(localStorage.getItem('esultan_hayday_suggestions')) || [];
+            list.innerHTML = suggs.length === 0 ? '<p style="color:var(--gray)">لا توجد اقتراحات</p>' : '';
+            suggs.forEach(s => {
+                list.innerHTML += `<div class="suggestion-item"><div><span style="color:var(--primary); font-weight:600;">${s.user}:</span> ${s.text}</div> <button onclick="deleteSuggestion(${s.id})" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">حذف</button></div>`;
+            });
+        }
+
+        function deleteSuggestion(id) {
+            let suggs = JSON.parse(localStorage.getItem('esultan_hayday_suggestions')) || [];
+            localStorage.setItem('esultan_hayday_suggestions', JSON.stringify(suggs.filter(s => s.id !== id)));
+            renderAdminSuggestions();
+        }
+
+        function updateSiteTheme() {
+            localStorage.setItem('esultan_hayday_primary', document.getElementById('primaryColorPicker').value);
+            localStorage.setItem('esultan_hayday_bg', document.getElementById('bgColorPicker').value);
+            applySavedStyles();
+            alert('تم تطبيق الألوان بنجاح');
+        }
+
+        function applySavedStyles() {
+            if (localStorage.getItem('esultan_hayday_primary')) document.documentElement.style.setProperty('--primary', localStorage.getItem('esultan_hayday_primary'));
+            if (localStorage.getItem('esultan_hayday_bg')) document.documentElement.style.setProperty('--bg', localStorage.getItem('esultan_hayday_bg'));
+        }
+
+        function updateSiteName() {
+            const name = document.getElementById('newSiteNameInput').value.trim();
+            if (!name) return;
+            localStorage.setItem('esultan_hayday_site_name', name);
+            loadSiteName();
+            alert('تم تحديث اسم الموقع');
+        }
+
+        function loadSiteName() {
+            if (localStorage.getItem('esultan_hayday_site_name')) {
+                document.getElementById('siteLogoText').innerText = localStorage.getItem('esultan_hayday_site_name');
+                document.getElementById('pageTitle').innerText = localStorage.getItem('esultan_hayday_site_name');
+            }
+        }
+
+        function populateSectionSelects() {
+            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
+            ['parentSectionSelectForSub', 'contentSectionSelect'].forEach(id => {
+                let sel = document.getElementById(id);
+                sel.innerHTML = '';
+                sections.forEach(s => sel.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+            });
+            populateSubSectionSelectForPublish();
+        }
+
+        function populateSubSectionSelectForPublish() {
+            const parentId = document.getElementById('contentSectionSelect').value;
+            const subContainer = document.getElementById('subSectionPublishContainer');
+            let subSelect = document.getElementById('contentSubSectionSelect');
+            subSelect.innerHTML = '';
+            let subs = (JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || []).filter(sub => sub.parentSectionId === parentId);
+            if (subs.length > 0) {
+                subContainer.classList.remove('hidden');
+                subs.forEach(s => subSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+            } else {
+                subContainer.classList.add('hidden');
+            }
+        }
+
+        function getYoutubeEmbedUrl(url) {
+            let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+            return (match && match[2].length === 11) ? 'https://www.youtube.com/embed/' + match[2] + '?autoplay=1' : null;
+        }
+
+        function downloadItemMedia(id, event) {
+            event.stopPropagation();
+            getAllContentsFromDB().then(contents => {
+                let item = contents.find(c => c.id == id);
+                if (!item) return;
+                recordDownloadHistory(item);
+                if (item.mediaBlob) {
+                    let url = URL.createObjectURL(item.mediaBlob);
+                    let a = document.createElement('a'); a.href = url; a.download = item.title || 'download';
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                } else if (item.thumbBlob) {
+                    let url = URL.createObjectURL(item.thumbBlob);
+                    let a = document.createElement('a'); a.href = url; a.download = (item.title || 'image') + '.jpg';
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                } else {
+                    alert('تم حفظ العنصر في صفحة المحفوظات في ملفك الشخصي.');
+                }
+            });
+        }
+
+        async function openContentModal(id) {
+            let contents = await getAllContentsFromDB();
+            let item = contents.find(c => c.id == id);
+            if (!item) return;
+
+            item.views = (item.views || 0) + 1;
+            const tx = db.transaction(storeName, "readwrite");
+            tx.objectStore(storeName).put(item);
+
+            document.getElementById('modalVideoTitle').innerText = item.title;
+            const modalBody = document.getElementById('modalBodyContent');
+
+            let downloadBtnHTML = `<button onclick="downloadItemMedia(${item.id}, event)" class="action-btn" style="max-width:220px; margin:20px auto 0 auto; display:block;">📥 حفظ / تنزيل الملف</button>`;
+
+            if (item.type === 'youtube') {
+                modalBody.innerHTML = `<div class="video-responsive-wrapper"><iframe src="${getYoutubeEmbedUrl(item.youtubeUrl)}" allowfullscreen></iframe></div><div style="padding:20px;">${downloadBtnHTML}</div>`;
+            } else if (item.type === 'localvideo') {
+                let videoUrl = URL.createObjectURL(item.mediaBlob);
+                modalBody.innerHTML = `<div class="video-responsive-wrapper"><video controls autoplay src="${videoUrl}"></video></div><div style="padding:20px;">${downloadBtnHTML}</div>`;
+            } else if (item.type === 'image') {
+                let imgUrl = URL.createObjectURL(item.mediaBlob);
+                modalBody.innerHTML = `<div style="text-align:center; padding:25px;"><img src="${imgUrl}" style="max-width:100%; max-height:60vh; border-radius:10px;"><div>${downloadBtnHTML}</div></div>`;
+            } else if (item.type === 'article') {
+                modalBody.innerHTML = `<div style="padding:30px; line-height:1.9; white-space:pre-wrap; font-size:16px;">${item.articleBody}</div>`;
+            }
+
+            document.getElementById('videoModalOverlay').classList.remove('hidden');
+            renderAppContent();
+        }
+
+        function closeVideoPlayer() {
+            document.getElementById('videoModalOverlay').classList.add('hidden');
+            document.getElementById('modalBodyContent').innerHTML = '';
+        }
+
+        async function handleLike(id, event) {
+            event.stopPropagation();
+            let contents = await getAllContentsFromDB();
+            let item = contents.find(c => c.id == id);
+            if (!item) return;
+
+            let likeStorageKey = `esultan_hayday_liked_item_${id}`;
+            let hasLiked = localStorage.getItem(likeStorageKey) === 'true';
+
+            if (!hasLiked) {
+                item.likes = (item.likes || 0) + 1;
+                localStorage.setItem(likeStorageKey, 'true');
+            } else {
+                item.likes = Math.max(0, (item.likes || 0) - 1);
+                localStorage.setItem(likeStorageKey, 'false');
+            }
+
+            const tx = db.transaction(storeName, "readwrite");
+            tx.objectStore(storeName).put(item);
+            tx.oncomplete = () => renderAppContent();
+        }
+
+        async function renderAppContent() {
+            const area = document.getElementById('mainContentArea');
+            area.innerHTML = '';
+            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
+            let subSections = JSON.parse(localStorage.getItem('esultan_hayday_sub_sections')) || [];
+            let contents = await getAllContentsFromDB();
+
+            if (sections.length === 0 || !activeSectionId) return;
+            const currentSec = sections.find(s => s.id === activeSectionId) || sections[0];
+
+            let secDiv = document.createElement('div');
+            secDiv.className = 'auth-box';
+            secDiv.innerHTML = `<div class="section-header"><h2>${currentSec.name} ${currentSec.locked && !unlockedSections.has(currentSec.id) ? '<span class="locked-badge">مغلق 🔒</span>' : ''}</h2></div>`;
+
+            if (currentSec.locked && !unlockedSections.has(currentSec.id)) {
+                secDiv.innerHTML += `<div style="text-align:center; padding:30px;"><input type="password" id="pass_${currentSec.id}" placeholder="أدخل كلمة مرور القسم" style="max-width:300px; display:inline-block; margin-left:10px;"><button class="action-btn" style="max-width:130px; display:inline-block; margin:0;" onclick="verifySec('${currentSec.id}')">فتح القسم</button></div>`;
+            } else {
+                let currentSubs = subSections.filter(sub => sub.parentSectionId === currentSec.id);
+                if (currentSubs.length > 0) {
+                    if (!activeSubSectionId || !currentSubs.some(s => s.id === activeSubSectionId)) activeSubSectionId = currentSubs[0].id;
+                    let subBar = document.createElement('div');
+                    subBar.className = 'sub-categories-bar';
+                    currentSubs.forEach(sub => {
+                        subBar.innerHTML += `<div class="sub-category-tab ${sub.id === activeSubSectionId ? 'active' : ''}" onclick="activeSubSectionId='${sub.id}'; renderAppContent();">${sub.name}</div>`;
+                    });
+                    secDiv.appendChild(subBar);
+                }
+
+                secDiv.innerHTML += `<div class="search-bar-container"><input type="text" placeholder="ابحث عن حسابات هاي داي، أدوات، أو منتجات..." value="${currentSearchQuery}" oninput="currentSearchQuery=this.value; renderAppContent();"></div>`;
+
+                let filtered = contents.filter(c => c.sectionId === currentSec.id);
+                if (activeSubSectionId) filtered = filtered.filter(c => c.subSectionId === activeSubSectionId);
+                if (currentSearchQuery.trim()) {
+                    filtered = filtered.filter(c => c.title.includes(currentSearchQuery));
+                }
+
+                if (filtered.length === 0) {
+                    secDiv.innerHTML += `<p style="color:var(--gray); text-align:center; padding:30px;">لا توجد منتجات أو حسابات مضافة في هذا القسم حالياً.</p>`;
+                } else {
+                    let grid = document.createElement('div');
+                    grid.className = 'grid';
+                    for (let item of filtered) {
+                        let card = document.createElement('div');
+                        card.className = 'card';
+                        card.onclick = () => openContentModal(item.id);
+
+                        let previewHTML = '';
+                        if (item.thumbBlob) {
+                            previewHTML = `<img src="${URL.createObjectURL(item.thumbBlob)}">`;
+                        } else if (item.type === 'image' && item.mediaBlob) {
+                            previewHTML = `<img src="${URL.createObjectURL(item.mediaBlob)}">`;
+                        } else if (item.type === 'localvideo' && item.mediaBlob) {
+                            previewHTML = `<video src="${URL.createObjectURL(item.mediaBlob)}"></video>`;
+                        } else {
+                            previewHTML = `<div style="background:#162032; height:100%; display:flex; align-items:center; justify-content:center; color:var(--primary); font-weight:bold;">تفاصيل / يوتيوب</div>`;
+                        }
+
+                        let isLikedByUser = localStorage.getItem(`esultan_hayday_liked_item_${item.id}`) === 'true';
+
+                        card.innerHTML = `
+                            <div class="thumbnail-container">${previewHTML}</div>
+                            <div class="card-body">
+                                <div class="card-title">${item.title}</div>
+                                <div class="card-desc">${item.desc}</div>
+                                <div class="video-stats">
+                                    <span>👁️ ${item.views || 0} مشاهدة</span>
+                                    <button class="download-btn-card" onclick="downloadItemMedia(${item.id}, event)">📥 حفظ</button>
+                                </div>
+                                <div class="card-actions-row">
+                                    <button class="like-btn ${isLikedByUser ? 'liked' : ''}" onclick="handleLike(${item.id}, event)">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                        </svg>
+                                        <span>${item.likes || 0}</span>
+                                    </button>
+                                </div>
+                                ${currentUser && currentUser.email === 'gojoesultan@gmail.com' ? `<button onclick="deleteContent(${item.id}, event)" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:6px; border-radius:6px; margin-top:10px; width:100%; font-weight:600; cursor:pointer;">حذف العنصر</button>` : ''}
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    }
+                    secDiv.appendChild(grid);
                 }
             }
-
-            if(!foundAny) {
-                list.innerHTML = `<p style="color:#666;">لا توجد محادثات فردية سابقة حتى الآن.</p>`;
-            }
-            document.getElementById('my-chats-modal').classList.remove('hidden');
+            area.appendChild(secDiv);
         }
 
-        function closeMyChatsModal() {
-            document.getElementById('my-chats-modal').classList.add('hidden');
-        }
-
-        // --- لوحة المشرف العام والمراجعة وقسم الرشق ---
-        function renderAdminPanel() {
-            let userObj = db.users.find(u => u.username === db.currentUser);
-            if(!userObj || !userObj.isGlobalAdmin) return;
-
-            let pendingContainer = document.getElementById('admin-pending-groups');
-            pendingContainer.innerHTML = '';
-
-            let pendingGroups = db.groups.filter(g => g.status === 'pending');
-            if(pendingGroups.length === 0) {
-                pendingContainer.innerHTML = `<p style="color:#666;">لا توجد جروبات تنتظر المراجعة حالياً.</p>`;
+        function verifySec(id) {
+            let sections = JSON.parse(localStorage.getItem('esultan_hayday_sections')) || [];
+            let sec = sections.find(s => s.id === id);
+            if (sec && document.getElementById(`pass_${id}`).value.trim() === sec.password) {
+                unlockedSections.add(id);
+                renderAppContent();
             } else {
-                pendingGroups.forEach(g => {
-                    pendingContainer.innerHTML += `
-                        <div class="card" style="background:#fff3cd;">
-                            <h4 style="margin-top:0;">${g.name} (بواسطة: ${g.owner})</h4>
-                            <p>${g.desc || 'بدون وصف'}</p>
-                            <button class="btn" style="background:var(--accent-color);" onclick="approveGroup('${g.id}')">موافقة ونشر</button>
-                            <button class="btn" style="background:var(--danger-color);" onclick="rejectGroup('${g.id}')">رفض وحذف</button>
-                        </div>
-                    `;
-                });
+                alert('كلمة المرور غير صحيحة');
             }
-
-            // تعبئة قائمة القنوات للرشق
-            let rushSelect = document.getElementById('rush-channel-select');
-            rushSelect.innerHTML = '';
-            db.channels.forEach(c => {
-                rushSelect.innerHTML += `<option value="${c.id}">${c.name} (المتابعين الحاليين: ${c.followersCount})</option>`;
-            });
-        }
-
-        function approveGroup(groupId) {
-            let g = db.groups.find(x => x.id === groupId);
-            if(g) {
-                g.status = 'approved';
-                saveData();
-                renderAdminPanel();
-                renderGroups();
-                alert("تمت الموافقة على نشر الجروب في المجتمع بنجاح!");
-            }
-        }
-
-        function rejectGroup(groupId) {
-            if(confirm("هل أنت متأكد من رفض وحذف هذا الجروب نهائياً؟")) {
-                db.groups = db.groups.filter(x => x.id !== groupId);
-                saveData();
-                renderAdminPanel();
-                renderGroups();
-            }
-        }
-
-        function executeRush() {
-            let channelId = document.getElementById('rush-channel-select').value;
-            let amount = parseInt(document.getElementById('rush-amount').value);
-            if(!channelId || isNaN(amount) || amount <= 0) {
-                alert("يرجى اختيار قناة وتحديد عدد صحيح وموجب للرشق!");
-                return;
-            }
-
-            let channel = db.channels.find(c => c.id === channelId);
-            if(channel) {
-                channel.followersCount += amount;
-                saveData();
-                renderAdminPanel();
-                renderChannels();
-                alert(`تم تنفيذ الرشق بنجاح وتمت إضافة ${amount} متابع للقناة!`);
-            }
-        }
-
-        function filterContent() {
-            renderGroups();
-            renderChannels();
         }
     </script>
 </body>
