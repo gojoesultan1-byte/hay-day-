@@ -141,7 +141,7 @@
             border: 1px solid var(--border-color);
         }
 
-        .modal-overlay, .video-modal-overlay, .full-page-overlay {
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -156,7 +156,7 @@
             padding: 20px;
             overflow-y: auto;
         }
-        .modal-content, .video-modal-content {
+        .modal-content {
             background: var(--card-bg);
             width: 100%;
             max-width: 750px;
@@ -248,28 +248,6 @@
             display: none !important;
         }
 
-        .full-page-overlay {
-            background-color: var(--bg);
-            z-index: 9999;
-            padding: 30px;
-            display: none;
-        }
-        .page-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .page-header button {
-            background: #162032;
-            color: #fff;
-            border: 1px solid var(--border-color);
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
         .community-hub-container {
             display: flex;
             gap: 20px;
@@ -332,54 +310,27 @@
             background: rgba(34, 197, 94, 0.1);
             border-color: var(--primary);
         }
-        .user-popup-menu {
-            position: fixed;
-            background: #111827;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-            z-index: 3000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            width: 200px;
-        }
-        .user-popup-menu button {
-            background: none;
-            border: none;
-            color: var(--text);
-            width: 100%;
-            text-align: right;
-            padding: 8px 10px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .user-popup-menu button:hover {
-            background: var(--primary);
-            color: #fff;
-        }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- الهيدر الفخم -->
+    <!-- الهيدر (الأزرار بجانب أزرار تسجيل الدخول فقط) -->
     <header>
         <div class="logo" id="siteLogoText">esultan hay day</div>
         <div class="header-controls">
-            <!-- تم نقل أزرار مجتمع هاي داي ودردشاتي لتكون مباشرة بجانب أزرار تسجيل الدخول -->
+            <button id="adminNavBtn" class="hidden" onclick="openAdminPanel()" style="background:#162032; color:var(--primary); border:1px solid var(--primary); padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer;">لوحة المشرف</button>
+            <button id="suggestionUserBtn" class="hidden" onclick="showSuggestionModal()" style="background:#162032; color:var(--text); border:1px solid var(--border-color); padding:8px 16px; border-radius:8px; font-weight:600; cursor:pointer;">اقتراحك</button>
+            
             <div id="authNavButtons" class="nav-btns" style="display: flex; align-items: center; gap: 10px;">
-                <button onclick="handleHeaderCommunityClick()" style="background: #162032; border: 1px solid var(--border-color); color: var(--text);">مجتمع هاي داي</button>
-                <button onclick="handleHeaderChatsClick()" style="background: #162032; border: 1px solid var(--border-color); color: var(--text);">دردشاتي</button>
                 <button id="loginNavBtn" onclick="showAuth('login')">تسجيل الدخول</button>
                 <button id="registerNavBtn" onclick="showAuth('register')" style="background:transparent; color:var(--text); border:1px solid var(--border-color);">إنشاء حساب</button>
             </div>
+            
             <!-- زر الملف الشخصي -->
             <button id="profileTriggerBtn" class="profile-trigger-btn hidden" onclick="openProfileModal()">
                 <img id="headerUserAvatar" src="" class="profile-avatar-small" alt="Avatar">
                 <span id="headerUserEmailName">حسابي</span>
             </button>
-            <button id="adminNavBtn" class="hidden" onclick="openAdminPanel()" style="background:#162032; color:var(--primary); border:1px solid var(--primary); padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer;">لوحة المشرف</button>
-            <button id="suggestionUserBtn" class="hidden" onclick="showSuggestionModal()" style="background:#162032; color:var(--text); border:1px solid var(--border-color); padding:8px 16px; border-radius:8px; font-weight:600; cursor:pointer;">اقتراحك</button>
         </div>
     </header>
 
@@ -391,7 +342,7 @@
         <!-- واجهة تسجيل الدخول -->
         <div id="authContainer" class="auth-box hidden">
             <h2 id="authTitle" style="margin-bottom: 20px; color: var(--primary);">تسجيل الدخول</h2>
-            <input type="email" id="authEmail" placeholder="البريد الإلكتروني">
+            <input type="email" id="authEmail" placeholder="البريد الإلكتروني (مثل: gojoesultan@gmail.com)">
             <input type="password" id="authPassword" placeholder="كلمة المرور">
             <button class="action-btn" onclick="handleAuth()">دخول</button>
             <p id="authSwitchText" style="margin-top: 20px; text-align: center; cursor: pointer; color: var(--gray); font-size: 14px;" onclick="toggleAuthMode()">ليس لديك حساب؟ إنشاء حساب جديد</p>
@@ -437,11 +388,11 @@
                         <option value="private">خاص</option>
                     </select>
                 </div>
-                <button class="action-btn" onclick="submitCreateHub()">إنشاء الآن</button>
+                <button class="action-btn" onclick="submitCreateHub()">إنشاء (بانتظار موافقة المشرف)</button>
             </div>
         </div>
 
-        <!-- نافذة إدخال كلمة المرور للوصول إلى قسم/جروب محمي -->
+        <!-- نافذة إدخال كلمة المرور للوصول إلى عنصر محمي -->
         <div id="passwordPromptModal" class="modal-overlay hidden">
             <div class="modal-content" style="max-width: 400px; text-align: center;">
                 <h3 style="color: var(--primary); margin-bottom: 15px;">هذا العنصر محمي بكلمة مرور</h3>
@@ -461,10 +412,21 @@
                 </div>
 
                 <div id="adminMenuButtons" class="admin-menu-buttons">
+                    <button class="admin-menu-btn" onclick="openAdminSection('pendingHubsManager')">
+                        <span>مراجعة وقبول الجروبات والقنوات الجديدة</span>
+                        <span style="color: var(--primary);">📋</span>
+                    </button>
                     <button class="admin-menu-btn" onclick="openAdminSection('groupLockManager')">
                         <span>قفل الجروبات والقنوات والأقسام بكلمة مرور</span>
                         <span style="color: var(--primary);">🔒</span>
                     </button>
+                </div>
+
+                <!-- قسم مراجعة وقبول الجروبات والقنوات -->
+                <div id="subSectionPendingHubsManager" class="admin-sub-section hidden">
+                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">الجروبات والقنوات بانتظار الموافقة</h3>
+                    <div id="pendingHubsListContainer"></div>
                 </div>
 
                 <!-- قسم قفل الجروبات والأقسام من لوحة المشرف -->
@@ -519,7 +481,7 @@
         let userProfileData = null;
         let isLoginMode = true;
         let activeSectionId = 'sec_community';
-        const unlockedItems = new Set(); // لتخزين العناصر التي تم فتحها بكلمة مرور مؤقتاً في الجلسة
+        const unlockedItems = new Set();
         let currentHubType = 'groups';
         let pendingUnlockCallback = null;
 
@@ -547,28 +509,26 @@
             } catch(e) { console.error(e); }
         }
 
-        async function getSectionsList() {
-            // جلب الأقسام مع كلمات المرور الخاصة بها من فايربيس إن وجدت، أو الافتراضية
+        function getSectionsList() {
             return [
-                { id: 'sec_community', name: 'مجتمع هاي داي', locked: false, password: '' },
-                { id: 'sec_chats', name: 'دردشاتي', locked: false, password: '' },
-                { id: 'sec_1', name: 'حسابات هاي داي', locked: false, password: '' },
-                { id: 'sec_2', name: 'بيع أدوات وتوسيع', locked: false, password: '' },
-                { id: 'sec_3', name: 'عروض وخصومات مميزة', locked: false, password: '' }
+                { id: 'sec_community', name: 'مجتمع هاي داي', locked: false, password: localStorage.getItem('lock_sec_sec_community') || '' },
+                { id: 'sec_chats', name: 'دردشاتي', locked: false, password: localStorage.getItem('lock_sec_sec_chats') || '' },
+                { id: 'sec_1', name: 'حسابات هاي داي', locked: false, password: localStorage.getItem('lock_sec_sec_1') || '' },
+                { id: 'sec_2', name: 'بيع أدوات وتوسيع', locked: false, password: localStorage.getItem('lock_sec_sec_2') || '' },
+                { id: 'sec_3', name: 'عروض وخصومات مميزة', locked: false, password: localStorage.getItem('lock_sec_sec_3') || '' }
             ];
         }
 
-        async function renderCategoriesBar() {
+        function renderCategoriesBar() {
             const bar = document.getElementById('categoriesBar');
             bar.innerHTML = '';
-            let sections = await getSectionsList();
+            let sections = getSectionsList();
 
             sections.forEach(sec => {
                 const tab = document.createElement('div');
                 tab.className = `category-tab ${sec.id === activeSectionId ? 'active' : ''}`;
                 tab.innerHTML = `${sec.name} ${sec.password ? '🔒' : ''}`;
-                tab.onclick = async function() {
-                    // التحقق من الحماية بكلمة مرور للقسم
+                tab.onclick = function() {
                     if (sec.password && !unlockedItems.has(sec.id)) {
                         triggerPasswordPrompt(sec.password, () => {
                             unlockedItems.add(sec.id);
@@ -613,30 +573,6 @@
             } else {
                 alert('كلمة المرور غير صحيحة!');
             }
-        }
-
-        function handleHeaderCommunityClick() {
-            if (!currentUser) {
-                showAuth('login');
-                return;
-            }
-            if (!userProfileData || !userProfileData.gameNickname) {
-                document.getElementById('gameNicknameModal').classList.remove('hidden');
-                return;
-            }
-            activeSectionId = 'sec_community';
-            renderCategoriesBar();
-            renderAppContent();
-        }
-
-        function handleHeaderChatsClick() {
-            if (!currentUser) {
-                showAuth('login');
-                return;
-            }
-            activeSectionId = 'sec_chats';
-            renderCategoriesBar();
-            renderAppContent();
         }
 
         async function saveGameNickname() {
@@ -714,8 +650,10 @@
             const profileBtn = document.getElementById('profileTriggerBtn');
             const adminBtn = document.getElementById('adminNavBtn');
             const suggestionUserBtn = document.getElementById('suggestionUserBtn');
+            const authNavButtons = document.getElementById('authNavButtons');
 
             if (currentUser) {
+                authNavButtons.classList.add('hidden');
                 profileBtn.classList.remove('hidden');
                 document.getElementById('headerUserAvatar').src = currentUser.photoURL || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
                 document.getElementById('headerUserEmailName').innerText = userProfileData?.gameNickname || currentUser.email.split('@')[0];
@@ -728,6 +666,7 @@
                     suggestionUserBtn.classList.remove('hidden');
                 }
             } else {
+                authNavButtons.classList.remove('hidden');
                 profileBtn.classList.add('hidden');
                 adminBtn.classList.add('hidden');
                 suggestionUserBtn.classList.add('hidden');
@@ -755,20 +694,76 @@
         function closeAdminPanel() { document.getElementById('adminOverlay').classList.add('hidden'); }
 
         function openAdminSection(sectionName) {
-            ['adminMenuButtons', 'subSectionGroupLockManager'].forEach(id => {
+            ['adminMenuButtons', 'subSectionPendingHubsManager', 'subSectionGroupLockManager'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
-            if(sectionName === 'groupLockManager') {
+            if (sectionName === 'pendingHubsManager') {
+                document.getElementById('subSectionPendingHubsManager').classList.remove('hidden');
+                loadPendingHubsList();
+            } else if(sectionName === 'groupLockManager') {
                 document.getElementById('subSectionGroupLockManager').classList.remove('hidden');
                 populateLockTargetSelect();
             }
         }
 
         function backToAdminMenu() {
-            ['subSectionGroupLockManager'].forEach(id => {
+            ['subSectionPendingHubsManager', 'subSectionGroupLockManager'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById('adminMenuButtons').classList.remove('hidden');
+        }
+
+        async function loadPendingHubsList() {
+            let container = document.getElementById('pendingHubsListContainer');
+            container.innerHTML = 'جاري التحميل...';
+            try {
+                let snap = await db.collection('hubs').where('status', '==', 'pending').get();
+                if (snap.empty) {
+                    container.innerHTML = '<p style="color:var(--gray);">لا توجد جروبات أو قنوات بانتظار الموافقة حالياً.</p>';
+                    return;
+                }
+                container.innerHTML = '';
+                snap.forEach(doc => {
+                    let data = doc.data();
+                    let div = document.createElement('div');
+                    div.style.cssText = 'background:#111827; border:1px solid var(--border-color); padding:15px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;';
+                    div.innerHTML = `
+                        <div>
+                            <div style="font-weight:bold; color:var(--text);">${data.title} (${data.type === 'group' ? 'جروب' : 'قناة'})</div>
+                            <div style="font-size:12px; color:var(--gray);">${data.desc || ''}</div>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button onclick="approveHub('${doc.id}')" style="background:var(--primary); color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">موافقة ونشر</button>
+                            <button onclick="rejectHub('${doc.id}')" style="background:#ef4444; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">رفض وحذف</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch(e) {
+                container.innerHTML = '<p style="color:#ef4444;">خطأ في جلب البيانات</p>';
+            }
+        }
+
+        async function approveHub(hubId) {
+            try {
+                await db.collection('hubs').doc(hubId).update({ status: 'approved' });
+                alert('تمت الموافقة ونشر الجروب/القناة بنجاح!');
+                loadPendingHubsList();
+            } catch(e) {
+                alert('خطأ: ' + e.message);
+            }
+        }
+
+        async function rejectHub(hubId) {
+            if (confirm('هل أنت متأكد من رفض وحذف هذا العنصر؟')) {
+                try {
+                    await db.collection('hubs').doc(hubId).delete();
+                    alert('تم الرفض والحذف بنجاح.');
+                    loadPendingHubsList();
+                } catch(e) {
+                    alert('خطأ: ' + e.message);
+                }
+            }
         }
 
         async function populateLockTargetSelect() {
@@ -777,12 +772,12 @@
             targetSelect.innerHTML = '';
 
             if (type === 'section') {
-                let sections = await getSectionsList();
+                let sections = getSectionsList();
                 sections.forEach(sec => {
                     targetSelect.innerHTML += `<option value="${sec.id}">${sec.name}</option>`;
                 });
             } else {
-                let snap = await db.collection('hubs').get();
+                let snap = await db.collection('hubs').where('status', '==', 'approved').get();
                 snap.forEach(doc => {
                     let data = doc.data();
                     targetSelect.innerHTML += `<option value="${doc.id}">${data.title} (${data.type})</option>`;
@@ -798,7 +793,6 @@
             if (!targetId) return alert('الرجاء اختيار عنصر');
 
             if (type === 'section') {
-                // حفظ كلمة المرور للقسم (يمكن حفظها في localStorage أو فايربيس)
                 localStorage.setItem(`lock_sec_${targetId}`, newPass);
                 alert('تم تحديث كلمة مرور القسم بنجاح!');
             } else {
@@ -871,7 +865,12 @@
             container.innerHTML = 'جارٍ التحميل...';
 
             try {
-                let snap = await db.collection('hubs').where('type', '==', currentHubType === 'groups' ? 'group' : 'channel').get();
+                let typeFilter = (currentHubType === 'groups') ? 'group' : 'channel';
+                let snap = await db.collection('hubs')
+                    .where('type', '==', typeFilter)
+                    .where('status', '==', 'approved')
+                    .get();
+
                 container.innerHTML = snap.empty ? '<p style="color:var(--gray); text-align:center; padding:20px;">لا توجد عناصر مضافة</p>' : '';
                 
                 snap.forEach(doc => {
@@ -887,7 +886,6 @@
                         </div>
                     `;
                     div.onclick = () => {
-                        // التحقق إذا كان الجروب محمي بكلمة مرور ولم يتم فتحه بعد
                         if (data.password && !unlockedItems.has(doc.id)) {
                             triggerPasswordPrompt(data.password, () => {
                                 unlockedItems.add(doc.id);
@@ -925,13 +923,13 @@
                     title,
                     desc,
                     privacy,
-                    password: '', // افتراضياً بدون كلمة مرور حتى يحددها المشرف
+                    status: 'pending',
+                    password: '',
                     ownerUid: currentUser.uid,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 closeCreateHubModal();
-                renderHubLists();
-                alert('تم الإنشاء بنجاح!');
+                alert('تم إرسال طلب إنشاء الجروب/القناة بنجاح وهو بانتظار مراجعة وموافقة المشرف (أنت).');
             } catch(e) {
                 alert('خطأ: ' + e.message);
             }
