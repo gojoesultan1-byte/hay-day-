@@ -316,7 +316,6 @@
     <header>
         <div class="logo" id="siteLogoText">esultan hay day</div>
         <div class="header-controls">
-            <!-- أزرار مجتمع هاي داي ودردشاتي في الهيدر -->
             <button class="header-custom-btn" onclick="proceedSectionClick('sec_community')">مجتمع هاي داي</button>
             <button class="header-custom-btn" onclick="proceedSectionClick('sec_chats')">دردشاتي</button>
 
@@ -335,19 +334,16 @@
         </div>
     </header>
 
-    <!-- شريط الأقسام -->
     <div class="categories-bar" id="categoriesBar"></div>
 
     <div class="container">
 
-        <!-- نافذة تسجيل الدخول العائمة (Modal) في منتصف الشاشة -->
         <div id="authModalOverlay" class="modal-overlay hidden">
             <div class="modal-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 id="authTitle" style="color: var(--primary);">تسجيل الدخول</h2>
                     <button onclick="closeAuthModal()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
                 </div>
-                <!-- تم إضافة خصائص لمنع الملء التلقائي وإظهار الإيميل المخزن -->
                 <input type="text" id="authEmail" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" placeholder="البريد الإلكتروني">
                 <input type="password" id="authPassword" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" placeholder="كلمة المرور">
                 <button class="action-btn" onclick="handleAuth()">دخول</button>
@@ -428,7 +424,6 @@
                     </button>
                 </div>
 
-                <!-- قسم إدارة إيميل وباسورد المشرف -->
                 <div id="subSectionAdminCredentialsManager" class="admin-sub-section hidden">
                     <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
                     <h3 style="color: var(--primary); margin-bottom: 15px;">تعديل بريد وكلمة مرور المشرف المعتمد</h3>
@@ -478,7 +473,7 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSy...ضع_المفتاح_الحقيقي_هنا",
+            apiKey: "AIzaSyDk1tZq8lX8...", // مفتاحك الحقيقي
             authDomain: "esultan-hayday.firebaseapp.com",
             projectId: "esultan-hayday",
             storageBucket: "esultan-hayday.appspot.com",
@@ -619,7 +614,6 @@
             isLoginMode = (mode === 'login');
             document.getElementById('authTitle').innerText = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
             
-            // تفريغ الحقول ومنع أي بيانات قديمة عند فتح النافذة
             const emailInput = document.getElementById('authEmail');
             const passInput = document.getElementById('authPassword');
             emailInput.value = '';
