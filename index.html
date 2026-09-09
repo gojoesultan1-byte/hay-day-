@@ -54,8 +54,9 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
-        .nav-btns button, .profile-trigger-btn {
+        .nav-btns button, .profile-trigger-btn, .header-custom-btn {
             background: var(--primary);
             color: #fff;
             border: none;
@@ -65,8 +66,14 @@
             font-weight: 700;
             transition: all 0.3s ease;
         }
-        .nav-btns button:hover {
+        .header-custom-btn {
+            background: #162032;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        .header-custom-btn:hover, .nav-btns button:hover {
             background: var(--primary-hover);
+            color: #fff;
             transform: translateY(-1px);
         }
         .profile-trigger-btn {
@@ -314,10 +321,13 @@
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- الهيدر (الأزرار بجانب أزرار تسجيل الدخول فقط) -->
     <header>
         <div class="logo" id="siteLogoText">esultan hay day</div>
         <div class="header-controls">
+            <!-- الزرّان المنقولان للهيدر (مجتمع هاي داي & دردشاتي) -->
+            <button class="header-custom-btn" onclick="proceedSectionClick('sec_community')">مجتمع هاي داي</button>
+            <button class="header-custom-btn" onclick="proceedSectionClick('sec_chats')">دردشاتي</button>
+
             <button id="adminNavBtn" class="hidden" onclick="openAdminPanel()" style="background:#162032; color:var(--primary); border:1px solid var(--primary); padding:8px 16px; border-radius:8px; font-weight:700; cursor:pointer;">لوحة المشرف</button>
             <button id="suggestionUserBtn" class="hidden" onclick="showSuggestionModal()" style="background:#162032; color:var(--text); border:1px solid var(--border-color); padding:8px 16px; border-radius:8px; font-weight:600; cursor:pointer;">اقتراحك</button>
             
@@ -326,7 +336,6 @@
                 <button id="registerNavBtn" onclick="showAuth('register')" style="background:transparent; color:var(--text); border:1px solid var(--border-color);">إنشاء حساب</button>
             </div>
             
-            <!-- زر الملف الشخصي -->
             <button id="profileTriggerBtn" class="profile-trigger-btn hidden" onclick="openProfileModal()">
                 <img id="headerUserAvatar" src="" class="profile-avatar-small" alt="Avatar">
                 <span id="headerUserEmailName">حسابي</span>
@@ -334,12 +343,11 @@
         </div>
     </header>
 
-    <!-- شريط الأقسام الرئيسي -->
+    <!-- شريط الأقسام (يحتوي على الأقسام الأخرى فقط بدون مجتمع هاي داي ودردشاتي) -->
     <div class="categories-bar" id="categoriesBar"></div>
 
     <div class="container">
 
-        <!-- واجهة تسجيل الدخول -->
         <div id="authContainer" class="auth-box hidden">
             <h2 id="authTitle" style="margin-bottom: 20px; color: var(--primary);">تسجيل الدخول</h2>
             <input type="email" id="authEmail" placeholder="البريد الإلكتروني (مثل: gojoesultan@gmail.com)">
@@ -348,7 +356,6 @@
             <p id="authSwitchText" style="margin-top: 20px; text-align: center; cursor: pointer; color: var(--gray); font-size: 14px;" onclick="toggleAuthMode()">ليس لديك حساب؟ إنشاء حساب جديد</p>
         </div>
 
-        <!-- صندوق إرسال اقتراح للمستخدمين -->
         <div id="suggestionBoxContainer" class="auth-box hidden">
             <h2 style="margin-bottom: 15px; color: var(--primary);">أرسل اقتراحك للمشرف</h2>
             <textarea id="userSuggestionInput" placeholder="اكتب اقتراحك هنا..." style="height: 120px;"></textarea>
@@ -356,7 +363,6 @@
             <button class="action-btn" style="background: #1e293b; color: #fff; margin-top: 10px;" onclick="document.getElementById('suggestionBoxContainer').classList.add('hidden')">إلغاء</button>
         </div>
 
-        <!-- نافذة الملف الشخصي الشاملة -->
         <div id="profileModalOverlay" class="modal-overlay hidden">
             <div class="modal-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
@@ -372,7 +378,6 @@
             </div>
         </div>
 
-        <!-- نافذة إنشاء جروب أو قناة -->
         <div id="createHubModal" class="modal-overlay hidden">
             <div class="modal-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
@@ -392,7 +397,6 @@
             </div>
         </div>
 
-        <!-- نافذة إدخال كلمة المرور للوصول إلى عنصر محمي -->
         <div id="passwordPromptModal" class="modal-overlay hidden">
             <div class="modal-content" style="max-width: 400px; text-align: center;">
                 <h3 style="color: var(--primary); margin-bottom: 15px;">هذا العنصر محمي بكلمة مرور</h3>
@@ -403,7 +407,6 @@
             </div>
         </div>
 
-        <!-- نافذة لوحة تحكم المشرف -->
         <div id="adminOverlay" class="modal-overlay hidden">
             <div class="modal-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
@@ -412,6 +415,10 @@
                 </div>
 
                 <div id="adminMenuButtons" class="admin-menu-buttons">
+                    <button class="admin-menu-btn" onclick="openAdminSection('adminCredentialsManager')">
+                        <span>إدارة إيميل وباسورد المشرف</span>
+                        <span style="color: var(--primary);">⚙️</span>
+                    </button>
                     <button class="admin-menu-btn" onclick="openAdminSection('pendingHubsManager')">
                         <span>مراجعة وقبول الجروبات والقنوات الجديدة</span>
                         <span style="color: var(--primary);">📋</span>
@@ -422,14 +429,23 @@
                     </button>
                 </div>
 
-                <!-- قسم مراجعة وقبول الجروبات والقنوات -->
+                <!-- قسم إدارة إيميل وباسورد المشرف -->
+                <div id="subSectionAdminCredentialsManager" class="admin-sub-section hidden">
+                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">تعديل بريد وكلمة مرور المشرف المعتمد</h3>
+                    <label style="font-size: 13px; color: var(--gray);">البريد الإلكتروني للمشرف:</label>
+                    <input type="email" id="adminSettingEmailInput" placeholder="admin@email.com">
+                    <label style="font-size: 13px; color: var(--gray);">كلمة المرور الجديدة (أو الباسورد الخاص بالصلاحية):</label>
+                    <input type="password" id="adminSettingPasswordInput" placeholder="كلمة المرور">
+                    <button class="action-btn" onclick="saveAdminCredentialsSetting()">حفظ بيانات المشرف</button>
+                </div>
+
                 <div id="subSectionPendingHubsManager" class="admin-sub-section hidden">
                     <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
                     <h3 style="color: var(--primary); margin-bottom: 15px;">الجروبات والقنوات بانتظار الموافقة</h3>
                     <div id="pendingHubsListContainer"></div>
                 </div>
 
-                <!-- قسم قفل الجروبات والأقسام من لوحة المشرف -->
                 <div id="subSectionGroupLockManager" class="admin-sub-section hidden">
                     <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
                     <h3 style="color: var(--primary); margin-bottom: 15px;">قفل الأقسام، الجروبات، أو القنوات بكلمة مرور</h3>
@@ -453,7 +469,6 @@
 
     </div>
 
-    <!-- نافذة إدخال الاسم المستعار في اللعبة -->
     <div id="gameNicknameModal" class="modal-overlay hidden">
         <div class="modal-content" style="max-width: 450px; text-align: center;">
             <h3 style="color: var(--primary); margin-bottom: 15px;">أدخل اسمك المستعار في اللعبة</h3>
@@ -480,10 +495,11 @@
         let currentUser = null;
         let userProfileData = null;
         let isLoginMode = true;
-        let activeSectionId = 'sec_community';
+        let activeSectionId = 'sec_1'; // القسم الافتراضي في شريط الأقسام
         const unlockedItems = new Set();
         let currentHubType = 'groups';
         let pendingUnlockCallback = null;
+        let messagesUnsubscribe = null;
 
         window.onload = async function() {
             auth.onAuthStateChanged(async (user) => {
@@ -509,10 +525,9 @@
             } catch(e) { console.error(e); }
         }
 
+        // تم استبعاد "مجتمع هاي داي" و "دردشاتي" من هذه القائمة لرفعها إلى الهيدر كأزرار علوية بناءً على طلبك
         function getSectionsList() {
             return [
-                { id: 'sec_community', name: 'مجتمع هاي داي', locked: false, password: localStorage.getItem('lock_sec_sec_community') || '' },
-                { id: 'sec_chats', name: 'دردشاتي', locked: false, password: localStorage.getItem('lock_sec_sec_chats') || '' },
                 { id: 'sec_1', name: 'حسابات هاي داي', locked: false, password: localStorage.getItem('lock_sec_sec_1') || '' },
                 { id: 'sec_2', name: 'بيع أدوات وتوسيع', locked: false, password: localStorage.getItem('lock_sec_sec_2') || '' },
                 { id: 'sec_3', name: 'عروض وخصومات مميزة', locked: false, password: localStorage.getItem('lock_sec_sec_3') || '' }
@@ -552,6 +567,10 @@
                     document.getElementById('gameNicknameModal').classList.remove('hidden');
                     return;
                 }
+            }
+            if (messagesUnsubscribe) {
+                messagesUnsubscribe();
+                messagesUnsubscribe = null;
             }
             activeSectionId = secId;
             renderCategoriesBar();
@@ -636,17 +655,34 @@
                 auth.signOut().then(() => {
                     currentUser = null;
                     userProfileData = null;
+                    if (messagesUnsubscribe) {
+                        messagesUnsubscribe();
+                        messagesUnsubscribe = null;
+                    }
                     closeAdminPanel();
                     closeProfileModal();
                     checkAuthUI();
-                    activeSectionId = 'sec_community';
+                    activeSectionId = 'sec_1';
                     renderCategoriesBar();
                     renderAppContent();
                 });
             }
         }
 
-        function checkAuthUI() {
+        async function isAdminUser(user) {
+            if (!user) return false;
+            // فحص البريد الافتراضي أو البريد المخزن في قاعدة البيانات عبر لوحة المشرف
+            if (user.email === 'gojoesultan@gmail.com') return true;
+            try {
+                let doc = await db.collection('settings').doc('admin_config').get();
+                if (doc.exists && doc.data().email === user.email) {
+                    return true;
+                }
+            } catch(e) {}
+            return false;
+        }
+
+        async function checkAuthUI() {
             const profileBtn = document.getElementById('profileTriggerBtn');
             const adminBtn = document.getElementById('adminNavBtn');
             const suggestionUserBtn = document.getElementById('suggestionUserBtn');
@@ -658,7 +694,8 @@
                 document.getElementById('headerUserAvatar').src = currentUser.photoURL || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
                 document.getElementById('headerUserEmailName').innerText = userProfileData?.gameNickname || currentUser.email.split('@')[0];
 
-                if (currentUser.email === 'gojoesultan@gmail.com') {
+                let adminCheck = await isAdminUser(currentUser);
+                if (adminCheck) {
                     adminBtn.classList.remove('hidden');
                     suggestionUserBtn.classList.add('hidden');
                 } else {
@@ -683,9 +720,10 @@
 
         function closeProfileModal() { document.getElementById('profileModalOverlay').classList.add('hidden'); }
 
-        function openAdminPanel() {
-            if (!currentUser || currentUser.email !== 'gojoesultan@gmail.com') {
-                return alert('غير مسموح بالدخول لوحة المشرف إلا لمالك الإيميل المخصص فقط!');
+        async function openAdminPanel() {
+            let adminCheck = await isAdminUser(currentUser);
+            if (!currentUser || !adminCheck) {
+                return alert('غير مسموح بالدخول لوحة المشرف إلا لحساب المشرف المعتمد!');
             }
             document.getElementById('adminOverlay').classList.remove('hidden');
             backToAdminMenu();
@@ -693,11 +731,20 @@
 
         function closeAdminPanel() { document.getElementById('adminOverlay').classList.add('hidden'); }
 
-        function openAdminSection(sectionName) {
-            ['adminMenuButtons', 'subSectionPendingHubsManager', 'subSectionGroupLockManager'].forEach(id => {
+        async function openAdminSection(sectionName) {
+            ['adminMenuButtons', 'subSectionAdminCredentialsManager', 'subSectionPendingHubsManager', 'subSectionGroupLockManager'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
-            if (sectionName === 'pendingHubsManager') {
+            if (sectionName === 'adminCredentialsManager') {
+                document.getElementById('subSectionAdminCredentialsManager').classList.remove('hidden');
+                try {
+                    let doc = await db.collection('settings').doc('admin_config').get();
+                    if (doc.exists) {
+                        document.getElementById('adminSettingEmailInput').value = doc.data().email || '';
+                        document.getElementById('adminSettingPasswordInput').value = doc.data().password || '';
+                    }
+                } catch(e) {}
+            } else if (sectionName === 'pendingHubsManager') {
                 document.getElementById('subSectionPendingHubsManager').classList.remove('hidden');
                 loadPendingHubsList();
             } else if(sectionName === 'groupLockManager') {
@@ -707,10 +754,28 @@
         }
 
         function backToAdminMenu() {
-            ['subSectionPendingHubsManager', 'subSectionGroupLockManager'].forEach(id => {
+            ['subSectionAdminCredentialsManager', 'subSectionPendingHubsManager', 'subSectionGroupLockManager'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById('adminMenuButtons').classList.remove('hidden');
+        }
+
+        async function saveAdminCredentialsSetting() {
+            let email = document.getElementById('adminSettingEmailInput').value.trim();
+            let password = document.getElementById('adminSettingPasswordInput').value.trim();
+            if(!email) return alert('الرجاء إدخال البريد الإلكتروني للمشرف');
+
+            try {
+                await db.collection('settings').doc('admin_config').set({
+                    email: email,
+                    password: password
+                }, { merge: true });
+                alert('تم حفظ إيميل وباسورد المشرف بنجاح وتحديث صلاحيات لوحة التحكم!');
+                closeAdminPanel();
+                checkAuthUI();
+            } catch(e) {
+                alert('خطأ أثناء الحفظ: ' + e.message);
+            }
         }
 
         async function loadPendingHubsList() {
@@ -772,8 +837,15 @@
             targetSelect.innerHTML = '';
 
             if (type === 'section') {
-                let sections = getSectionsList();
-                sections.forEach(sec => {
+                // الأقسام المتاحة تشمل الأقسام العادية بالإضافة لمجتمع هاي داي ودردشاتي
+                let allSecs = [
+                    { id: 'sec_community', name: 'مجتمع هاي داي' },
+                    { id: 'sec_chats', name: 'دردشاتي' },
+                    { id: 'sec_1', name: 'حسابات هاي داي' },
+                    { id: 'sec_2', name: 'بيع أدوات وتوسيع' },
+                    { id: 'sec_3', name: 'عروض وخصومات مميزة' }
+                ];
+                allSecs.forEach(sec => {
                     targetSelect.innerHTML += `<option value="${sec.id}">${sec.name}</option>`;
                 });
             } else {
@@ -844,8 +916,8 @@
                             <button class="hub-action-icon-btn" onclick="openCreateHubModalForm('channel')">+ إنشاء قناة</button>
                         </div>
                         <div style="padding: 10px; display: flex; gap: 10px; border-bottom: 1px solid var(--border-color);">
-                            <button class="action-btn" style="padding:6px; font-size:13px; margin:0;" onclick="currentHubType='groups'; renderHubLists();">الجروبات</button>
-                            <button class="action-btn" style="padding:6px; font-size:13px; margin:0; background:#1e293b;" onclick="currentHubType='channels'; renderHubLists();">القنوات</button>
+                            <button class="action-btn" id="btnTabGroups" style="padding:6px; font-size:13px; margin:0;" onclick="switchHubTypeTab('groups')">الجروبات</button>
+                            <button class="action-btn" id="btnTabChannels" style="padding:6px; font-size:13px; margin:0; background:#1e293b;" onclick="switchHubTypeTab('channels')">القنوات</button>
                         </div>
                         <div class="hub-list-section" id="hubItemsListContainer"></div>
                     </div>
@@ -856,6 +928,20 @@
                     </div>
                 </div>
             `;
+            renderHubLists();
+        }
+
+        function switchHubTypeTab(type) {
+            currentHubType = type;
+            const btnGroups = document.getElementById('btnTabGroups');
+            const btnChannels = document.getElementById('btnTabChannels');
+            if(type === 'groups') {
+                btnGroups.style.background = 'var(--primary)';
+                btnChannels.style.background = '#1e293b';
+            } else {
+                btnChannels.style.background = 'var(--primary)';
+                btnGroups.style.background = '#1e293b';
+            }
             renderHubLists();
         }
 
@@ -904,6 +990,8 @@
 
         function openCreateHubModalForm(type) {
             window.targetHubCreationType = type;
+            document.getElementById('newHubTitle').value = '';
+            document.getElementById('newHubDesc').value = '';
             document.getElementById('createHubModalTitle').innerText = type === 'group' ? 'إنشاء جروب جديد' : 'إنشاء قناة جديدة';
             document.getElementById('createHubModal').classList.remove('hidden');
         }
@@ -929,7 +1017,7 @@
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 closeCreateHubModal();
-                alert('تم إرسال طلب إنشاء الجروب/القناة بنجاح وهو بانتظار مراجعة وموافقة المشرف (أنت).');
+                alert('تم إرسال طلب إنشاء الجروب/القناة بنجاح وهو بانتظار مراجعة وموافقة المشرف.');
             } catch(e) {
                 alert('خطأ: ' + e.message);
             }
@@ -941,7 +1029,12 @@
             const chatArea = document.getElementById('hubMainChatArea');
             
             let docSnap = await db.collection('hubs').doc(hubId).get();
+            if(!docSnap.exists) return;
             let hubData = docSnap.data();
+
+            let adminCheck = await isAdminUser(currentUser);
+            let isOwnerOrAdmin = currentUser && (adminCheck || hubData.ownerUid === currentUser.uid);
+            let canSend = (hubData.type === 'group') || (hubData.type === 'channel' && isOwnerOrAdmin);
 
             chatArea.innerHTML = `
                 <div style="padding:15px; background:#111827; border-bottom:1px solid var(--border-color);">
@@ -949,15 +1042,39 @@
                     <div style="font-size:12px; color:var(--gray);">${hubData.desc || ''}</div>
                 </div>
                 <div id="messagesContainer" style="flex-grow:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;"></div>
+                ${canSend ? `
                 <div style="padding:15px; background:#111827; border-top:1px solid var(--border-color); display:flex; gap:10px;">
-                    <input type="text" id="chatMessageInput" placeholder="اكتب رسالة..." style="margin:0;">
+                    <input type="text" id="chatMessageInput" placeholder="اكتب رسالة..." style="margin:0;" onkeypress="if(event.key === 'Enter') sendHubMessage('${hubId}')">
                     <button class="action-btn" style="width:auto; margin:0;" onclick="sendHubMessage('${hubId}')">إرسال</button>
-                </div>
+                </div>` : `<div style="padding:12px; text-align:center; background:#111827; color:var(--gray); font-size:13px;">هذه قناة، المشرفون فقط من يمكنهم النشر فيها.</div>`}
             `;
+
+            if (messagesUnsubscribe) messagesUnsubscribe();
+
+            messagesUnsubscribe = db.collection('hubs').doc(hubId).collection('messages')
+                .orderBy('createdAt', 'asc')
+                .onSnapshot(snapshot => {
+                    let msgContainer = document.getElementById('messagesContainer');
+                    if (!msgContainer) return;
+                    msgContainer.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        let m = doc.data();
+                        let d = document.createElement('div');
+                        let isMe = currentUser && m.senderUid === currentUser.uid;
+                        d.style.cssText = `max-width:70%; padding:10px 14px; border-radius:10px; background:${isMe ? '#166534' : '#1e293b'}; align-self:${isMe ? 'flex-end' : 'flex-start'}; border:1px solid var(--border-color);`;
+                        d.innerHTML = `
+                            <div style="font-size:11px; color:var(--primary); margin-bottom:3px; font-weight:bold;">${m.senderName || 'مستخدم'}</div>
+                            <div style="font-size:14px; word-break:break-word;">${m.text}</div>
+                        `;
+                        msgContainer.appendChild(d);
+                    });
+                    msgContainer.scrollTop = msgContainer.scrollHeight;
+                });
         }
 
         async function sendHubMessage(hubId) {
             let input = document.getElementById('chatMessageInput');
+            if(!input) return;
             let text = input.value.trim();
             if (!text) return;
 
@@ -965,7 +1082,7 @@
                 await db.collection('hubs').doc(hubId).collection('messages').add({
                     text,
                     senderUid: currentUser.uid,
-                    senderName: userProfileData.gameNickname,
+                    senderName: userProfileData?.gameNickname || currentUser.email.split('@')[0],
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 input.value = '';
