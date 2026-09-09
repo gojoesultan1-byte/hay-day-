@@ -127,43 +127,6 @@
             background: rgba(34, 197, 94, 0.03);
         }
 
-        .sub-categories-bar {
-            background: #131d31;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding: 0 30px;
-            margin-bottom: 25px;
-            scroll-behavior: smooth;
-        }
-        .sub-categories-bar::-webkit-scrollbar {
-            height: 3px;
-        }
-        .sub-categories-bar::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 2px;
-        }
-        .sub-category-tab {
-            padding: 12px 20px;
-            color: var(--gray);
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 14px;
-            border-bottom: 2px solid transparent;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .sub-category-tab:hover {
-            color: var(--text);
-        }
-        .sub-category-tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
         .container {
             max-width: 1300px;
             margin: 30px auto;
@@ -203,13 +166,6 @@
             border: 1px solid var(--border-color);
             max-height: 90vh;
             overflow-y: auto;
-        }
-        .modal-content::-webkit-scrollbar, .video-modal-content::-webkit-scrollbar {
-            width: 6px;
-        }
-        .modal-content::-webkit-scrollbar-thumb, .video-modal-content::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 3px;
         }
 
         .admin-menu-buttons {
@@ -255,10 +211,6 @@
             font-size: 14px;
             margin-bottom: 20px;
             font-weight: 600;
-            transition: 0.2s;
-        }
-        .back-to-menu:hover {
-            background: #334155;
         }
 
         input, textarea, select {
@@ -270,12 +222,10 @@
             color: white;
             border-radius: 8px;
             font-size: 15px;
-            transition: 0.3s;
         }
         input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
         }
 
         button.action-btn {
@@ -298,214 +248,6 @@
             display: none !important;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 25px;
-            margin-top: 25px;
-        }
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-        .card:hover {
-            transform: translateY(-6px);
-            border-color: var(--primary);
-            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.15);
-        }
-        .thumbnail-container {
-            position: relative;
-            width: 100%;
-            height: 180px;
-            background: #000;
-        }
-        .thumbnail-container img, .thumbnail-container video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .card-body {
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-        .card-title {
-            font-size: 17px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #fff;
-        }
-        .card-desc {
-            color: var(--gray);
-            font-size: 13px;
-            margin-bottom: 15px;
-            flex-grow: 1;
-            line-height: 1.5;
-        }
-        .video-stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            color: var(--gray);
-            border-top: 1px solid var(--border-color);
-            padding-top: 12px;
-            margin-top: auto;
-        }
-        
-        .card-actions-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 12px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 12px;
-        }
-        .like-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--gray);
-            font-size: 13px;
-            transition: 0.2s;
-        }
-        .like-btn svg {
-            width: 22px;
-            height: 22px;
-            fill: #ffffff;
-            stroke: #ffffff;
-            stroke-width: 1.5;
-            transition: fill 0.3s ease, transform 0.2s;
-        }
-        .like-btn:hover svg {
-            transform: scale(1.1);
-        }
-        .like-btn.liked svg {
-            fill: #22c55e;
-            stroke: #22c55e;
-        }
-        .like-btn.liked span {
-            color: #22c55e;
-            font-weight: bold;
-        }
-
-        .download-btn-card {
-            background: #162032;
-            color: white;
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: 0.2s;
-        }
-        .download-btn-card:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .section-header h2 {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-        .locked-badge {
-            background: rgba(229, 9, 20, 0.15);
-            color: #ff4d4d;
-            border: 1px solid rgba(229, 9, 20, 0.3);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .suggestion-item, .section-manage-item {
-            background: #111827;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .search-bar-container {
-            margin-bottom: 25px;
-        }
-
-        .video-modal-content {
-            background: #1e293b;
-            max-width: 950px;
-            padding: 0;
-            overflow: hidden;
-        }
-        .video-responsive-wrapper {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            background: #000;
-        }
-        .video-responsive-wrapper iframe, .video-responsive-wrapper video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .upload-box {
-            background: #111827;
-            border: 2px dashed var(--border-color);
-            padding: 20px;
-            text-align: center;
-            border-radius: 8px;
-            margin: 10px 0 20px 0;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .upload-box:hover {
-            border-color: var(--primary);
-            background: rgba(34, 197, 94, 0.02);
-        }
-
-        .account-switcher-item, .downloaded-item-row {
-            background: #111827;
-            padding: 12px 16px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            border: 1px solid var(--border-color);
-        }
-        .account-switcher-item.active-account {
-            border-color: var(--primary);
-            background: rgba(34, 197, 94, 0.05);
-        }
-        
         .full-page-overlay {
             background-color: var(--bg);
             z-index: 9999;
@@ -527,33 +269,7 @@
             cursor: pointer;
             font-weight: 600;
         }
-        .tabs-container {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
-        }
-        .tab-btn {
-            flex: 1;
-            background: #1e293b;
-            color: var(--gray);
-            border: 1px solid var(--border-color);
-            padding: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .tab-btn.active {
-            background: var(--primary);
-            color: #fff;
-            border-color: var(--primary);
-            font-weight: 700;
-        }
 
-        /* تنسيقات إضافية لمجتمع هاي داي والدردشة */
         .community-hub-container {
             display: flex;
             gap: 20px;
@@ -595,11 +311,6 @@
             cursor: pointer;
             text-align: center;
             font-size: 13px;
-            transition: 0.2s;
-        }
-        .hub-action-icon-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
         }
         .hub-list-section {
             flex-grow: 1;
@@ -616,10 +327,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: 0.2s;
-        }
-        .hub-item-row:hover {
-            border-color: var(--primary);
         }
         .hub-item-row.active {
             background: rgba(34, 197, 94, 0.1);
@@ -659,7 +366,10 @@
     <header>
         <div class="logo" id="siteLogoText">esultan hay day</div>
         <div class="header-controls">
-            <div id="authNavButtons" class="nav-btns">
+            <!-- تم نقل أزرار مجتمع هاي داي ودردشاتي لتكون مباشرة بجانب أزرار تسجيل الدخول -->
+            <div id="authNavButtons" class="nav-btns" style="display: flex; align-items: center; gap: 10px;">
+                <button onclick="handleHeaderCommunityClick()" style="background: #162032; border: 1px solid var(--border-color); color: var(--text);">مجتمع هاي داي</button>
+                <button onclick="handleHeaderChatsClick()" style="background: #162032; border: 1px solid var(--border-color); color: var(--text);">دردشاتي</button>
                 <button id="loginNavBtn" onclick="showAuth('login')">تسجيل الدخول</button>
                 <button id="registerNavBtn" onclick="showAuth('register')" style="background:transparent; color:var(--text); border:1px solid var(--border-color);">إنشاء حساب</button>
             </div>
@@ -690,71 +400,28 @@
         <!-- صندوق إرسال اقتراح للمستخدمين -->
         <div id="suggestionBoxContainer" class="auth-box hidden">
             <h2 style="margin-bottom: 15px; color: var(--primary);">أرسل اقتراحك للمشرف</h2>
-            <p style="color: var(--gray); margin-bottom: 15px; font-size: 14px;">شاركنا برأيك أو اقتراحك لمنتجات أو حسابات حابب نضيفها للموقع:</p>
             <textarea id="userSuggestionInput" placeholder="اكتب اقتراحك هنا..." style="height: 120px;"></textarea>
             <button class="action-btn" onclick="submitSuggestion()">إرسال الاقتراح</button>
             <button class="action-btn" style="background: #1e293b; color: #fff; margin-top: 10px;" onclick="document.getElementById('suggestionBoxContainer').classList.add('hidden')">إلغاء</button>
-        </div>
-
-        <!-- نافذة عرض المحتوى المنبثقة -->
-        <div id="videoModalOverlay" class="video-modal-overlay hidden">
-            <div class="video-modal-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: #111827; border-bottom: 1px solid var(--border-color);">
-                    <h3 id="modalVideoTitle" style="font-size: 18px; font-weight: 700; color: var(--primary);">عنوان المنتج / الحساب</h3>
-                    <button onclick="closeVideoPlayer()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
-                </div>
-                <div id="modalBodyContent"></div>
-            </div>
         </div>
 
         <!-- نافذة الملف الشخصي الشاملة -->
         <div id="profileModalOverlay" class="modal-overlay hidden">
             <div class="modal-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                    <h2 id="profileModalTitle" style="color: var(--primary);">الملف الشخصي وإعدادات الحساب</h2>
+                    <h2 style="color: var(--primary);">الملف الشخصي وإعدادات الحساب</h2>
                     <button onclick="closeProfileModal()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
                 </div>
-
                 <div style="text-align: center; margin-bottom: 25px;">
-                    <img id="profileModalAvatarImg" src="" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 12px; box-shadow: 0 0 20px rgba(34,197,94,0.2);" alt="User Avatar">
+                    <img id="profileModalAvatarImg" src="" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 12px;" alt="User Avatar">
                     <h3 id="profileModalEmailText" style="font-size: 16px; color: var(--text);">user@email.com</h3>
                     <p id="profileModalGameNameText" style="font-size: 14px; color: var(--primary); margin-top: 5px;"></p>
-                    
-                    <div style="margin-top: 15px;">
-                        <button class="action-btn" style="background: #1e293b; color: #fff; max-width: 220px; display: inline-block; font-size: 14px; padding: 10px; border: 1px solid var(--border-color);" onclick="document.getElementById('avatarFileInput').click()">تغيير صورة الحساب</button>
-                        <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="uploadDirectAvatar(this)">
-                    </div>
                 </div>
-
-                <hr style="border-color: var(--border-color); margin: 25px 0;">
-
-                <div style="margin-bottom: 20px;">
-                    <div onclick="openDownloadsPage()" style="background: #111827; border: 1px solid var(--border-color); padding: 16px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
-                        <span style="font-weight: 600; display: flex; align-items: center; gap: 10px;">📥 المنتجات والوسائط التي تم حفظها</span>
-                        <span style="color: var(--primary);">←</span>
-                    </div>
-                </div>
-
-                <hr style="border-color: var(--border-color); margin: 25px 0;">
-
-                <div style="margin-bottom: 20px;">
-                    <label style="font-size: 14px; color: var(--gray); display: block; margin-bottom: 8px;">اختر لغة الموقع الأساسية:</label>
-                    <select id="siteLanguageSelect" onchange="changeSiteLanguage(this.value)">
-                        <option value="ar">العربية (Arabic)</option>
-                        <option value="en">الإنجليزية (English)</option>
-                        <option value="ja">اليابانية (Japanese - 日本語)</option>
-                        <option value="de">الألمانية (German - Deutsch)</option>
-                        <option value="fr">الفرنسية (French - Français)</option>
-                    </select>
-                </div>
-
-                <hr style="border-color: var(--border-color); margin: 25px 0;">
-
-                <button class="action-btn" style="background: rgba(229,9,20,0.15); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3);" onclick="confirmLogout()">تسجيل الخروج من الحساب الحالي</button>
+                <button class="action-btn" style="background: rgba(229,9,20,0.15); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3);" onclick="confirmLogout()">تسجيل الخروج</button>
             </div>
         </div>
 
-        <!-- صفحة إنشاء جروب أو قناة (بنفس الشكل تماماً) -->
+        <!-- نافذة إنشاء جروب أو قناة -->
         <div id="createHubModal" class="modal-overlay hidden">
             <div class="modal-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
@@ -763,10 +430,6 @@
                 </div>
                 <input type="text" id="newHubTitle" placeholder="اسم الجروب أو القناة">
                 <textarea id="newHubDesc" placeholder="وصف موجز..."></textarea>
-                <div class="upload-box" onclick="document.getElementById('newHubImageFile').click()">
-                    <span id="newHubImageText" style="color:var(--gray)">اختر صورة الغلاف أو الأيقونة</span>
-                    <input type="file" id="newHubImageFile" accept="image/*" class="hidden" onchange="previewFileLabel(this, 'newHubImageText')">
-                </div>
                 <div style="margin-bottom: 20px;">
                     <label style="font-size: 14px; color: var(--gray); display: block; margin-bottom: 8px;">نوع الخصوصية:</label>
                     <select id="newHubPrivacySelect">
@@ -778,24 +441,14 @@
             </div>
         </div>
 
-        <!-- صفحة التنزيلات الكاملة -->
-        <div id="downloadsPage" class="full-page-overlay">
-            <div class="page-header">
-                <button onclick="closeDownloadsPage()">⬅ عودة</button>
-                <h2 style="color: var(--primary);">العناصر والوسائط المحفوظة</h2>
-            </div>
-            
-            <div class="tabs-container">
-                <button class="tab-btn active" onclick="switchDownloadsTab('videos', this)">الفيديوهات</button>
-                <button class="tab-btn" onclick="switchDownloadsTab('images', this)">الصور</button>
-            </div>
-
-            <div id="videosDownloadsTab" class="downloads-tab-content">
-                <div id="videosDownloadsGrid" class="grid"></div>
-            </div>
-            
-            <div id="imagesDownloadsTab" class="downloads-tab-content hidden">
-                <div id="imagesDownloadsGrid" class="grid"></div>
+        <!-- نافذة إدخال كلمة المرور للوصول إلى قسم/جروب محمي -->
+        <div id="passwordPromptModal" class="modal-overlay hidden">
+            <div class="modal-content" style="max-width: 400px; text-align: center;">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">هذا العنصر محمي بكلمة مرور</h3>
+                <p style="color: var(--gray); font-size: 13px; margin-bottom: 15px;">الرجاء إدخال كلمة المرور للمتابعة:</p>
+                <input type="password" id="promptPasswordInput" placeholder="كلمة المرور">
+                <button class="action-btn" onclick="verifyPasswordAndUnlock()">دخول</button>
+                <button class="action-btn" style="background: #1e293b; color: #fff; margin-top: 10px;" onclick="document.getElementById('passwordPromptModal').classList.add('hidden')">إلغاء</button>
             </div>
         </div>
 
@@ -808,144 +461,27 @@
                 </div>
 
                 <div id="adminMenuButtons" class="admin-menu-buttons">
-                    <button class="admin-menu-btn" onclick="openAdminSection('sectionsManager')">
-                        <span>إدارة الأقسام الرئيسية والفرعية</span>
-                        <span style="color: var(--primary);">📂</span>
-                    </button>
-                    <button class="admin-menu-btn" onclick="openAdminSection('boostStats')">
-                        <span>زيادة المشاهدات واللايكات للمحتوى</span>
-                        <span style="color: var(--primary);">📈</span>
-                    </button>
-                    <button class="admin-menu-btn" onclick="openAdminSection('content')">
-                        <span>نشر محتوى جديد (يوتيوب / فيديو / صورة / مقال)</span>
-                        <span style="color: var(--primary);">🎬</span>
-                    </button>
-                    <button class="admin-menu-btn" onclick="openAdminSection('theme')">
-                        <span>تغيير ألوان وخلفية الموقع</span>
-                        <span style="color: var(--primary);">🎨</span>
-                    </button>
-                    <button class="admin-menu-btn" onclick="openAdminSection('sitename')">
-                        <span>تغيير اسم الموقع</span>
-                        <span style="color: var(--primary);">✏️</span>
-                    </button>
-                    <button class="admin-menu-btn" onclick="openAdminSection('suggestions')">
-                        <span>عرض اقتراحات المستخدمين</span>
-                        <span style="color: var(--primary);">📥</span>
+                    <button class="admin-menu-btn" onclick="openAdminSection('groupLockManager')">
+                        <span>قفل الجروبات والقنوات والأقسام بكلمة مرور</span>
+                        <span style="color: var(--primary);">🔒</span>
                     </button>
                 </div>
 
-                <div id="subSectionSectionsManager" class="admin-sub-section hidden">
+                <!-- قسم قفل الجروبات والأقسام من لوحة المشرف -->
+                <div id="subSectionGroupLockManager" class="admin-sub-section hidden">
                     <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
-                    <h3 style="color: var(--primary); margin-bottom: 12px;">إدارة الأقسام الرئيسية</h3>
-                    <div style="background: #111827; padding: 18px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
-                        <input type="text" id="manageSectionNameInput" placeholder="اسم القسم الرئيسي (مثال: حسابات هاي داي، أدوات وموارد)">
-                        <input type="password" id="manageSectionPassInput" placeholder="كلمة المرور الخاصة بالقسم (اختياري)">
-                        <button class="action-btn" onclick="saveSectionData()">حفظ القسم الرئيسي</button>
-                    </div>
-                    <h4 style="font-size: 14px; color: var(--gray);">الأقسام الرئيسية الحالية:</h4>
-                    <div id="adminSectionsList" style="max-height: 200px; overflow-y: auto; margin-top: 10px; margin-bottom: 20px;"></div>
-
-                    <hr style="border-color: var(--border-color); margin: 20px 0;">
-
-                    <h3 style="color: var(--primary); margin-bottom: 12px;">إدارة الأقسام الفرعية</h3>
-                    <div style="background: #111827; padding: 18px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border-color);">
-                        <label style="font-size:13px; color:var(--gray);">القسم الرئيسي التابع له:</label>
-                        <select id="parentSectionSelectForSub" style="margin-top:5px; margin-bottom:15px;"></select>
-                        <input type="text" id="manageSubSectionNameInput" placeholder="اسم القسم الفرعي (مثال: ليفلات عالية، أدوات توسيع)">
-                        <button class="action-btn" onclick="saveSubSectionData()">حفظ القسم الفرعي</button>
-                    </div>
-                    <h4 style="font-size: 14px; color: var(--gray);">الأقسام الفرعية الحالية:</h4>
-                    <div id="adminSubSectionsList" style="max-height: 200px; overflow-y: auto; margin-top: 10px;"></div>
-                </div>
-
-                <div id="subSectionBoostStats" class="admin-sub-section hidden">
-                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
-                    <h3 style="color: var(--primary); margin-bottom: 15px;">زيادة المشاهدات واللايكات للمحتوى</h3>
-                    <label style="font-size: 13px; color: var(--gray);">اختر المحتوى:</label>
-                    <select id="boostVideoSelect" style="margin-top:5px; margin-bottom:15px;" onchange="loadVideoStatsToForm()"></select>
-                    <label style="font-size: 13px; color: var(--gray);">عدد المشاهدات:</label>
-                    <input type="number" id="boostViewsInput" placeholder="عدد المشاهدات">
-                    <label style="font-size: 13px; color: var(--gray);">عدد اللايكات:</label>
-                    <input type="number" id="boostLikesInput" placeholder="عدد اللايكات">
-                    <button class="action-btn" onclick="saveBoostStats()">تحديث الإحصائيات</button>
-                </div>
-
-                <div id="subSectionContent" class="admin-sub-section hidden">
-                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
-                    <h3 style="color: var(--primary); margin-bottom: 15px;">نشر محتوى جديد</h3>
-                    
-                    <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">نوع المحتوى:</label>
-                    <select id="contentTypeSelect" onchange="toggleContentTypeFields()" style="margin-top:5px; margin-bottom:15px;">
-                        <option value="youtube">فيديو يوتيوب (مع غلاف)</option>
-                        <option value="localvideo">فيديو من الجهاز</option>
-                        <option value="image">صورة من الجهاز</option>
-                        <option value="article">مقال نصي</option>
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">قفل الأقسام، الجروبات، أو القنوات بكلمة مرور</h3>
+                    <label style="font-size: 13px; color: var(--gray);">اختر نوع العنصر المراد حمايته:</label>
+                    <select id="lockItemTypeSelect" style="margin-top:5px; margin-bottom:15px;" onchange="populateLockTargetSelect()">
+                        <option value="section">قسم رئيسي</option>
+                        <option value="group">جروب / قناة</option>
                     </select>
 
-                    <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">القسم الرئيسي:</label>
-                    <select id="contentSectionSelect" onchange="populateSubSectionSelectForPublish()" style="margin-top:5px; margin-bottom:15px;"></select>
-                    
-                    <div id="subSectionPublishContainer" class="hidden">
-                        <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">القسم الفرعي:</label>
-                        <select id="contentSubSectionSelect" style="margin-top:5px; margin-bottom:15px;"></select>
-                    </div>
+                    <label style="font-size: 13px; color: var(--gray);">اختر العنصر المحدد:</label>
+                    <select id="lockTargetItemSelect" style="margin-top:5px; margin-bottom:15px;"></select>
 
-                    <input type="text" id="contentTitle" placeholder="عنوان المنتج / الحساب">
-                    <textarea id="contentDesc" placeholder="وصف موجز يظهر في البطاقة..."></textarea>
-                    
-                    <div id="youtubeFieldsContainer">
-                        <input type="text" id="contentYoutubeUrl" placeholder="رابط يوتيوب">
-                        <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">صورة الغلاف:</label>
-                        <div class="upload-box" onclick="document.getElementById('thumbFile').click()">
-                            <span id="thumbFileText" style="color:var(--gray)">اختر صورة الغلاف</span>
-                            <input type="file" id="thumbFile" accept="image/*" class="hidden" onchange="previewFileLabel(this, 'thumbFileText')">
-                        </div>
-                    </div>
-
-                    <div id="localVideoFieldsContainer" class="hidden">
-                        <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">ملف الفيديو:</label>
-                        <div class="upload-box" onclick="document.getElementById('localVideoFile').click()">
-                            <span id="localVideoText" style="color:var(--gray)">اختر ملف الفيديو (MP4)</span>
-                            <input type="file" id="localVideoFile" accept="video/*" class="hidden" onchange="previewFileLabel(this, 'localVideoText')">
-                        </div>
-                    </div>
-
-                    <div id="imageFieldsContainer" class="hidden">
-                        <label style="margin-top:5px; display:block; color:var(--gray); font-size:13px;">ملف الصورة:</label>
-                        <div class="upload-box" onclick="document.getElementById('localImageFile').click()">
-                            <span id="localImageText" style="color:var(--gray)">اختر الصورة</span>
-                            <input type="file" id="localImageFile" accept="image/*" class="hidden" onchange="previewFileLabel(this, 'localImageText')">
-                        </div>
-                    </div>
-
-                    <div id="articleFieldsContainer" class="hidden">
-                        <textarea id="contentArticleBody" placeholder="اكتب تفاصيل المنتج أو الحساب الكاملة هنا..." style="height: 140px;"></textarea>
-                    </div>
-                    
-                    <button class="action-btn" onclick="publishContentFirebase()">نشر الآن</button>
-                </div>
-
-                <div id="subSectionTheme" class="admin-sub-section hidden">
-                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
-                    <h3 style="color: var(--primary); margin-bottom: 15px;">تخصيص ألوان الموقع</h3>
-                    <label style="font-size: 14px; color: var(--gray); display:block; margin-bottom:5px;">اللون الأساسي (الأخضر/المزرعة):</label>
-                    <input type="color" id="primaryColorPicker" value="#22c55e" style="height: 45px; cursor: pointer; padding:5px;">
-                    <label style="font-size: 14px; color: var(--gray); margin-top: 15px; display: block; margin-bottom:5px;">لون الخلفية العامة:</label>
-                    <input type="color" id="bgColorPicker" value="#0f172a" style="height: 45px; cursor: pointer; padding:5px;">
-                    <button class="action-btn" onclick="updateSiteTheme()">حفظ وتطبيق الألوان</button>
-                </div>
-
-                <div id="subSectionSiteName" class="admin-sub-section hidden">
-                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
-                    <h3 style="color: var(--primary); margin-bottom: 15px;">تغيير اسم الموقع</h3>
-                    <input type="text" id="newSiteNameInput" placeholder="اسم الموقع الجديد">
-                    <button class="action-btn" onclick="updateSiteName()">تحديث الاسم</button>
-                </div>
-
-                <div id="subSectionSuggestions" class="admin-sub-section hidden">
-                    <button class="back-to-menu" onclick="backToAdminMenu()">← رجوع للقائمة</button>
-                    <h3 style="color: var(--primary); margin-bottom: 15px;">اقتراحات المستخدمين</h3>
-                    <div id="adminSuggestionsList" style="max-height: 280px; overflow-y: auto; margin-top: 10px;"></div>
+                    <input type="password" id="adminNewPasswordInput" placeholder="كلمة المرور الجديدة (أتركه فارغاً للإلغاء)">
+                    <button class="action-btn" onclick="saveItemPasswordLock()">حفظ الحماية</button>
                 </div>
 
             </div>
@@ -959,14 +495,12 @@
     <div id="gameNicknameModal" class="modal-overlay hidden">
         <div class="modal-content" style="max-width: 450px; text-align: center;">
             <h3 style="color: var(--primary); margin-bottom: 15px;">أدخل اسمك المستعار في اللعبة</h3>
-            <p style="color: var(--gray); font-size: 14px; margin-bottom: 15px;">هذا الاسم سيظهر للجميع في مجتمع هاي داي والدردشة (يجب ألا يتكرر).</p>
             <input type="text" id="gameNicknameInput" placeholder="الاسم المستعار في اللعبة">
             <button class="action-btn" onclick="saveGameNickname()">تأكيد ودخول</button>
         </div>
     </div>
 
     <script>
-        // إعدادات فايربيس الحقيقية الآمنة
         const firebaseConfig = {
             apiKey: "AIzaSyD-MOCK-API-KEY-FOR-DEMO-SECURE",
             authDomain: "esultan-hayday.firebaseapp.com",
@@ -975,22 +509,19 @@
             messagingSenderId: "123456789",
             appId: "1:123:web:abc"
         };
-        // تهيئة فايربيس
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const auth = firebase.auth();
         const db = firebase.firestore();
-        const storage = firebase.storage();
 
         let currentUser = null;
         let userProfileData = null;
         let isLoginMode = true;
-        let activeSectionId = null;
-        let activeSubSectionId = null;
-        let currentSearchQuery = '';
-        const unlockedSections = new Set();
-        let currentHubType = 'groups'; // groups, channels, chats
+        let activeSectionId = 'sec_community';
+        const unlockedItems = new Set(); // لتخزين العناصر التي تم فتحها بكلمة مرور مؤقتاً في الجلسة
+        let currentHubType = 'groups';
+        let pendingUnlockCallback = null;
 
         window.onload = async function() {
             auth.onAuthStateChanged(async (user) => {
@@ -1002,10 +533,6 @@
                     userProfileData = null;
                 }
                 checkAuthUI();
-                applySavedStyles();
-                loadSiteName();
-                loadSavedLanguage();
-                initActiveSection();
                 renderCategoriesBar();
                 renderAppContent();
             });
@@ -1020,74 +547,107 @@
             } catch(e) { console.error(e); }
         }
 
-        function initActiveSection() {
-            // إضافة أقسام افتراضية من ضمنها مجتمع هاي داي ودردشاتي
-            let sections = [
+        async function getSectionsList() {
+            // جلب الأقسام مع كلمات المرور الخاصة بها من فايربيس إن وجدت، أو الافتراضية
+            return [
                 { id: 'sec_community', name: 'مجتمع هاي داي', locked: false, password: '' },
                 { id: 'sec_chats', name: 'دردشاتي', locked: false, password: '' },
                 { id: 'sec_1', name: 'حسابات هاي داي', locked: false, password: '' },
                 { id: 'sec_2', name: 'بيع أدوات وتوسيع', locked: false, password: '' },
                 { id: 'sec_3', name: 'عروض وخصومات مميزة', locked: false, password: '' }
             ];
-            if(!activeSectionId || !sections.some(s => s.id === activeSectionId)) {
-                activeSectionId = sections[0].id;
-            }
         }
 
-        function renderCategoriesBar() {
+        async function renderCategoriesBar() {
             const bar = document.getElementById('categoriesBar');
             bar.innerHTML = '';
-            let sections = [
-                { id: 'sec_community', name: 'مجتمع هاي داي', locked: false },
-                { id: 'sec_chats', name: 'دردشاتي', locked: false },
-                { id: 'sec_1', name: 'حسابات هاي داي', locked: false },
-                { id: 'sec_2', name: 'بيع أدوات وتوسيع', locked: false },
-                { id: 'sec_3', name: 'عروض وخصومات مميزة', locked: false }
-            ];
+            let sections = await getSectionsList();
 
             sections.forEach(sec => {
                 const tab = document.createElement('div');
                 tab.className = `category-tab ${sec.id === activeSectionId ? 'active' : ''}`;
-                tab.innerHTML = `${sec.name}`;
-                tab.onclick = function() {
-                    if (sec.id === 'sec_community') {
-                        // التحقق من الاسم المستعار قبل الدخول لمجتمع هاي داي
-                        if (!currentUser) {
-                            showAuth('login');
-                            return;
-                        }
-                        if (!userProfileData || !userProfileData.gameNickname) {
-                            document.getElementById('gameNicknameModal').classList.remove('hidden');
-                            return;
-                        }
+                tab.innerHTML = `${sec.name} ${sec.password ? '🔒' : ''}`;
+                tab.onclick = async function() {
+                    // التحقق من الحماية بكلمة مرور للقسم
+                    if (sec.password && !unlockedItems.has(sec.id)) {
+                        triggerPasswordPrompt(sec.password, () => {
+                            unlockedItems.add(sec.id);
+                            proceedSectionClick(sec.id);
+                        });
+                        return;
                     }
-                    activeSectionId = sec.id;
-                    currentSearchQuery = '';
-                    renderCategoriesBar();
-                    renderAppContent();
+                    proceedSectionClick(sec.id);
                 };
                 bar.appendChild(tab);
             });
+        }
+
+        function proceedSectionClick(secId) {
+            if (secId === 'sec_community') {
+                if (!currentUser) {
+                    showAuth('login');
+                    return;
+                }
+                if (!userProfileData || !userProfileData.gameNickname) {
+                    document.getElementById('gameNicknameModal').classList.remove('hidden');
+                    return;
+                }
+            }
+            activeSectionId = secId;
+            renderCategoriesBar();
+            renderAppContent();
+        }
+
+        function triggerPasswordPrompt(correctPassword, onSuccessCallback) {
+            window.currentCorrectPassword = correctPassword;
+            pendingUnlockCallback = onSuccessCallback;
+            document.getElementById('promptPasswordInput').value = '';
+            document.getElementById('passwordPromptModal').classList.remove('hidden');
+        }
+
+        function verifyPasswordAndUnlock() {
+            let entered = document.getElementById('promptPasswordInput').value;
+            if (entered === window.currentCorrectPassword) {
+                document.getElementById('passwordPromptModal').classList.add('hidden');
+                if (pendingUnlockCallback) pendingUnlockCallback();
+            } else {
+                alert('كلمة المرور غير صحيحة!');
+            }
+        }
+
+        function handleHeaderCommunityClick() {
+            if (!currentUser) {
+                showAuth('login');
+                return;
+            }
+            if (!userProfileData || !userProfileData.gameNickname) {
+                document.getElementById('gameNicknameModal').classList.remove('hidden');
+                return;
+            }
+            activeSectionId = 'sec_community';
+            renderCategoriesBar();
+            renderAppContent();
+        }
+
+        function handleHeaderChatsClick() {
+            if (!currentUser) {
+                showAuth('login');
+                return;
+            }
+            activeSectionId = 'sec_chats';
+            renderCategoriesBar();
+            renderAppContent();
         }
 
         async function saveGameNickname() {
             let nick = document.getElementById('gameNicknameInput').value.trim();
             if (!nick) return alert('الرجاء إدخال الاسم المستعار');
             
-            // التأكد من عدم تكرار الاسم في قاعدة البيانات
-            let checkQuery = await db.collection('users').where('gameNickname', '==', nick).get();
-            if (!checkQuery.empty) {
-                return alert('هذا الاسم المستعار مستخدم بالفعل من قبل شخص آخر، اختر اسمًا غيره.');
-            }
-
             try {
                 await db.collection('users').doc(currentUser.uid).set({
                     email: currentUser.email,
                     gameNickname: nick,
-                    ratingCount: 0,
-                    totalRating: 0,
-                    badgeType: 'مضمون', // مضمون أو قفاص
-                    bannedUntil: null
+                    badgeType: 'مضمون'
                 }, { merge: true });
 
                 await fetchUserProfile(currentUser.uid);
@@ -1105,7 +665,6 @@
             document.getElementById('authContainer').classList.remove('hidden');
             isLoginMode = (mode === 'login');
             document.getElementById('authTitle').innerText = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
-            document.getElementById('authSwitchText').innerText = isLoginMode ? 'ليس لديك حساب؟ إنشاء حساب جديد' : 'لديك حساب بالفعل؟ تسجيل الدخول';
         }
 
         function toggleAuthMode() {
@@ -1126,10 +685,7 @@
                     await db.collection('users').doc(cred.user.uid).set({
                         email: email,
                         gameNickname: '',
-                        ratingCount: 0,
-                        totalRating: 0,
-                        badgeType: 'مضمون',
-                        bannedUntil: null
+                        badgeType: 'مضمون'
                     });
                 }
                 document.getElementById('authContainer').classList.add('hidden');
@@ -1147,7 +703,7 @@
                     closeAdminPanel();
                     closeProfileModal();
                     checkAuthUI();
-                    activeSectionId = 'sec_1';
+                    activeSectionId = 'sec_community';
                     renderCategoriesBar();
                     renderAppContent();
                 });
@@ -1155,13 +711,11 @@
         }
 
         function checkAuthUI() {
-            const authNavBtns = document.getElementById('authNavButtons');
             const profileBtn = document.getElementById('profileTriggerBtn');
             const adminBtn = document.getElementById('adminNavBtn');
             const suggestionUserBtn = document.getElementById('suggestionUserBtn');
 
             if (currentUser) {
-                authNavBtns.classList.add('hidden');
                 profileBtn.classList.remove('hidden');
                 document.getElementById('headerUserAvatar').src = currentUser.photoURL || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
                 document.getElementById('headerUserEmailName').innerText = userProfileData?.gameNickname || currentUser.email.split('@')[0];
@@ -1174,7 +728,6 @@
                     suggestionUserBtn.classList.remove('hidden');
                 }
             } else {
-                authNavBtns.classList.remove('hidden');
                 profileBtn.classList.add('hidden');
                 adminBtn.classList.add('hidden');
                 suggestionUserBtn.classList.add('hidden');
@@ -1189,104 +742,7 @@
             document.getElementById('profileModalAvatarImg').src = currentUser.photoURL || 'https://via.placeholder.com/100/1e293b/22c55e?text=U';
         }
 
-        function closeProfileModal() {
-            document.getElementById('profileModalOverlay').classList.add('hidden');
-        }
-
-        function openDownloadsPage() {
-            closeProfileModal();
-            document.getElementById('downloadsPage').style.display = 'block';
-            renderDownloadsContent();
-        }
-
-        function closeDownloadsPage() {
-            document.getElementById('downloadsPage').style.display = 'none';
-        }
-
-        function switchDownloadsTab(tabName, btnElement) {
-            const videosTab = document.getElementById('videosDownloadsTab');
-            const imagesTab = document.getElementById('imagesDownloadsTab');
-            const buttons = document.querySelectorAll('#downloadsPage .tab-btn');
-
-            buttons.forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
-
-            if (tabName === 'videos') {
-                videosTab.classList.remove('hidden');
-                imagesTab.classList.add('hidden');
-            } else {
-                videosTab.classList.add('hidden');
-                imagesTab.classList.remove('hidden');
-            }
-        }
-
-        async function renderDownloadsContent() {
-            const videosGrid = document.getElementById('videosDownloadsGrid');
-            const imagesGrid = document.getElementById('imagesDownloadsGrid');
-            videosGrid.innerHTML = '<p style="color:var(--gray); padding:20px;">جارٍ التحميل من فايربيس...</p>';
-            imagesGrid.innerHTML = '<p style="color:var(--gray); padding:20px;">جارٍ التحميل من فايربيس...</p>';
-            
-            try {
-                let snapshot = await db.collection('contents').get();
-                videosGrid.innerHTML = '';
-                imagesGrid.innerHTML = '';
-                
-                snapshot.forEach(doc => {
-                    let item = doc.data();
-                    item.id = doc.id;
-                    let card = createDownloadCard(item);
-                    if (item.type === 'localvideo' || item.type === 'youtube') {
-                        videosGrid.appendChild(card);
-                    } else {
-                        imagesGrid.appendChild(card);
-                    }
-                });
-            } catch(e) {
-                videosGrid.innerHTML = '<p style="color:#ff4d4d">خطأ في جلب البيانات</p>';
-            }
-        }
-
-        function createDownloadCard(item) {
-            let card = document.createElement('div');
-            card.className = 'card';
-            let previewHTML = `<img src="${item.mediaUrl || item.thumbUrl || 'https://via.placeholder.com/300/1e293b/22c55e?text=HayDay'}">`;
-            card.innerHTML = `
-                <div class="thumbnail-container">${previewHTML}</div>
-                <div class="card-body">
-                    <div class="card-title">${item.title}</div>
-                    <div class="card-desc">${item.desc || ''}</div>
-                </div>
-            `;
-            return card;
-        }
-
-        function uploadDirectAvatar(input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                const uploadTask = storage.ref('avatars/' + currentUser.uid).put(file);
-                uploadTask.on('state_changed', null, (err) => alert(err.message), async () => {
-                    let url = await uploadTask.snapshot.ref.getDownloadURL();
-                    await currentUser.updateProfile({ photoURL: url });
-                    document.getElementById('profileModalAvatarImg').src = url;
-                    document.getElementById('headerUserAvatar').src = url;
-                    alert('تم تغيير صورة الحساب بنجاح!');
-                });
-            }
-        }
-
-        function changeSiteLanguage(lang) {
-            localStorage.setItem('esultan_hayday_site_lang', lang);
-            document.documentElement.lang = lang;
-            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
-            alert('تم تغيير لغة الموقع بنجاح');
-        }
-
-        function loadSavedLanguage() {
-            let lang = localStorage.getItem('esultan_hayday_site_lang') || 'ar';
-            document.getElementById('siteLanguageSelect').value = lang;
-            document.documentElement.lang = lang;
-            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
-        }
+        function closeProfileModal() { document.getElementById('profileModalOverlay').classList.add('hidden'); }
 
         function openAdminPanel() {
             if (!currentUser || currentUser.email !== 'gojoesultan@gmail.com') {
@@ -1294,93 +750,63 @@
             }
             document.getElementById('adminOverlay').classList.remove('hidden');
             backToAdminMenu();
-            populateSectionSelects();
-            renderAdminSuggestions();
         }
 
         function closeAdminPanel() { document.getElementById('adminOverlay').classList.add('hidden'); }
 
         function openAdminSection(sectionName) {
-            ['subSectionSectionsManager', 'subSectionBoostStats', 'subSectionTheme', 'subSectionSiteName', 'subSectionSuggestions', 'subSectionContent', 'adminMenuButtons'].forEach(id => {
+            ['adminMenuButtons', 'subSectionGroupLockManager'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
-            if(sectionName === 'sectionsManager') document.getElementById('subSectionSectionsManager').classList.remove('hidden');
-            else if(sectionName === 'boostStats') document.getElementById('subSectionBoostStats').classList.remove('hidden');
-            else if(sectionName === 'content') {
-                document.getElementById('subSectionContent').classList.remove('hidden');
-                populateSectionSelects();
-                toggleContentTypeFields();
+            if(sectionName === 'groupLockManager') {
+                document.getElementById('subSectionGroupLockManager').classList.remove('hidden');
+                populateLockTargetSelect();
             }
-            else if(sectionName === 'theme') document.getElementById('subSectionTheme').classList.remove('hidden');
-            else if(sectionName === 'sitename') document.getElementById('subSectionSiteName').classList.remove('hidden');
-            else if(sectionName === 'suggestions') document.getElementById('subSectionSuggestions').classList.remove('hidden');
         }
 
         function backToAdminMenu() {
-            ['subSectionSectionsManager', 'subSectionBoostStats', 'subSectionTheme', 'subSectionSiteName', 'subSectionSuggestions', 'subSectionContent'].forEach(id => {
+            ['subSectionGroupLockManager'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById('adminMenuButtons').classList.remove('hidden');
         }
 
-        function toggleContentTypeFields() {
-            const type = document.getElementById('contentTypeSelect').value;
-            document.getElementById('youtubeFieldsContainer').classList.toggle('hidden', type !== 'youtube');
-            document.getElementById('localVideoFieldsContainer').classList.toggle('hidden', type !== 'localvideo');
-            document.getElementById('imageFieldsContainer').classList.toggle('hidden', type !== 'image');
-            document.getElementById('articleFieldsContainer').classList.toggle('hidden', type !== 'article');
-        }
+        async function populateLockTargetSelect() {
+            let type = document.getElementById('lockItemTypeSelect').value;
+            let targetSelect = document.getElementById('lockTargetItemSelect');
+            targetSelect.innerHTML = '';
 
-        function previewFileLabel(input, textId) {
-            if (input.files && input.files[0]) {
-                document.getElementById(textId).innerText = 'تم اختيار الملف: ' + input.files[0].name;
+            if (type === 'section') {
+                let sections = await getSectionsList();
+                sections.forEach(sec => {
+                    targetSelect.innerHTML += `<option value="${sec.id}">${sec.name}</option>`;
+                });
+            } else {
+                let snap = await db.collection('hubs').get();
+                snap.forEach(doc => {
+                    let data = doc.data();
+                    targetSelect.innerHTML += `<option value="${doc.id}">${data.title} (${data.type})</option>`;
+                });
             }
         }
 
-        async function publishContentFirebase() {
-            const type = document.getElementById('contentTypeSelect').value;
-            const sectionId = document.getElementById('contentSectionSelect').value;
-            const title = document.getElementById('contentTitle').value.trim();
-            const desc = document.getElementById('contentDesc').value.trim();
+        async function saveItemPasswordLock() {
+            let type = document.getElementById('lockItemTypeSelect').value;
+            let targetId = document.getElementById('lockTargetItemSelect').value;
+            let newPass = document.getElementById('adminNewPasswordInput').value.trim();
 
-            if (!sectionId || !title) return alert('الرجاء كتابة العنوان وتحديد القسم');
+            if (!targetId) return alert('الرجاء اختيار عنصر');
 
-            let itemData = { type, sectionId, title, desc, views: 0, likes: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() };
-
-            try {
-                if (type === 'youtube') {
-                    itemData.youtubeUrl = document.getElementById('contentYoutubeUrl').value.trim();
-                    const file = document.getElementById('thumbFile').files[0];
-                    if (file) {
-                        let snap = await storage.ref('thumbs/' + Date.now()).put(file);
-                        itemData.thumbUrl = await snap.ref.getDownloadURL();
-                    }
-                } else if (type === 'localvideo' || type === 'image') {
-                    const fileInputId = type === 'localvideo' ? 'localVideoFile' : 'localImageFile';
-                    const file = document.getElementById(fileInputId).files[0];
-                    if (!file) return alert('اختر الملف!');
-                    let snap = await storage.ref('media/' + Date.now()).put(file);
-                    itemData.mediaUrl = await snap.ref.getDownloadURL();
-                } else if (type === 'article') {
-                    itemData.articleBody = document.getElementById('contentArticleBody').value.trim();
-                }
-
-                await db.collection('contents').add(itemData);
-                alert('تم نشر المحتوى بنجاح في فايربيس!');
-                renderAppContent();
-            } catch(e) {
-                alert('خطأ أثناء النشر: ' + e.message);
+            if (type === 'section') {
+                // حفظ كلمة المرور للقسم (يمكن حفظها في localStorage أو فايربيس)
+                localStorage.setItem(`lock_sec_${targetId}`, newPass);
+                alert('تم تحديث كلمة مرور القسم بنجاح!');
+            } else {
+                await db.collection('hubs').doc(targetId).update({ password: newPass });
+                alert('تم تحديث كلمة مرور الجروب/القناة بنجاح!');
             }
-        }
-
-        function saveSectionData() {
-            alert('تم الحفظ بنجاح');
-        }
-        function saveSubSectionData() {
-            alert('تم الحفظ بنجاح');
-        }
-        function saveBoostStats() {
-            alert('تم التحديث بنجاح');
+            closeAdminPanel();
+            renderCategoriesBar();
         }
 
         function showSuggestionModal() { document.getElementById('suggestionBoxContainer').classList.toggle('hidden'); }
@@ -1400,57 +826,6 @@
             } catch(e) { alert(e.message); }
         }
 
-        async function renderAdminSuggestions() {
-            const list = document.getElementById('adminSuggestionsList');
-            list.innerHTML = 'جارٍ التحميل...';
-            let snap = await db.collection('suggestions').get();
-            list.innerHTML = snap.empty ? '<p style="color:var(--gray)">لا توجد اقتراحات</p>' : '';
-            snap.forEach(doc => {
-                let s = doc.data();
-                list.innerHTML += `<div class="suggestion-item"><div><span style="color:var(--primary); font-weight:600;">${s.user}:</span> ${s.text}</div> <button onclick="deleteSuggestion('${doc.id}')" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600;">حذف</button></div>`;
-            });
-        }
-
-        async function deleteSuggestion(id) {
-            await db.collection('suggestions').doc(id).delete();
-            renderAdminSuggestions();
-        }
-
-        function updateSiteTheme() {
-            localStorage.setItem('esultan_hayday_primary', document.getElementById('primaryColorPicker').value);
-            localStorage.setItem('esultan_hayday_bg', document.getElementById('bgColorPicker').value);
-            applySavedStyles();
-            alert('تم تطبيق الألوان بنجاح');
-        }
-
-        function applySavedStyles() {
-            if (localStorage.getItem('esultan_hayday_primary')) document.documentElement.style.setProperty('--primary', localStorage.getItem('esultan_hayday_primary'));
-            if (localStorage.getItem('esultan_hayday_bg')) document.documentElement.style.setProperty('--bg', localStorage.getItem('esultan_hayday_bg'));
-        }
-
-        function updateSiteName() {
-            const name = document.getElementById('newSiteNameInput').value.trim();
-            if (!name) return;
-            localStorage.setItem('esultan_hayday_site_name', name);
-            loadSiteName();
-            alert('تم تحديث اسم الموقع');
-        }
-
-        function loadSiteName() {
-            if (localStorage.getItem('esultan_hayday_site_name')) {
-                document.getElementById('siteLogoText').innerText = localStorage.getItem('esultan_hayday_site_name');
-                document.getElementById('pageTitle').innerText = localStorage.getItem('esultan_hayday_site_name');
-            }
-        }
-
-        function populateSectionSelects() {
-            let sel = document.getElementById('contentSectionSelect');
-            sel.innerHTML = '<option value="sec_1">حسابات هاي داي</option><option value="sec_2">بيع أدوات وتوسيع</option><option value="sec_3">عروض وخصومات مميزة</option>';
-        }
-
-        function populateSubSectionSelectForPublish() {}
-
-        // --- وظائف مجتمع هاي داي والدردشة الحقيقية (عبر فايربيس) ---
         let activeHubId = null;
 
         function renderAppContent() {
@@ -1475,12 +850,10 @@
                             <button class="hub-action-icon-btn" onclick="openCreateHubModalForm('channel')">+ إنشاء قناة</button>
                         </div>
                         <div style="padding: 10px; display: flex; gap: 10px; border-bottom: 1px solid var(--border-color);">
-                            <button class="tab-btn ${currentHubType === 'groups' ? 'active' : ''}" style="padding:8px; font-size:13px;" onclick="currentHubType='groups'; renderHubLists();">الجروبات</button>
-                            <button class="tab-btn ${currentHubType === 'channels' ? 'active' : ''}" style="padding:8px; font-size:13px;" onclick="currentHubType='channels'; renderHubLists();">القنوات</button>
+                            <button class="action-btn" style="padding:6px; font-size:13px; margin:0;" onclick="currentHubType='groups'; renderHubLists();">الجروبات</button>
+                            <button class="action-btn" style="padding:6px; font-size:13px; margin:0; background:#1e293b;" onclick="currentHubType='channels'; renderHubLists();">القنوات</button>
                         </div>
-                        <div class="hub-list-section" id="hubItemsListContainer">
-                            <!-- قائمة الجروبات أو القنوات الحقيقية -->
-                        </div>
+                        <div class="hub-list-section" id="hubItemsListContainer"></div>
                     </div>
                     <div class="hub-main-chat" id="hubMainChatArea">
                         <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--gray);">
@@ -1503,25 +876,27 @@
                 
                 snap.forEach(doc => {
                     let data = doc.data();
-                    let isPinned = data.isPinned && currentUser.email === 'gojoesultan@gmail.com';
                     let div = document.createElement('div');
                     div.className = `hub-item-row ${activeHubId === doc.id ? 'active' : ''}`;
                     div.innerHTML = `
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <img src="${data.imageUrl || 'https://via.placeholder.com/40/1e293b/22c55e?text=HD'}" style="width:35px; height:35px; border-radius:50%; object-fit:cover;">
                             <div>
-                                <div style="font-weight:600; font-size:14px;">${data.title} ${isPinned ? '📌' : ''}</div>
+                                <div style="font-weight:600; font-size:14px;">${data.title} ${data.password ? '🔒' : ''}</div>
                                 <div style="font-size:11px; color:var(--gray);">${data.privacy === 'public' ? 'عام' : 'خاص'}</div>
                             </div>
                         </div>
-                        ${currentUser.email === 'gojoesultan@gmail.com' ? `
-                            <div style="display:flex; gap:5px;">
-                                <button onclick="pinHub('${doc.id}', event)" style="background:#162032; color:var(--primary); border:1px solid var(--border-color); padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;">تثبيت</button>
-                                <button onclick="deleteHub('${doc.id}', event)" style="background:rgba(229,9,20,0.15); color:#ff4d4d; border:1px solid rgba(229,9,20,0.3); padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;">حذف</button>
-                            </div>
-                        ` : ''}
                     `;
-                    div.onclick = () => loadHubChat(doc.id);
+                    div.onclick = () => {
+                        // التحقق إذا كان الجروب محمي بكلمة مرور ولم يتم فتحه بعد
+                        if (data.password && !unlockedItems.has(doc.id)) {
+                            triggerPasswordPrompt(data.password, () => {
+                                unlockedItems.add(doc.id);
+                                loadHubChat(doc.id);
+                            });
+                            return;
+                        }
+                        loadHubChat(doc.id);
+                    };
                     container.appendChild(div);
                 });
             } catch(e) {
@@ -1535,23 +910,14 @@
             document.getElementById('createHubModal').classList.remove('hidden');
         }
 
-        function closeCreateHubModal() {
-            document.getElementById('createHubModal').classList.add('hidden');
-        }
+        function closeCreateHubModal() { document.getElementById('createHubModal').classList.add('hidden'); }
 
         async function submitCreateHub() {
             let title = document.getElementById('newHubTitle').value.trim();
             let desc = document.getElementById('newHubDesc').value.trim();
             let privacy = document.getElementById('newHubPrivacySelect').value;
-            let file = document.getElementById('newHubImageFile').files[0];
 
             if (!title) return alert('أدخل العنوان');
-
-            let imageUrl = '';
-            if (file) {
-                let snap = await storage.ref('hubs/' + Date.now()).put(file);
-                imageUrl = await snap.ref.getDownloadURL();
-            }
 
             try {
                 await db.collection('hubs').add({
@@ -1559,12 +925,8 @@
                     title,
                     desc,
                     privacy,
-                    imageUrl,
+                    password: '', // افتراضياً بدون كلمة مرور حتى يحددها المشرف
                     ownerUid: currentUser.uid,
-                    ownerName: userProfileData.gameNickname,
-                    admins: [currentUser.uid],
-                    allowMembersEdit: true,
-                    isPinned: false,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 closeCreateHubModal();
@@ -1575,23 +937,6 @@
             }
         }
 
-        async function pinHub(id, event) {
-            event.stopPropagation();
-            let docRef = db.collection('hubs').doc(id);
-            let doc = await docRef.get();
-            let currentPin = doc.data().isPinned || false;
-            await docRef.update({ isPinned: !currentPin });
-            renderHubLists();
-        }
-
-        async function deleteHub(id, event) {
-            event.stopPropagation();
-            if (confirm('هل تريد حذف هذا الجروب/القناة نهائياً؟')) {
-                await db.collection('hubs').doc(id).delete();
-                renderHubLists();
-            }
-        }
-
         async function loadHubChat(hubId) {
             activeHubId = hubId;
             renderHubLists();
@@ -1599,49 +944,18 @@
             
             let docSnap = await db.collection('hubs').doc(hubId).get();
             let hubData = docSnap.data();
-            let isOwnerOrAdmin = hubData.ownerUid === currentUser.uid || (hubData.admins && hubData.admins.includes(currentUser.uid));
-
-            // التحقق من الحظر لمدة 20 يوم في حال تجاوز البلاغات 7
-            let isBanned = userProfileData.bannedUntil && userProfileData.bannedUntil.toMillis() > Date.now();
 
             chatArea.innerHTML = `
-                <div style="padding:15px; background:#111827; border-bottom:1px solid var(--border-color); display:flex; justify-content:between; align-items:center;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${hubData.imageUrl || 'https://via.placeholder.com/40'}" style="width:35px; height:35px; border-radius:50%; object-fit:cover;">
-                        <div>
-                            <div style="font-weight:700;">${hubData.title}</div>
-                            <div style="font-size:12px; color:var(--gray);">${hubData.desc || ''}</div>
-                        </div>
-                    </div>
-                    ${isOwnerOrAdmin ? `<button onclick="openHubSettings('${hubId}')" style="background:#162032; color:var(--primary); border:1px solid var(--border-color); padding:6px 12px; border-radius:6px; font-size:12px; cursor:pointer;">إعدادات الجروب</button>` : ''}
+                <div style="padding:15px; background:#111827; border-bottom:1px solid var(--border-color);">
+                    <div style="font-weight:700;">${hubData.title}</div>
+                    <div style="font-size:12px; color:var(--gray);">${hubData.desc || ''}</div>
                 </div>
                 <div id="messagesContainer" style="flex-grow:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;"></div>
                 <div style="padding:15px; background:#111827; border-top:1px solid var(--border-color); display:flex; gap:10px;">
-                    <input type="text" id="chatMessageInput" placeholder="${isBanned ? 'أنت محظور من إرسال الرسائل مؤقتاً بسبب البلاغات' : 'اكتب رسالة...'}" ${isBanned ? 'disabled' : ''} style="margin:0;">
-                    <button class="action-btn" style="width:auto; margin:0;" onclick="sendHubMessage('${hubId}')" ${isBanned ? 'disabled' : ''}>إرسال</button>
+                    <input type="text" id="chatMessageInput" placeholder="اكتب رسالة..." style="margin:0;">
+                    <button class="action-btn" style="width:auto; margin:0;" onclick="sendHubMessage('${hubId}')">إرسال</button>
                 </div>
             `;
-
-            // الاستماع للرسائل بشكل حقيقي (Real-time)
-            db.collection('hubs').doc(hubId).collection('messages').orderBy('createdAt', 'asc').onSnapshot(snapshot => {
-                const msgContainer = document.getElementById('messagesContainer');
-                if (!msgContainer) return;
-                msgContainer.innerHTML = '';
-                snapshot.forEach(doc => {
-                    let msg = doc.data();
-                    let div = document.createElement('div');
-                    div.style.background = '#111827';
-                    div.style.padding = '10px 14px';
-                    div.style.borderRadius = '8px';
-                    div.style.border = '1px solid var(--border-color)';
-                    div.innerHTML = `
-                        <div style="font-size:12px; color:var(--primary); font-weight:600; cursor:pointer; margin-bottom:4px;" onclick="showUserOptions(event, '${msg.senderUid}', '${msg.senderName}')">${msg.senderName}</div>
-                        <div>${msg.text}</div>
-                    `;
-                    msgContainer.appendChild(div);
-                });
-                msgContainer.scrollTop = msgContainer.scrollHeight;
-            });
         }
 
         async function sendHubMessage(hubId) {
@@ -1662,72 +976,11 @@
             }
         }
 
-        function showUserOptions(event, targetUid, targetName) {
-            event.stopPropagation();
-            let oldMenu = document.getElementById('userPopupMenu');
-            if (oldMenu) oldMenu.remove();
-
-            let menu = document.createElement('div');
-            menu.id = 'userPopupMenu';
-            menu.className = 'user-popup-menu';
-            menu.style.top = event.clientY + 'px';
-            menu.style.left = event.clientX + 'px';
-
-            menu.innerHTML = `
-                <div style="font-weight:700; font-size:13px; color:var(--primary); padding:5px 10px; border-bottom:1px solid var(--border-color); margin-bottom:5px;">${targetName}</div>
-                <button onclick="userAction('ban', '${targetUid}')">حظر</button>
-                <button onclick="userAction('report', '${targetUid}')">بلاغ</button>
-                <button onclick="userAction('friend', '${targetUid}')">اضافة صديق</button>
-                <hr style="border-color:var(--border-color); margin:5px 0;">
-                <div style="font-size:12px; color:var(--gray); padding:3px 10px;">اختر الحالة:</div>
-                <button onclick="setRateBadge('${targetUid}', 'قفاص')">قفاص</button>
-                <button onclick="setRateBadge('${targetUid}', 'مضمون')">مضمون</button>
-            `;
-            document.body.appendChild(menu);
-
-            document.addEventListener('click', function closeMenu() {
-                menu.remove();
-                document.removeEventListener('click', closeMenu);
-            }, { once: true });
-        }
-
-        async function userAction(actionType, targetUid) {
-            if (actionType === 'report') {
-                // إضافة بلاغ وزيادة عداد البلاغات
-                let userRef = db.collection('users').doc(targetUid);
-                let doc = await userRef.get();
-                let data = doc.data();
-                let reports = (data.reportsCount || 0) + 1;
-                let updateData = { reportsCount: reports };
-
-                // إذا تجاوز البلاغات 7 يتم حظره من إرسال الرسائل لمدة 20 يوم
-                if (reports > 7) {
-                    let banUntil = new Date(Date.now() + 20 * 24 * 60 * 60 * 1000);
-                    updateData.bannedUntil = firebase.firestore.Timestamp.fromDate(banUntil);
-                }
-
-                await userRef.update(updateData);
-                alert('تم إرسال البلاغ بنجاح.');
-            } else if (actionType === 'ban') {
-                alert('تم حظر المستخدم.');
-            } else if (actionType === 'friend') {
-                alert('تم إرسال طلب الصداقة.');
-            }
-        }
-
-        async function setRateBadge(targetUid, badge) {
-            await db.collection('users').doc(targetUid).update({
-                badgeType: badge,
-                ratingCount: firebase.firestore.FieldValue.increment(1)
-            });
-            alert('تم تقييم المستخدم بنجاح كـ (' + badge + ')');
-        }
-
         function renderDirectChats(container) {
             container.innerHTML = `
                 <div class="auth-box">
                     <h2 style="color:var(--primary); margin-bottom:15px;">دردشاتي الخاصة</h2>
-                    <p style="color:var(--gray);">هنا تظهر محادثاتك الخاصة مع الأصدقاء الذين أضفتهم من الجروبات والقنوات.</p>
+                    <p style="color:var(--gray);">هنا تظهر محادثاتك الخاصة مع الأصدقاء.</p>
                 </div>
             `;
         }
