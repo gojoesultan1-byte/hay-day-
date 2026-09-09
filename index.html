@@ -1,5700 +1,905 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hay Day Community</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-
-<style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    font-family:'Cairo',sans-serif;
-}
-
-:root{
-    --green:#4caf50;
-    --green2:#2e7d32;
-    --light:#f1f8e9;
-    --white:#fff;
-    --text:#263238;
-    --muted:#78909c;
-    --gold:#ffb300;
-    --red:#d32f2f;
-    --blue:#1976d2;
-    --border:#dfe7df;
-    --shadow:0 5px 20px rgba(0,0,0,.08);
-}
-
-body{
-    background:var(--light);
-    color:var(--text);
-}
-
-button{
-    border:0;
-    cursor:pointer;
-    font-weight:700;
-}
-
-input,
-textarea,
-select{
-    width:100%;
-    padding:11px;
-    border:1px solid #ccc;
-    border-radius:9px;
-    outline:none;
-}
-
-textarea{
-    resize:vertical;
-    min-height:100px;
-}
-
-button:hover{
-    opacity:.9;
-}
-
-.hidden{
-    display:none!important;
-}
-
-/* HEADER */
-
-header{
-    position:sticky;
-    top:0;
-    z-index:500;
-    background:var(--green);
-    color:white;
-    padding:12px 20px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    box-shadow:0 3px 15px rgba(0,0,0,.15);
-}
-
-.logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:20px;
-    font-weight:900;
-}
-
-.header-actions{
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
-
-.header-btn{
-    background:white;
-    color:var(--green2);
-    padding:8px 13px;
-    border-radius:8px;
-}
-
-.user-badge{
-    background:rgba(255,255,255,.18);
-    padding:7px 12px;
-    border-radius:10px;
-}
-
-/* LAYOUT */
-
-.container{
-    width:min(1250px,95%);
-    margin:20px auto 100px;
-}
-
-.hero{
-    background:linear-gradient(135deg,#2e7d32,#81c784);
-    color:white;
-    border-radius:18px;
-    padding:35px 20px;
-    text-align:center;
-    margin-bottom:20px;
-    box-shadow:var(--shadow);
-}
-
-.hero h1{
-    font-size:32px;
-    margin-bottom:8px;
-}
-
-.hero p{
-    opacity:.95;
-}
-
-/* COMMUNITY */
-
-.community-bar{
-    display:flex;
-    gap:8px;
-    margin-bottom:15px;
-    overflow-x:auto;
-}
-
-.community-tab{
-    white-space:nowrap;
-    background:white;
-    color:var(--green2);
-    border:1px solid var(--border);
-    padding:10px 15px;
-    border-radius:10px;
-}
-
-.community-tab.active{
-    background:var(--green);
-    color:white;
-}
-
-.search-box{
-    background:white;
-    padding:12px;
-    border-radius:12px;
-    box-shadow:var(--shadow);
-    margin-bottom:15px;
-}
-
-.search-box input{
-    border:0;
-    background:#f5f5f5;
-}
-
-/* GROUPS */
-
-.section-title{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin:20px 0 12px;
-}
-
-.create-btn{
-    background:var(--gold);
-    padding:9px 14px;
-    border-radius:9px;
-}
-
-.groups-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:15px;
-}
-
-.group-card{
-    background:white;
-    border-radius:15px;
-    overflow:hidden;
-    box-shadow:var(--shadow);
-    cursor:pointer;
-    transition:.2s;
-}
-
-.group-card:hover{
-    transform:translateY(-2px);
-}
-
-.group-cover{
-    width:100%;
-    height:150px;
-    object-fit:cover;
-    background:#ddd;
-}
-
-.group-info{
-    padding:14px;
-}
-
-.group-name{
-    font-weight:900;
-    font-size:18px;
-}
-
-.group-desc{
-    color:var(--muted);
-    font-size:13px;
-    margin:5px 0;
-}
-
-.group-meta{
-    display:flex;
-    justify-content:space-between;
-    color:#607d8b;
-    font-size:13px;
-}
-
-.badge{
-    display:inline-block;
-    padding:3px 7px;
-    border-radius:7px;
-    background:#e8f5e9;
-    color:var(--green2);
-    font-size:11px;
-}
-
-/* MODAL */
-
-.modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.65);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:2000;
-    padding:15px;
-}
-
-.modal.show{
-    display:flex;
-}
-
-.modal-box{
-    background:white;
-    width:min(700px,100%);
-    max-height:92vh;
-    overflow-y:auto;
-    border-radius:15px;
-    padding:22px;
-    position:relative;
-}
-
-.close{
-    position:absolute;
-    left:15px;
-    top:12px;
-    background:#eee;
-    border-radius:50%;
-    width:34px;
-    height:34px;
-}
-
-.form-group{
-    margin:12px 0;
-}
-
-.form-group label{
-    display:block;
-    font-weight:700;
-    margin-bottom:5px;
-}
-
-.primary{
-    background:var(--green);
-    color:white;
-    padding:11px 16px;
-    border-radius:9px;
-}
-
-.danger{
-    background:var(--red);
-    color:white;
-    padding:8px 12px;
-    border-radius:8px;
-}
-
-.secondary{
-    background:#eceff1;
-    color:#263238;
-    padding:9px 13px;
-    border-radius:8px;
-}
-
-.blue{
-    background:var(--blue);
-    color:white;
-    padding:9px 13px;
-    border-radius:8px;
-}
-
-/* COMMUNITY VIEW */
-
-.community-view{
-    display:none;
-}
-
-.community-header{
-    background:white;
-    border-radius:15px;
-    overflow:hidden;
-    box-shadow:var(--shadow);
-    margin-bottom:15px;
-}
-
-.community-banner{
-    height:180px;
-    width:100%;
-    object-fit:cover;
-    background:#ddd;
-}
-
-.community-details{
-    padding:15px;
-}
-
-.community-actions{
-    display:flex;
-    flex-wrap:wrap;
-    gap:7px;
-    margin-top:10px;
-}
-
-/* CHAT */
-
-.chat-layout{
-    display:grid;
-    grid-template-columns:280px 1fr;
-    gap:15px;
-}
-
-.chat-side,
-.chat-main{
-    background:white;
-    border-radius:15px;
-    box-shadow:var(--shadow);
-}
-
-.chat-side{
-    padding:12px;
-    max-height:650px;
-    overflow:auto;
-}
-
-.chat-main{
-    min-height:650px;
-    display:flex;
-    flex-direction:column;
-}
-
-.chat-header{
-    padding:12px 15px;
-    border-bottom:1px solid var(--border);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-.messages{
-    flex:1;
-    padding:15px;
-    overflow-y:auto;
-    background:#f7faf7;
-}
-
-.message{
-    max-width:75%;
-    margin:7px 0;
-    padding:9px 12px;
-    border-radius:12px;
-    background:white;
-    box-shadow:0 2px 5px rgba(0,0,0,.06);
-    position:relative;
-}
-
-.message.mine{
-    margin-right:auto;
-    background:#dcf8c6;
-}
-
-.message-name{
-    font-size:11px;
-    color:var(--green2);
-    font-weight:800;
-}
-
-.message-time{
-    font-size:9px;
-    color:#999;
-}
-
-.message-tools{
-    display:flex;
-    gap:5px;
-    margin-top:5px;
-}
-
-.message-tools button{
-    font-size:10px;
-    background:#eee;
-    padding:3px 6px;
-    border-radius:5px;
-}
-
-.chat-input{
-    display:flex;
-    gap:7px;
-    padding:10px;
-    border-top:1px solid var(--border);
-}
-
-.chat-input input{
-    flex:1;
-}
-
-/* PINNED */
-
-.pinned-bar{
-    display:flex;
-    gap:7px;
-    overflow-x:auto;
-    padding:8px;
-    background:#fff8e1;
-    border-bottom:1px solid #ffe082;
-}
-
-.pin-item{
-    white-space:nowrap;
-    background:#ffecb3;
-    border-radius:8px;
-    padding:5px 9px;
-    font-size:11px;
-    cursor:pointer;
-}
-
-/* MEMBERS */
-
-.member{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    padding:9px;
-    border-bottom:1px solid #eee;
-}
-
-.member-info{
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
-
-.avatar{
-    width:36px;
-    height:36px;
-    border-radius:50%;
-    object-fit:cover;
-    background:#ddd;
-}
-
-/* PRIVATE CHATS */
-
-.private-layout{
-    display:grid;
-    grid-template-columns:280px 1fr;
-    gap:15px;
-}
-
-.chat-list{
-    background:white;
-    border-radius:15px;
-    box-shadow:var(--shadow);
-    overflow:auto;
-}
-
-.chat-user{
-    padding:12px;
-    display:flex;
-    gap:8px;
-    align-items:center;
-    cursor:pointer;
-    border-bottom:1px solid #eee;
-}
-
-.chat-user:hover{
-    background:#f5f5f5;
-}
-
-/* PROFILE */
-
-.profile-box{
-    text-align:center;
-}
-
-.profile-avatar{
-    width:90px;
-    height:90px;
-    border-radius:50%;
-    object-fit:cover;
-    margin-bottom:10px;
-}
-
-.rating{
-    color:#ffb300;
-}
-
-/* ADMIN */
-
-.admin-section{
-    background:#fafafa;
-    border:1px solid #ddd;
-    padding:15px;
-    border-radius:12px;
-    margin-bottom:15px;
-}
-
-.admin-item{
-    background:white;
-    padding:10px;
-    border-radius:8px;
-    margin:7px 0;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-}
-
-.admin-actions{
-    display:flex;
-    gap:5px;
-    flex-wrap:wrap;
-}
-
-/* PRODUCTS */
-
-.products-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:15px;
-}
-
-.product-card{
-    background:white;
-    border-radius:13px;
-    overflow:hidden;
-    box-shadow:var(--shadow);
-}
-
-.product-image{
-    width:100%;
-    height:160px;
-    object-fit:cover;
-}
-
-.product-info{
-    padding:12px;
-}
-
-.product-price{
-    color:var(--green2);
-    font-weight:900;
-}
-
-/* REVIEWS */
-
-.reviews-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;
-}
-
-.review{
-    background:white;
-    padding:15px;
-    border-radius:12px;
-    box-shadow:var(--shadow);
-}
-
-/* TOAST */
-
-#toast{
-    position:fixed;
-    bottom:20px;
-    left:50%;
-    transform:translateX(-50%);
-    background:#263238;
-    color:white;
-    padding:11px 18px;
-    border-radius:9px;
-    z-index:5000;
-    display:none;
-}
-
-#toast.show{
-    display:block;
-}
-
-/* MOBILE */
-
-@media(max-width:900px){
-    .groups-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .products-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .reviews-grid{
-        grid-template-columns:1fr 1fr;
-    }
-
-    .chat-layout,
-    .private-layout{
-        grid-template-columns:1fr;
-    }
-
-    .chat-side{
-        max-height:250px;
-    }
-}
-
-@media(max-width:600px){
-    header{
-        flex-direction:column;
-        gap:10px;
-    }
-
-    .hero h1{
-        font-size:24px;
-    }
-
-    .groups-grid,
-    .products-grid,
-    .reviews-grid{
-        grid-template-columns:repeat(2,1fr);
-        gap:8px;
-    }
-
-    .group-cover{
-        height:120px;
-    }
-
-    .group-info{
-        padding:9px;
-    }
-
-    .group-name{
-        font-size:15px;
-    }
-
-    .group-desc{
-        font-size:11px;
-    }
-
-    .chat-main{
-        min-height:550px;
-    }
-
-    .message{
-        max-width:88%;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مجتمع هاي داي - المنصة المتكاملة</title>
+    <style>
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #333333;
+            --primary-color: #2c3e50;
+            --card-bg: #ffffff;
+            --accent-color: #27ae60;
+            --danger-color: #c0392b;
+        }
+
+        body {
+            font-family: 'Cairo', Tahoma, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: 0.3s;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-title-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .my-chats-badge {
+            font-size: 14px;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .my-chats-badge:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .pinned-ticker {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 85%;
+            max-width: 750px;
+            max-height: 85vh;
+            border-radius: 10px;
+            padding: 25px;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .close-modal-btn {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            float: left;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
-
 <body>
 
-<header>
-
-    <div class="logo">
-        <i class="fa-solid fa-tractor"></i>
-        <span>Hay Day Community</span>
-    </div>
-
-    <div class="header-actions">
-
-        <button class="header-btn"
-                onclick="showSection('community')">
-            <i class="fa-solid fa-users"></i>
-            مجتمع هاي داي
-        </button>
-
-        <button class="header-btn"
-                onclick="showSection('private')">
-            <i class="fa-solid fa-comments"></i>
-            محادثاتي
-        </button>
-
-        <span id="userHeader"
-              class="user-badge hidden"></span>
-
-        <button id="loginHeader"
-                class="header-btn"
-                onclick="openModal('loginModal')">
-            تسجيل الدخول
-        </button>
-
-        <button id="registerHeader"
-                class="header-btn"
-                onclick="openModal('registerModal')">
-            إنشاء حساب
-        </button>
-
-        <button id="logoutHeader"
-                class="header-btn hidden"
-                onclick="logout()">
-            خروج
-        </button>
-
-        <button id="adminHeader"
-                class="header-btn hidden"
-                onclick="openAdmin()">
-            <i class="fa-solid fa-shield-halved"></i>
-            لوحة المشرف
-        </button>
-
-    </div>
-
-</header>
-
-
-<div class="container">
-
-<!-- ================= COMMUNITY ================= -->
-
-<section id="communitySection">
-
-    <div class="hero">
-
-        <h1>مجتمع هاي داي</h1>
-
-        <p>
-            جروبات وقنوات هاي داي — تواصل، دردشة، أصدقاء ومجتمعات.
-        </p>
-
-    </div>
-
-    <div class="community-bar">
-
-        <button class="community-tab active"
-                id="groupsTab"
-                onclick="loadGroups()">
-            <i class="fa-solid fa-users"></i>
-            الجروبات
-        </button>
-
-        <button class="community-tab"
-                onclick="loadChannels()">
-            <i class="fa-solid fa-tower-broadcast"></i>
-            القنوات
-        </button>
-
-    </div>
-
-
-    <div class="search-box">
-
-        <input
-            id="communitySearch"
-            type="text"
-            placeholder="ابحث عن جروب أو قناة..."
-            oninput="searchCommunity()">
-
-    </div>
-
-
-    <div class="section-title">
-
-        <h2 id="communityTitle">
-            الجروبات
-        </h2>
-
-        <button
-            class="create-btn"
-            onclick="openCreateGroup()">
-
-            <i class="fa-solid fa-plus"></i>
-            إنشاء جروب
-
-        </button>
-
-    </div>
-
-
-    <div id="groupsContainer"
-         class="groups-grid">
-    </div>
-
-</section>
-
-
-<!-- ================= COMMUNITY VIEW ================= -->
-
-<section id="communityView"
-         class="community-view">
-
-    <button
-        class="secondary"
-        onclick="backToCommunity()"
-        style="margin-bottom:10px">
-
-        <i class="fa-solid fa-arrow-right"></i>
-        العودة
-
-    </button>
-
-
-    <div class="community-header">
-
-        <img
-            id="communityBanner"
-            class="community-banner">
-
-        <div class="community-details">
-
-            <h2 id="communityName"></h2>
-
-            <p id="communityDescription"></p>
-
-            <div class="group-meta">
-
-                <span id="communityMembers"></span>
-
-                <span id="communityType"></span>
-
-            </div>
-
-            <div
-                id="communityActions"
-                class="community-actions">
-            </div>
-
+    <header>
+        <div class="header-title-area">
+            <h1 style="margin:0; font-size: 22px;">مجتمع هاي داي</h1>
+            <span class="my-chats-badge" onclick="openMyChatsModal()">محادثاتي</span>
         </div>
-
-    </div>
-
-
-    <div class="chat-layout">
-
-        <aside class="chat-side">
-
-            <h3>
-                <i class="fa-solid fa-user-group"></i>
-                الأعضاء
-            </h3>
-
-            <div id="membersList"></div>
-
-        </aside>
-
-
-        <main class="chat-main">
-
-            <div class="chat-header">
-
-                <strong id="chatTitle">
-                    الدردشة
-                </strong>
-
-                <button
-                    class="secondary"
-                    onclick="openGroupSettings()">
-
-                    <i class="fa-solid fa-gear"></i>
-
-                </button>
-
-            </div>
-
-
-            <div
-                id="pinnedMessages"
-                class="pinned-bar hidden">
-            </div>
-
-
-            <div
-                id="groupMessages"
-                class="messages">
-            </div>
-
-
-            <div
-                id="groupChatInput"
-                class="chat-input">
-
-                <input
-                    id="groupMessageInput"
-                    placeholder="اكتب رسالة..."
-                    onkeydown="if(event.key==='Enter')sendGroupMessage()">
-
-                <button
-                    class="primary"
-                    onclick="sendGroupMessage()">
-
-                    <i class="fa-solid fa-paper-plane"></i>
-
-                </button>
-
-            </div>
-
-        </main>
-
-    </div>
-
-</section>
-
-
-<!-- ================= PRIVATE CHATS ================= -->
-
-<section id="privateSection"
-         class="hidden">
-
-    <div class="hero">
-
-        <h1>
-            <i class="fa-solid fa-comments"></i>
-            محادثاتي
-        </h1>
-
-        <p>
-            جميع محادثاتك الخاصة واحد لواحد.
-        </p>
-
-    </div>
-
-
-    <div class="private-layout">
-
-        <div class="chat-list">
-
-            <div style="padding:12px">
-
-                <input
-                    id="userSearch"
-                    placeholder="ابحث عن مستخدم..."
-                    oninput="searchUsers()">
-
-            </div>
-
-            <div id="privateUsersList"></div>
-
-        </div>
-
-
-        <div class="chat-main">
-
-            <div class="chat-header">
-
-                <strong id="privateChatTitle">
-                    اختر شخصًا للمحادثة
-                </strong>
-
-                <button
-                    id="privateProfileButton"
-                    class="secondary hidden"
-                    onclick="openSelectedProfile()">
-
-                    الملف الشخصي
-
-                </button>
-
-            </div>
-
-
-            <div
-                id="privateMessages"
-                class="messages">
-            </div>
-
-
-            <div
-                id="privateInput"
-                class="chat-input hidden">
-
-                <input
-                    id="privateMessageInput"
-                    placeholder="اكتب رسالة..."
-                    onkeydown="if(event.key==='Enter')sendPrivateMessage()">
-
-                <button
-                    class="primary"
-                    onclick="sendPrivateMessage()">
-
-                    <i class="fa-solid fa-paper-plane"></i>
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ================= PRODUCTS ================= -->
-
-<section id="productsSection">
-
-    <div class="section-title">
-
-        <h2>
-            <i class="fa-solid fa-store"></i>
-            متجر هاي داي
-        </h2>
-
-    </div>
-
-    <div
-        id="productsContainer"
-        class="products-grid">
-    </div>
-
-</section>
-
-
-<!-- ================= REVIEWS ================= -->
-
-<section style="margin-top:30px">
-
-    <div class="section-title">
-
-        <h2>
-            ⭐ آراء العملاء
-        </h2>
-
-        <button
-            class="create-btn"
-            onclick="openModal('reviewModal')">
-
-            أضف تقييمك
-
-        </button>
-
-    </div>
-
-    <div
-        id="reviewsContainer"
-        class="reviews-grid">
-    </div>
-
-</section>
-
-</div>
-
-
-<!-- ================= LOGIN ================= -->
-
-<div id="loginModal" class="modal">
-
-<div class="modal-box">
-
-<button class="close"
-        onclick="closeModal('loginModal')">
-×
-</button>
-
-<h2>تسجيل الدخول</h2>
-
-<div class="form-group">
-
-<label>البريد الإلكتروني</label>
-
-<input
-id="loginEmail"
-type="email">
-
-</div>
-
-<div class="form-group">
-
-<label>كلمة المرور</label>
-
-<input
-id="loginPassword"
-type="password">
-
-</div>
-
-<button
-class="primary"
-style="width:100%"
-onclick="login()">
-
-دخول
-
-</button>
-
-</div>
-</div>
-
-
-<!-- ================= REGISTER ================= -->
-
-<div id="registerModal" class="modal">
-
-<div class="modal-box">
-
-<button class="close"
-        onclick="closeModal('registerModal')">
-×
-</button>
-
-<h2>إنشاء حساب</h2>
-
-<div class="form-group">
-
-<label>اسم المستخدم</label>
-
-<input
-id="registerName"
-maxlength="30">
-
-</div>
-
-<div class="form-group">
-
-<label>اسم المستخدم Username</label>
-
-<input
-id="registerUsername"
-placeholder="@username"
-maxlength="20">
-
-</div>
-
-<div class="form-group">
-
-<label>البريد الإلكتروني</label>
-
-<input
-id="registerEmail"
-type="email">
-
-</div>
-
-<div class="form-group">
-
-<label>كلمة المرور</label>
-
-<input
-id="registerPassword"
-type="password">
-
-</div>
-
-<div class="form-group">
-
-<label>الصورة الشخصية - اختياري</label>
-
-<input
-id="registerAvatar"
-type="url"
-placeholder="رابط الصورة">
-
-</div>
-
-<button
-class="primary"
-style="width:100%"
-onclick="register()">
-
-إنشاء الحساب
-
-</button>
-
-</div>
-</div>
-
-
-<!-- ================= CREATE GROUP ================= -->
-
-<div id="createGroupModal" class="modal">
-
-<div class="modal-box">
-
-<button class="close"
-        onclick="closeModal('createGroupModal')">
-×
-</button>
-
-<h2>
-<i class="fa-solid fa-users"></i>
-إنشاء جروب
-</h2>
-
-<div class="form-group">
-
-<label>
-اسم الجروب *
-</label>
-
-<input
-id="groupNameInput"
-maxlength="50"
-placeholder="اسم الجروب">
-
-</div>
-
-<div class="form-group">
-
-<label>
-العنوان - اختياري
-</label>
-
-<input
-id="groupTitleInput"
-maxlength="100">
-
-</div>
-
-<div class="form-group">
-
-<label>
-الوصف - اختياري
-</label>
-
-<textarea
-id="groupDescriptionInput"
-maxlength="500"
-placeholder="وصف الجروب"></textarea>
-
-</div>
-
-<div class="form-group">
-
-<label>
-صورة الجروب - اختياري
-</label>
-
-<input
-id="groupImageInput"
-type="url"
-placeholder="رابط الصورة">
-
-</div>
-
-<div class="form-group">
-
-<label>
-نوع الجروب
-</label>
-
-<select id="groupPrivacyInput">
-
-<option value="public">
-علني - يظهر للجميع
-</option>
-
-<option value="private">
-خاص - يظهر للمشتركين فقط
-</option>
-
-</select>
-
-</div>
-
-<button
-class="primary"
-style="width:100%"
-onclick="createGroup()">
-
-إرسال للمراجعة
-
-</button>
-
-</div>
-</div>
-
-
-<!-- ================= GROUP SETTINGS ================= -->
-
-<div id="groupSettingsModal" class="modal">
-
-<div class="modal-box">
-
-<button class="close"
-        onclick="closeModal('groupSettingsModal')">
-×
-</button>
-
-<h2>
-إعدادات الجروب
-</h2>
-
-<div id="groupSettingsContent"></div>
-
-</div>
-</div>
-
-
-<!-- ================= PROFILE ================= -->
-
-<div id="profileModal" class="modal">
-
-<div class="modal-box">
-
-<button class="close"
-        onclick="closeModal('profileModal')">
-×
-</button>
-
-<div
-id="profileContent"
-class="profile-box">
-</div>
-
-</div>
-</div>
-
-
-<!-- ================= ADMIN ================= -->
-
-<div id="adminModal" class="modal">
-
-<div class="modal-box"
-     style="max-width:900px">
-
-<button class="close"
-        onclick="closeModal('adminModal')">
-×
-</button>
-
-<h2>
-<i class="fa-solid fa-shield-halved"></i>
-لوحة المشرف الرئيسية
-</h2>
-
-
-<!-- GROUP REQUESTS -->
-
-<div class="admin-section">
-
-<h3>
-طلبات الجروبات
-</h3>
-
-<div id="adminGroupsList"></div>
-
-</div>
-
-
-<!-- RETURN REQUESTS -->
-
-<div class="admin-section">
-
-<h3>
-طلبات العودة للجروبات
-</h3>
-
-<div id="adminReturnRequests"></div>
-
-</div>
-
-
-<!-- RASHQ -->
-
-<div class="admin-section">
-
-<h3>
-<i class="fa-solid fa-bolt"></i>
-الرشق
-</h3>
-
-<p style="font-size:13px;color:#777;margin-bottom:10px">
-إدارة عدد المتابعين الظاهر للقنوات.
-</p>
-
-<div class="form-group">
-
-<label>القناة</label>
-
-<select id="rashqChannel"></select>
-
-</div>
-
-<div class="form-group">
-
-<label>عدد المتابعين</label>
-
-<input
-id="rashqCount"
-type="number"
-min="0">
-
-</div>
-
-<button
-class="primary"
-onclick="applyRashq()">
-
-تطبيق
-
-</button>
-
-</div>
-
-
-<!-- USERS -->
-
-<div class="admin-section">
-
-<h3>
-المستخدمون
-</h3>
-
-<div
-id="adminUsersList"
-style="max-height:300px;overflow:auto">
-</div>
-
-</div>
-
-</div>
-</div>
-
-
-<!-- ================= REVIEW ================= -->
-
-<div id="reviewModal" class="modal">
-
-<div class="modal-box">
-
-<button class="close"
-        onclick="closeModal('reviewModal')">
-×
-</button>
-
-<h2>
-إضافة تقييم
-</h2>
-
-<div class="form-group">
-
-<label>التقييم</label>
-
-<select id="reviewStars">
-
-<option value="5">⭐⭐⭐⭐⭐</option>
-<option value="4">⭐⭐⭐⭐</option>
-<option value="3">⭐⭐⭐</option>
-<option value="2">⭐⭐</option>
-<option value="1">⭐</option>
-
-</select>
-
-</div>
-
-<div class="form-group">
-
-<label>التعليق</label>
-
-<textarea
-id="reviewText"
-placeholder="اكتب تقييمك..."></textarea>
-
-</div>
-
-<button
-class="primary"
-style="width:100%"
-onclick="submitReview()">
-
-إرسال التقييم
-
-</button>
-
-</div>
-</div>
-
-
-<div id="toast"></div>
-
-
-<script>
-
-/* =========================================================
-   FIREBASE CONFIG
-   ضع بيانات مشروع Firebase الخاص بك هنا
-========================================================= */
-
-const firebaseConfig = {
-
-    apiKey: "PUT_YOUR_API_KEY_HERE",
-
-    authDomain: "PUT_YOUR_PROJECT.firebaseapp.com",
-
-    projectId: "PUT_YOUR_PROJECT_ID",
-
-    storageBucket: "PUT_YOUR_PROJECT.appspot.com",
-
-    messagingSenderId: "PUT_YOUR_MESSAGING_SENDER_ID",
-
-    appId: "PUT_YOUR_APP_ID"
-
-};
-
-
-/* =========================================================
-   FIREBASE INIT
-========================================================= */
-
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-
-const db = firebase.firestore();
-
-
-/* =========================================================
-   ADMIN
-========================================================= */
-
-const ADMIN_PROFILE_ID = "111111111";
-
-const ADMIN_EMAIL = "gojoesultan@gmail.com";
-
-
-/* =========================================================
-   GLOBAL STATE
-========================================================= */
-
-let currentUser = null;
-
-let currentProfile = null;
-
-let currentCommunity = null;
-
-let currentCommunityType = "group";
-
-let selectedPrivateUser = null;
-
-let unsubscribeGroupMessages = null;
-
-let unsubscribePrivateMessages = null;
-
-let unsubscribeGroups = null;
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-function toast(message){
-
-    const el =
-        document.getElementById("toast");
-
-    el.innerText = message;
-
-    el.classList.add("show");
-
-    setTimeout(()=>{
-        el.classList.remove("show");
-    },3000);
-}
-
-
-/* =========================================================
-   MODALS
-========================================================= */
-
-function openModal(id){
-
-    document
-        .getElementById(id)
-        .classList.add("show");
-
-}
-
-function closeModal(id){
-
-    document
-        .getElementById(id)
-        .classList.remove("show");
-
-}
-
-
-/* =========================================================
-   AUTH STATE
-========================================================= */
-
-auth.onAuthStateChanged(async user=>{
-
-    currentUser = user;
-
-    if(user){
-
-        await loadCurrentProfile();
-
-        document
-            .getElementById("loginHeader")
-            .classList.add("hidden");
-
-        document
-            .getElementById("registerHeader")
-            .classList.add("hidden");
-
-        document
-            .getElementById("logoutHeader")
-            .classList.remove("hidden");
-
-        document
-            .getElementById("userHeader")
-            .classList.remove("hidden");
-
-        document
-            .getElementById("userHeader")
-            .innerText =
-            currentProfile
-            ? currentProfile.name
-            : user.email;
-
-        if(
-            currentProfile &&
-            (
-                currentProfile.profileId === ADMIN_PROFILE_ID ||
-                currentProfile.email === ADMIN_EMAIL
-            )
-        ){
-
-            document
-                .getElementById("adminHeader")
-                .classList.remove("hidden");
-
-        }
-
-    }else{
-
-        currentProfile = null;
-
-        document
-            .getElementById("loginHeader")
-            .classList.remove("hidden");
-
-        document
-            .getElementById("registerHeader")
-            .classList.remove("hidden");
-
-        document
-            .getElementById("logoutHeader")
-            .classList.add("hidden");
-
-        document
-            .getElementById("userHeader")
-            .classList.add("hidden");
-
-        document
-            .getElementById("adminHeader")
-            .classList.add("hidden");
-
-    }
-
-});
-
-
-/* =========================================================
-   LOAD PROFILE
-========================================================= */
-
-async function loadCurrentProfile(){
-
-    if(!currentUser) return;
-
-    const snap =
-        await db
-        .collection("users")
-        .doc(currentUser.uid)
-        .get();
-
-    if(snap.exists){
-
-        currentProfile = {
-            id:snap.id,
-            ...snap.data()
-        };
-
-    }
-
-}
-
-
-/* =========================================================
-   RANDOM 9 DIGIT ID
-========================================================= */
-
-function generateProfileId(){
-
-    return String(
-        Math.floor(
-            100000000 +
-            Math.random()*900000000
-        )
-    );
-
-}
-
-
-/* =========================================================
-   USERNAME NORMALIZATION
-========================================================= */
-
-function normalizeUsername(username){
-
-    return username
-        .trim()
-        .toLowerCase()
-        .replace(/^@/,"")
-        .replace(/[^a-z0-9_]/g,"");
-
-}
-
-
-/* =========================================================
-   CHECK LINKS
-========================================================= */
-
-function containsLink(text){
-
-    if(!text) return false;
-
-    const patterns = [
-
-        /https?:\/\//i,
-
-        /www\./i,
-
-        /\b[a-z0-9-]+\.(com|net|org|io|me|co|eg|ly|gg|site|online)\b/i,
-
-        /t\.me\//i,
-
-        /wa\.me\//i
-
-    ];
-
-    return patterns.some(x=>x.test(text));
-
-}
-
-
-/* =========================================================
-   REGISTER
-========================================================= */
-
-async function register(){
-
-    try{
-
-        const name =
-            document
-            .getElementById("registerName")
-            .value.trim();
-
-        const username =
-            normalizeUsername(
-                document
-                .getElementById("registerUsername")
-                .value
-            );
-
-        const email =
-            document
-            .getElementById("registerEmail")
-            .value.trim();
-
-        const password =
-            document
-            .getElementById("registerPassword")
-            .value;
-
-        const avatar =
-            document
-            .getElementById("registerAvatar")
-            .value.trim();
-
-        if(!name || !username || !email || !password){
-
-            toast("أكمل البيانات المطلوبة.");
-
-            return;
-
-        }
-
-        if(username.length < 3){
-
-            toast("اسم المستخدم يجب أن يكون 3 أحرف على الأقل.");
-
-            return;
-
-        }
-
-        const usernameSnap =
-            await db
-            .collection("usernames")
-            .doc(username)
-            .get();
-
-        if(usernameSnap.exists){
-
-            toast("اسم المستخدم مأخوذ بالفعل.");
-
-            return;
-
-        }
-
-        const credential =
-            await auth
-            .createUserWithEmailAndPassword(
-                email,
-                password
-            );
-
-        const profileId =
-            generateProfileId();
-
-        await db
-        .collection("users")
-        .doc(credential.user.uid)
-        .set({
-
-            uid:credential.user.uid,
-
-            profileId,
-
-            name,
-
-            username,
-
-            email,
-
-            avatar:avatar || "",
-
-            role:"user",
-
-            blockedUsers:[],
-
-            friends:[],
-
-            createdAt:
-                firebase.firestore.FieldValue.serverTimestamp()
-
-        });
-
-        await db
-        .collection("usernames")
-        .doc(username)
-        .set({
-
-            uid:credential.user.uid,
-
-            profileId
-
-        });
-
-        await loadCurrentProfile();
-
-        closeModal("registerModal");
-
-        toast(
-            "تم إنشاء الحساب. ID الخاص بك: " +
-            profileId
-        );
-
-    }catch(error){
-
-        console.error(error);
-
-        toast(
-            error.message ||
-            "حدث خطأ أثناء إنشاء الحساب."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-async function login(){
-
-    try{
-
-        const email =
-            document
-            .getElementById("loginEmail")
-            .value.trim();
-
-        const password =
-            document
-            .getElementById("loginPassword")
-            .value;
-
-        if(!email || !password){
-
-            toast("أدخل البريد وكلمة المرور.");
-
-            return;
-
-        }
-
-        await auth.signInWithEmailAndPassword(
-            email,
-            password
-        );
-
-        closeModal("loginModal");
-
-        toast("تم تسجيل الدخول.");
-
-    }catch(error){
-
-        toast(
-            "بيانات الدخول غير صحيحة."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logout(){
-
-    await auth.signOut();
-
-    toast("تم تسجيل الخروج.");
-
-}
-
-
-/* =========================================================
-   SECTIONS
-========================================================= */
-
-function showSection(section){
-
-    document
-        .getElementById("communitySection")
-        .style.display =
-        section==="community"
-        ? "block"
-        : "none";
-
-    document
-        .getElementById("communityView")
-        .style.display="none";
-
-    document
-        .getElementById("privateSection")
-        .classList.toggle(
-            "hidden",
-            section!=="private"
-        );
-
-    document
-        .getElementById("productsSection")
-        .style.display =
-        section==="community"
-        ? "block"
-        : "none";
-
-}
-
-
-/* =========================================================
-   CREATE GROUP
-========================================================= */
-
-function openCreateGroup(){
-
-    if(!currentUser){
-
-        toast("يجب تسجيل الدخول أولًا.");
-
-        openModal("loginModal");
-
-        return;
-
-    }
-
-    document
-        .getElementById("groupNameInput")
-        .value="";
-
-    document
-        .getElementById("groupTitleInput")
-        .value="";
-
-    document
-        .getElementById("groupDescriptionInput")
-        .value="";
-
-    document
-        .getElementById("groupImageInput")
-        .value="";
-
-    openModal("createGroupModal");
-
-}
-
-
-/* =========================================================
-   CREATE GROUP
-========================================================= */
-
-async function createGroup(){
-
-    if(!currentUser || !currentProfile){
-
-        toast("سجل الدخول أولًا.");
-
-        return;
-
-    }
-
-    const name =
-        document
-        .getElementById("groupNameInput")
-        .value.trim();
-
-    const title =
-        document
-        .getElementById("groupTitleInput")
-        .value.trim();
-
-    const description =
-        document
-        .getElementById("groupDescriptionInput")
-        .value.trim();
-
-    const image =
-        document
-        .getElementById("groupImageInput")
-        .value.trim();
-
-    const privacy =
-        document
-        .getElementById("groupPrivacyInput")
-        .value;
-
-    if(!name){
-
-        toast("اسم الجروب إجباري.");
-
-        return;
-
-    }
-
-    if(
-        containsLink(name) ||
-        containsLink(title) ||
-        containsLink(description)
-    ){
-
-        toast("ممنوع إضافة روابط.");
-
-        return;
-
-    }
-
-    const slug =
-        name
-        .toLowerCase()
-        .replace(/\s+/g,"-")
-        .replace(/[^a-z0-9\u0600-\u06ff-]/g,"");
-
-    const nameRef =
-        db
-        .collection("groupNames")
-        .doc(slug);
-
-    const existing =
-        await nameRef.get();
-
-    if(existing.exists){
-
-        toast("اسم الجروب مستخدم مسبقًا.");
-
-        return;
-
-    }
-
-    const groupRef =
-        db
-        .collection("groups")
-        .doc();
-
-    const groupData = {
-
-        id:groupRef.id,
-
-        name,
-
-        slug,
-
-        title,
-
-        description,
-
-        image,
-
-        privacy,
-
-        status:"pending",
-
-        ownerUid:currentUser.uid,
-
-        ownerProfileId:
-            currentProfile.profileId,
-
-        ownerName:
-            currentProfile.name,
-
-        admins:[],
-
-        members:[currentUser.uid],
-
-        bannedUsers:[],
-
-        returnRequests:[],
-
-        memberCount:1,
-
-        chatClosed:false,
-
-        pinnedMessages:[],
-
-        createdAt:
-            firebase.firestore.FieldValue.serverTimestamp()
-
-    };
-
-    await groupRef.set(groupData);
-
-    await nameRef.set({
-        groupId:groupRef.id
-    });
-
-    closeModal("createGroupModal");
-
-    toast(
-        "تم إرسال الجروب للمراجعة. لن يظهر حتى تتم الموافقة عليه."
-    );
-
-}
-
-
-/* =========================================================
-   LOAD PUBLIC GROUPS
-========================================================= */
-
-function loadGroups(){
-
-    currentCommunityType="group";
-
-    document
-        .getElementById("communityTitle")
-        .innerText="الجروبات";
-
-    document
-        .getElementById("groupsTab")
-        .classList.add("active");
-
-    listenGroups();
-
-}
-
-
-/* =========================================================
-   LIST GROUPS
-========================================================= */
-
-function listenGroups(){
-
-    if(unsubscribeGroups)
-        unsubscribeGroups();
-
-    unsubscribeGroups =
-        db
-        .collection("groups")
-        .where("status","==","approved")
-        .where("privacy","==","public")
-        .onSnapshot(snapshot=>{
-
-            const groups=[];
-
-            snapshot.forEach(doc=>{
-
-                groups.push({
-                    id:doc.id,
-                    ...doc.data()
-                });
-
-            });
-
-            groups.sort(
-                (a,b)=>
-                (b.memberCount||0) -
-                (a.memberCount||0)
-            );
-
-            renderGroups(groups);
-
-        });
-
-}
-
-
-/* =========================================================
-   RENDER GROUPS
-========================================================= */
-
-function renderGroups(groups){
-
-    const container =
-        document
-        .getElementById("groupsContainer");
-
-    container.innerHTML="";
-
-    if(groups.length===0){
-
-        container.innerHTML=
-        "<p>لا توجد جروبات حاليًا.</p>";
-
-        return;
-
-    }
-
-    groups.forEach(group=>{
-
-        const card =
-            document.createElement("div");
-
-        card.className="group-card";
-
-        card.onclick=()=>{
-            openCommunity(
-                group.id,
-                "group"
-            );
-        };
-
-        card.innerHTML=`
-
-            <img
-                class="group-cover"
-                src="${
-                    group.image ||
-                    "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80"
-                }">
-
-            <div class="group-info">
-
-                <div class="group-name">
-                    ${escapeHtml(group.name)}
-                </div>
-
-                <div class="group-desc">
-                    ${escapeHtml(
-                        group.description || ""
-                    )}
-                </div>
-
-                <div class="group-meta">
-
-                    <span>
-                        👥 ${
-                            formatCount(
-                                group.memberCount||0
-                            )
-                        }
-                    </span>
-
-                    <span class="badge">
-                        ${
-                            group.privacy==="public"
-                            ? "علني"
-                            : "خاص"
-                        }
-                    </span>
-
-                </div>
-
-            </div>
-        `;
-
-        container.appendChild(card);
-
-    });
-
-}
-
-
-/* =========================================================
-   CHANNELS
-========================================================= */
-
-async function loadChannels(){
-
-    currentCommunityType="channel";
-
-    document
-        .getElementById("communityTitle")
-        .innerText="القنوات";
-
-    document
-        .getElementById("groupsTab")
-        .classList.remove("active");
-
-    const snap =
-        await db
-        .collection("channels")
-        .where("status","==","approved")
-        .get();
-
-    const channels=[];
-
-    snap.forEach(doc=>{
-
-        channels.push({
-            id:doc.id,
-            ...doc.data()
-        });
-
-    });
-
-    channels.sort(
-        (a,b)=>
-        (b.followerCount||0) -
-        (a.followerCount||0)
-    );
-
-    renderChannels(channels);
-
-}
-
-
-/* =========================================================
-   RENDER CHANNELS
-========================================================= */
-
-function renderChannels(channels){
-
-    const container =
-        document
-        .getElementById("groupsContainer");
-
-    container.innerHTML="";
-
-    if(channels.length===0){
-
-        container.innerHTML=
-        "<p>لا توجد قنوات حاليًا.</p>";
-
-        return;
-
-    }
-
-    channels.forEach(channel=>{
-
-        const card =
-            document.createElement("div");
-
-        card.className="group-card";
-
-        card.onclick=()=>{
-            openCommunity(
-                channel.id,
-                "channel"
-            );
-        };
-
-        card.innerHTML=`
-
-            <img
-                class="group-cover"
-                src="${
-                    channel.image ||
-                    "https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=800&q=80"
-                }">
-
-            <div class="group-info">
-
-                <div class="group-name">
-
-                    📺
-                    ${escapeHtml(channel.name)}
-
-                </div>
-
-                <div class="group-desc">
-
-                    ${escapeHtml(
-                        channel.description || ""
-                    )}
-
-                </div>
-
-                <div class="group-meta">
-
-                    <span>
-                        👥 ${
-                            formatCount(
-                                channel.followerCount||0
-                            )
-                        }
-                    </span>
-
-                    <span class="badge">
-                        قناة
-                    </span>
-
-                </div>
-
-            </div>
-
-        `;
-
-        container.appendChild(card);
-
-    });
-
-}
-
-
-/* =========================================================
-   SEARCH COMMUNITY
-========================================================= */
-
-async function searchCommunity(){
-
-    const text =
-        document
-        .getElementById("communitySearch")
-        .value
-        .trim()
-        .toLowerCase();
-
-    if(!text){
-
-        if(currentCommunityType==="group")
-            loadGroups();
-        else
-            loadChannels();
-
-        return;
-
-    }
-
-    const collection =
-        currentCommunityType==="group"
-        ? "groups"
-        : "channels";
-
-    const snap =
-        await db
-        .collection(collection)
-        .where("status","==","approved")
-        .get();
-
-    const result=[];
-
-    snap.forEach(doc=>{
-
-        const data=doc.data();
-
-        const searchable =
-            (
-                data.name+
-                " "+
-                (data.title||"")+
-                " "+
-                (data.description||"")
-            ).toLowerCase();
-
-        if(searchable.includes(text)){
-
-            result.push({
-                id:doc.id,
-                ...data
-            });
-
-        }
-
-    });
-
-    if(currentCommunityType==="group")
-        renderGroups(result);
-    else
-        renderChannels(result);
-
-}
-
-
-/* =========================================================
-   OPEN COMMUNITY
-========================================================= */
-
-async function openCommunity(id,type){
-
-    const collection =
-        type==="group"
-        ? "groups"
-        : "channels";
-
-    const snap =
-        await db
-        .collection(collection)
-        .doc(id)
-        .get();
-
-    if(!snap.exists){
-
-        toast("العنصر غير موجود.");
-
-        return;
-
-    }
-
-    currentCommunity={
-        id:snap.id,
-        ...snap.data()
-    };
-
-    currentCommunityType=type;
-
-    document
-        .getElementById("communitySection")
-        .style.display="none";
-
-    document
-        .getElementById("productsSection")
-        .style.display="none";
-
-    document
-        .getElementById("communityView")
-        .style.display="block";
-
-    document
-        .getElementById("privateSection")
-        .classList.add("hidden");
-
-    document
-        .getElementById("communityName")
-        .innerText=currentCommunity.name;
-
-    document
-        .getElementById("communityDescription")
-        .innerText=
-        currentCommunity.description || "";
-
-    document
-        .getElementById("communityBanner")
-        .src=
-        currentCommunity.image ||
-        "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80";
-
-    document
-        .getElementById("communityMembers")
-        .innerText=
-        "👥 "+
-        formatCount(
-            currentCommunity.memberCount ||
-            currentCommunity.followerCount ||
-            0
-        );
-
-    document
-        .getElementById("communityType")
-        .innerText=
-        type==="group"
-        ? "جروب"
-        : "قناة";
-
-    renderCommunityActions();
-
-    if(type==="group"){
-
-        await loadMembers();
-
-        listenGroupMessages();
-
-        renderPinnedMessages();
-
-    }
-
-}
-
-
-/* =========================================================
-   COMMUNITY ACTIONS
-========================================================= */
-
-function renderCommunityActions(){
-
-    const box =
-        document
-        .getElementById("communityActions");
-
-    box.innerHTML="";
-
-    if(!currentUser){
-
-        box.innerHTML=`
-            <button
-                class="primary"
-                onclick="openModal('loginModal')">
-                تسجيل الدخول للانضمام
-            </button>
-        `;
-
-        return;
-
-    }
-
-    if(currentCommunityType==="channel"){
-
-        box.innerHTML=`
-
-            <button
-                class="primary"
-                onclick="followChannel()">
-                <i class="fa-solid fa-user-plus"></i>
-                متابعة
-            </button>
-
-            <button
-                class="secondary"
-                onclick="copyCommunityLink()">
-                🔗 مشاركة القناة
-            </button>
-
-        `;
-
-        return;
-
-    }
-
-    const isOwner =
-        currentCommunity.ownerUid ===
-        currentUser.uid;
-
-    const isAdmin =
-        isOwner ||
-        (
-            currentCommunity.admins||[]
-        ).includes(currentUser.uid);
-
-    const isMember =
-        (
-            currentCommunity.members||[]
-        ).includes(currentUser.uid);
-
-    const isBanned =
-        (
-            currentCommunity.bannedUsers||[]
-        ).includes(currentUser.uid);
-
-    if(isBanned){
-
-        box.innerHTML=`
-
-            <span class="badge">
-                أنت مطرود من هذا الجروب
-            </span>
-
-            <button
-                class="primary"
-                onclick="requestReturn()">
-                إرسال طلب عودة
-            </button>
-
-        `;
-
-        return;
-
-    }
-
-    if(!isMember){
-
-        box.innerHTML=`
-
-            <button
-                class="primary"
-                onclick="joinGroup()">
-                <i class="fa-solid fa-user-plus"></i>
-                ${
-                    currentCommunity.privacy==="private"
-                    ? "طلب الانضمام"
-                    : "انضمام"
-                }
-            </button>
-
-            <button
-                class="secondary"
-                onclick="copyCommunityLink()">
-                🔗 مشاركة الجروب
-            </button>
-
-        `;
-
-        return;
-
-    }
-
-    box.innerHTML=`
-
-        <button
-            class="danger"
-            onclick="leaveGroup()">
-            مغادرة
-        </button>
-
-        <button
-            class="secondary"
-            onclick="copyCommunityLink()">
-            🔗 مشاركة
-        </button>
-
-        ${
-            isAdmin
-            ? `
-                <button
-                    class="blue"
-                    onclick="openGroupSettings()">
-                    ⚙️ إعدادات الإدارة
-                </button>
-            `
-            :""
-        }
-
-    `;
-
-}
-
-
-/* =========================================================
-   JOIN GROUP
-========================================================= */
-
-async function joinGroup(){
-
-    if(!currentUser){
-
-        openModal("loginModal");
-
-        return;
-
-    }
-
-    if(
-        (currentCommunity.bannedUsers||[])
-        .includes(currentUser.uid)
-    ){
-
-        toast("أنت مطرود من هذا الجروب.");
-
-        return;
-
-    }
-
-    if(currentCommunity.privacy==="private"){
-
-        await db
-        .collection("groups")
-        .doc(currentCommunity.id)
-        .collection("joinRequests")
-        .doc(currentUser.uid)
-        .set({
-
-            uid:currentUser.uid,
-
-            profileId:
-                currentProfile.profileId,
-
-            name:
-                currentProfile.name,
-
-            status:"pending",
-
-            createdAt:
-                firebase.firestore.FieldValue.serverTimestamp()
-
-        });
-
-        toast(
-            "تم إرسال طلب الانضمام."
-        );
-
-        return;
-
-    }
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .update({
-
-        members:
-            firebase.firestore.FieldValue.arrayUnion(
-                currentUser.uid
-            ),
-
-        memberCount:
-            firebase.firestore.FieldValue.increment(1)
-
-    });
-
-    currentCommunity.members.push(
-        currentUser.uid
-    );
-
-    currentCommunity.memberCount++;
-
-    renderCommunityActions();
-
-    toast("تم الانضمام للجروب.");
-
-}
-
-
-/* =========================================================
-   LEAVE GROUP
-========================================================= */
-
-async function leaveGroup(){
-
-    if(!confirm("هل تريد مغادرة الجروب؟"))
-        return;
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .update({
-
-        members:
-            firebase.firestore.FieldValue.arrayRemove(
-                currentUser.uid
-            ),
-
-        memberCount:
-            firebase.firestore.FieldValue.increment(-1)
-
-    });
-
-    currentCommunity.members =
-        currentCommunity.members
-        .filter(
-            uid=>uid!==currentUser.uid
-        );
-
-    currentCommunity.memberCount--;
-
-    renderCommunityActions();
-
-    toast("تمت مغادرة الجروب.");
-
-}
-
-
-/* =========================================================
-   BAN USER
-========================================================= */
-
-async function banUser(uid){
-
-    if(!isGroupAdmin()){
-
-        toast("ليس لديك صلاحية.");
-
-        return;
-
-    }
-
-    if(uid===currentCommunity.ownerUid){
-
-        toast("لا يمكن طرد مالك الجروب.");
-
-        return;
-
-    }
-
-    if(!confirm("طرد هذا المستخدم؟"))
-        return;
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .update({
-
-        members:
-            firebase.firestore.FieldValue.arrayRemove(
-                uid
-            ),
-
-        bannedUsers:
-            firebase.firestore.FieldValue.arrayUnion(
-                uid
-            ),
-
-        memberCount:
-            firebase.firestore.FieldValue.increment(-1)
-
-    });
-
-    toast(
-        "تم طرد المستخدم ولن يستطيع العودة إلا بطلب."
-    );
-
-    await loadMembers();
-
-}
-
-
-/* =========================================================
-   REQUEST RETURN
-========================================================= */
-
-async function requestReturn(){
-
-    if(!currentUser)
-        return;
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .collection("returnRequests")
-    .doc(currentUser.uid)
-    .set({
-
-        uid:currentUser.uid,
-
-        profileId:
-            currentProfile.profileId,
-
-        name:
-            currentProfile.name,
-
-        status:"pending",
-
-        createdAt:
-            firebase.firestore.FieldValue.serverTimestamp()
-
-    });
-
-    toast(
-        "تم إرسال طلب العودة للمالك/المشرف."
-    );
-
-}
-
-
-/* =========================================================
-   LOAD MEMBERS
-========================================================= */
-
-async function loadMembers(){
-
-    const list =
-        document
-        .getElementById("membersList");
-
-    list.innerHTML="جارٍ التحميل...";
-
-    const memberIds =
-        currentCommunity.members || [];
-
-    if(memberIds.length===0){
-
-        list.innerHTML=
-        "<p>لا يوجد أعضاء.</p>";
-
-        return;
-
-    }
-
-    const members=[];
-
-    for(
-        const uid of memberIds
-    ){
-
-        const snap =
-            await db
-            .collection("users")
-            .doc(uid)
-            .get();
-
-        if(snap.exists){
-
-            members.push({
-                uid,
-                ...snap.data()
-            });
-
-        }
-
-    }
-
-    list.innerHTML="";
-
-    const admin =
-        isGroupAdmin();
-
-    members.forEach(user=>{
-
-        const div =
-            document.createElement("div");
-
-        div.className="member";
-
-        div.innerHTML=`
-
-            <div class="member-info">
-
-                <img
-                    class="avatar"
-                    src="${
-                        user.avatar ||
-                        "https://i.pravatar.cc/100"
-                    }">
-
-                <div>
-
-                    <b>
-                        ${escapeHtml(user.name)}
-                    </b>
-
-                    <div style="font-size:10px;color:#888">
-                        @${escapeHtml(user.username||"")}
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div>
-
-                ${
-                    user.uid===
-                    currentCommunity.ownerUid
-                    ? `<span class="badge">
-                        المالك
-                       </span>`
-                    :
-                    (
-                        currentCommunity.admins||[]
-                    ).includes(user.uid)
-                    ? `<span class="badge">
-                        مشرف
-                       </span>`
-                    :
-                    admin
-                    ? `
-                        <button
-                            class="danger"
-                            style="padding:4px 7px;font-size:10px"
-                            onclick="banUser('${user.uid}')">
-                            طرد
-                        </button>
-                    `
-                    :""
-                }
-
-            </div>
-
-        `;
-
-        div.onclick=(e)=>{
-
-            if(
-                e.target.tagName==="BUTTON"
-            )
-                return;
-
-            openProfile(user.uid);
-
-        };
-
-        list.appendChild(div);
-
-    });
-
-}
-
-
-/* =========================================================
-   GROUP ADMIN CHECK
-========================================================= */
-
-function isGroupAdmin(){
-
-    if(!currentUser || !currentCommunity)
-        return false;
-
-    return(
-        currentCommunity.ownerUid===
-        currentUser.uid
-        ||
-        (
-            currentCommunity.admins||[]
-        ).includes(currentUser.uid)
-    );
-
-}
-
-
-/* =========================================================
-   GROUP SETTINGS
-========================================================= */
-
-async function openGroupSettings(){
-
-    if(!isGroupAdmin()){
-
-        toast("هذه الإعدادات للمشرفين فقط.");
-
-        return;
-
-    }
-
-    const isOwner =
-        currentCommunity.ownerUid===
-        currentUser.uid;
-
-    const content =
-        document
-        .getElementById("groupSettingsContent");
-
-    content.innerHTML=`
-
-        <div class="admin-section">
-
-            <h3>الخصوصية</h3>
-
-            <button
-                class="primary"
-                onclick="toggleGroupPrivacy()">
-
-                ${
-                    currentCommunity.privacy==="public"
-                    ? "تحويل الجروب إلى خاص"
-                    : "تحويل الجروب إلى علني"
-                }
-
-            </button>
-
-        </div>
-
-
-        <div class="admin-section">
-
-            <h3>الدردشة</h3>
-
-            <button
-                class="${
-                    currentCommunity.chatClosed
-                    ? "primary"
-                    : "danger"
-                }"
-                onclick="toggleChatLock()">
-
-                ${
-                    currentCommunity.chatClosed
-                    ? "فتح الدردشة"
-                    : "إغلاق الدردشة"
-                }
-
-            </button>
-
-        </div>
-
-
-        ${
-            isOwner
-            ? `
-            <div class="admin-section">
-
-                <h3>
-                    إضافة مشرفين
-                </h3>
-
-                <input
-                    id="newAdminUsername"
-                    placeholder="اكتب Username الشخص">
-
-                <button
-                    class="primary"
-                    style="margin-top:8px"
-                    onclick="addGroupAdmin()">
-
-                    إضافة مشرف
-
-                </button>
-
-            </div>
-            `
-            :""
-        }
-
-
-        <div class="admin-section">
-
-            <h3>
-                طلبات الانضمام
-            </h3>
-
-            <div id="groupJoinRequests">
-                جارٍ التحميل...
-            </div>
-
-        </div>
-
-
-        <div class="admin-section">
-
-            <h3>
-                طلبات العودة
-            </h3>
-
-            <div id="groupReturnRequests">
-                جارٍ التحميل...
-            </div>
-
-        </div>
-
-    `;
-
-    openModal("groupSettingsModal");
-
-    loadGroupRequests();
-
-    loadGroupReturnRequests();
-
-}
-
-
-/* =========================================================
-   TOGGLE PRIVACY
-========================================================= */
-
-async function toggleGroupPrivacy(){
-
-    const newPrivacy =
-        currentCommunity.privacy==="public"
-        ? "private"
-        : "public";
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .update({
-
-        privacy:newPrivacy
-
-    });
-
-    currentCommunity.privacy=
-        newPrivacy;
-
-    renderCommunityActions();
-
-    closeModal("groupSettingsModal");
-
-    toast("تم تغيير خصوصية الجروب.");
-
-}
-
-
-/* =========================================================
-   TOGGLE CHAT
-========================================================= */
-
-async function toggleChatLock(){
-
-    const newState =
-        !currentCommunity.chatClosed;
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .update({
-
-        chatClosed:newState
-
-    });
-
-    currentCommunity.chatClosed=
-        newState;
-
-    renderGroupChatState();
-
-    closeModal("groupSettingsModal");
-
-    toast(
-        newState
-        ? "تم إغلاق الدردشة."
-        : "تم فتح الدردشة."
-    );
-
-}
-
-
-/* =========================================================
-   ADD ADMIN
-========================================================= */
-
-async function addGroupAdmin(){
-
-    if(
-        currentCommunity.ownerUid !==
-        currentUser.uid
-    ){
-
-        toast(
-            "مالك الجروب فقط يستطيع إضافة المشرفين."
-        );
-
-        return;
-
-    }
-
-    const username =
-        normalizeUsername(
-            document
-            .getElementById("newAdminUsername")
-            .value
-        );
-
-    if(!username){
-
-        toast("اكتب اسم المستخدم.");
-
-        return;
-
-    }
-
-    const usernameSnap =
-        await db
-        .collection("usernames")
-        .doc(username)
-        .get();
-
-    if(!usernameSnap.exists){
-
-        toast("هذا المستخدم غير موجود.");
-
-        return;
-
-    }
-
-    const uid =
-        usernameSnap.data().uid;
-
-    if(uid===currentUser.uid){
-
-        toast("أنت مالك الجروب بالفعل.");
-
-        return;
-
-    }
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .update({
-
-        admins:
-            firebase.firestore.FieldValue.arrayUnion(
-                uid
-            )
-
-    });
-
-    currentCommunity.admins =
-        currentCommunity.admins || [];
-
-    currentCommunity.admins.push(uid);
-
-    toast("تم تعيينه مشرفًا.");
-
-    openGroupSettings();
-
-    loadMembers();
-
-}
-
-
-/* =========================================================
-   GROUP JOIN REQUESTS
-========================================================= */
-
-async function loadGroupRequests(){
-
-    const box =
-        document
-        .getElementById("groupJoinRequests");
-
-    const snap =
-        await db
-        .collection("groups")
-        .doc(currentCommunity.id)
-        .collection("joinRequests")
-        .where("status","==","pending")
-        .get();
-
-    box.innerHTML="";
-
-    if(snap.empty){
-
-        box.innerHTML=
-        "<p>لا توجد طلبات.</p>";
-
-        return;
-
-    }
-
-    snap.forEach(doc=>{
-
-        const data=doc.data();
-
-        const div =
-            document.createElement("div");
-
-        div.className="admin-item";
-
-        div.innerHTML=`
-
-            <div>
-                <b>${escapeHtml(data.name)}</b>
-                <br>
-                <small>
-                    ID: ${data.profileId}
-                </small>
-            </div>
-
-            <div class="admin-actions">
-
-                <button
-                    class="primary"
-                    onclick="approveJoinRequest('${doc.id}')">
-                    قبول
-                </button>
-
-                <button
-                    class="danger"
-                    onclick="rejectJoinRequest('${doc.id}')">
-                    رفض
-                </button>
-
-            </div>
-
-        `;
-
-        box.appendChild(div);
-
-    });
-
-}
-
-
-/* =========================================================
-   APPROVE JOIN
-========================================================= */
-
-async function approveJoinRequest(uid){
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .update({
-
-        members:
-            firebase.firestore.FieldValue.arrayUnion(uid),
-
-        memberCount:
-            firebase.firestore.FieldValue.increment(1)
-
-    });
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .collection("joinRequests")
-    .doc(uid)
-    .update({
-
-        status:"approved"
-
-    });
-
-    toast("تم قبول الطلب.");
-
-    loadGroupRequests();
-
-}
-
-
-/* =========================================================
-   REJECT JOIN
-========================================================= */
-
-async function rejectJoinRequest(uid){
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .collection("joinRequests")
-    .doc(uid)
-    .update({
-
-        status:"rejected"
-
-    });
-
-    toast("تم رفض الطلب.");
-
-    loadGroupRequests();
-
-}
-
-
-/* =========================================================
-   RETURN REQUESTS
-========================================================= */
-
-async function loadGroupReturnRequests(){
-
-    const box =
-        document
-        .getElementById("groupReturnRequests");
-
-    const snap =
-        await db
-        .collection("groups")
-        .doc(currentCommunity.id)
-        .collection("returnRequests")
-        .where("status","==","pending")
-        .get();
-
-    box.innerHTML="";
-
-    if(snap.empty){
-
-        box.innerHTML=
-        "<p>لا توجد طلبات عودة.</p>";
-
-        return;
-
-    }
-
-    snap.forEach(doc=>{
-
-        const data=doc.data();
-
-        const div =
-            document.createElement("div");
-
-        div.className="admin-item";
-
-        div.innerHTML=`
-
-            <div>
-
-                <b>
-                    ${escapeHtml(data.name)}
-                </b>
-
-                <br>
-
-                <small>
-                    ID: ${data.profileId}
-                </small>
-
-            </div>
-
-            <div class="admin-actions">
-
-                <button
-                    class="primary"
-                    onclick="approveReturn('${doc.id}')">
-
-                    قبول
-
-                </button>
-
-                <button
-                    class="danger"
-                    onclick="rejectReturn('${doc.id}')">
-
-                    رفض
-
-                </button>
-
-            </div>
-
-        `;
-
-        box.appendChild(div);
-
-    });
-
-}
-
-
-/* =========================================================
-   APPROVE RETURN
-========================================================= */
-
-async function approveReturn(uid){
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .update({
-
-        members:
-            firebase.firestore.FieldValue.arrayUnion(uid),
-
-        bannedUsers:
-            firebase.firestore.FieldValue.arrayRemove(uid),
-
-        memberCount:
-            firebase.firestore.FieldValue.increment(1)
-
-    });
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .collection("returnRequests")
-    .doc(uid)
-    .update({
-
-        status:"approved"
-
-    });
-
-    toast("تم قبول طلب العودة.");
-
-    loadGroupReturnRequests();
-
-}
-
-
-/* =========================================================
-   REJECT RETURN
-========================================================= */
-
-async function rejectReturn(uid){
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .collection("returnRequests")
-    .doc(uid)
-    .update({
-
-        status:"rejected"
-
-    });
-
-    toast("تم رفض الطلب.");
-
-    loadGroupReturnRequests();
-
-}
-
-
-/* =========================================================
-   GROUP MESSAGES
-========================================================= */
-
-function listenGroupMessages(){
-
-    if(unsubscribeGroupMessages)
-        unsubscribeGroupMessages();
-
-    unsubscribeGroupMessages =
-        db
-        .collection("groups")
-        .doc(currentCommunity.id)
-        .collection("messages")
-        .orderBy("createdAt","asc")
-        .onSnapshot(snapshot=>{
-
-            const box =
-                document
-                .getElementById("groupMessages");
-
-            box.innerHTML="";
-
-            snapshot.forEach(doc=>{
-
-                const msg={
-                    id:doc.id,
-                    ...doc.data()
-                };
-
-                renderMessage(
-                    box,
-                    msg,
-                    "group"
-                );
-
-            });
-
-            box.scrollTop=
-                box.scrollHeight;
-
-            renderGroupChatState();
-
-        });
-
-}
-
-
-/* =========================================================
-   GROUP CHAT STATE
-========================================================= */
-
-function renderGroupChatState(){
-
-    const input =
-        document
-        .getElementById("groupChatInput");
-
-    const isMember =
-        currentUser &&
-        currentCommunity &&
-        (
-            currentCommunity.members||[]
-        ).includes(currentUser.uid);
-
-    if(
-        currentCommunity &&
-        currentCommunity.chatClosed
-    ){
-
-        input.innerHTML=`
-
-            <div style="
-                width:100%;
-                text-align:center;
-                color:#c62828;
-                font-weight:700;
-                padding:10px">
-
-                🔒 الدردشة مغلقة من إدارة الجروب
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-    if(!isMember){
-
-        input.innerHTML=`
-
-            <div style="
-                width:100%;
-                text-align:center;
-                color:#777;
-                padding:10px">
-
-                انضم للجروب للمشاركة في الدردشة.
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-    input.innerHTML=`
-
-        <input
-            id="groupMessageInput"
-            placeholder="اكتب رسالة..."
-            onkeydown="if(event.key==='Enter')sendGroupMessage()">
-
-        <button
-            class="primary"
-            onclick="sendGroupMessage()">
-
-            <i class="fa-solid fa-paper-plane"></i>
-
-        </button>
-
-    `;
-
-}
-
-
-/* =========================================================
-   SEND GROUP MESSAGE
-========================================================= */
-
-async function sendGroupMessage(){
-
-    if(!currentUser || !currentProfile)
-        return;
-
-    if(currentCommunity.chatClosed){
-
-        toast("الدردشة مغلقة.");
-
-        return;
-
-    }
-
-    if(
-        !(currentCommunity.members||[])
-        .includes(currentUser.uid)
-    ){
-
-        toast("أنت لست عضوًا.");
-
-        return;
-
-    }
-
-    const input =
-        document
-        .getElementById("groupMessageInput");
-
-    const text =
-        input.value.trim();
-
-    if(!text)
-        return;
-
-    if(containsLink(text)){
-
-        toast("ممنوع إرسال الروابط.");
-
-        return;
-
-    }
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .collection("messages")
-    .add({
-
-        uid:currentUser.uid,
-
-        name:currentProfile.name,
-
-        username:
-            currentProfile.username,
-
-        text,
-
-        createdAt:
-            firebase.firestore.FieldValue.serverTimestamp(),
-
-        pinned:false
-
-    });
-
-    input.value="";
-
-}
-
-
-/* =========================================================
-   RENDER MESSAGE
-========================================================= */
-
-function renderMessage(box,msg,type){
-
-    const div =
-        document.createElement("div");
-
-    div.className=
-        "message "+
-        (
-            msg.uid===currentUser?.uid
-            ? "mine"
-            :""
-        );
-
-    const admin =
-        type==="group" &&
-        isGroupAdmin();
-
-    div.id=
-        "message-"+msg.id;
-
-    div.innerHTML=`
-
-        <div class="message-name">
-
-            ${escapeHtml(msg.name)}
-
-            ${
-                msg.pinned
-                ? " 📌"
-                :""
-            }
-
-        </div>
-
         <div>
-            ${escapeHtml(msg.text)}
+            <span id="user-display-info" style="margin-left: 15px; font-weight: bold;"></span>
+            <button class="btn" id="auth-btn" onclick="toggleAuthModal()" style="background:#e67e22;">تسجيل / دخول</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- شريط البحث العام -->
+        <input type="text" id="global-search" class="search-bar" placeholder="ابحث عن قناة أو جروب معين..." oninput="filterContent()">
+
+        <!-- التبويبات الرئيسية -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('groups')">الجروبات</button>
+            <button class="tab-btn" onclick="switchTab('channels')">القنوات</button>
+            <button class="tab-btn hidden" id="admin-tab-btn" onclick="switchTab('admin')">لوحة المشرف العام</button>
         </div>
 
-        <div class="message-time">
+        <!-- محتوى الجروبات -->
+        <div id="tab-groups" class="tab-content">
+            <button class="btn" onclick="openCreateGroupModal()" style="margin-bottom: 20px;">إنشاء جروب جديد</button>
+            <div id="groups-list"></div>
+        </div>
 
-            ${
-                msg.createdAt &&
-                msg.createdAt.toDate
-                ? msg.createdAt.toDate()
-                    .toLocaleTimeString()
-                :""
+        <!-- محتوى القنوات -->
+        <div id="tab-channels" class="tab-content hidden">
+            <button class="btn" onclick="openCreateChannelModal()" style="margin-bottom: 20px;">إنشاء قناة جديدة</button>
+            <div id="channels-list"></div>
+        </div>
+
+        <!-- لوحة المشرف العام -->
+        <div id="tab-admin" class="tab-content hidden">
+            <h2>لوحة التحكم والمراجعة العامة</h2>
+            <hr>
+            <h3>الجروبات قيد الانتظار للمراجعة</h3>
+            <div id="admin-pending-groups"></div>
+            
+            <h3 style="margin-top: 30px;">قسم الرشق (زيادة متابعين القنوات)</h3>
+            <div class="card">
+                <select id="rush-channel-select"></select>
+                <input type="number" id="rush-amount" placeholder="عدد المتابعين المراد إضافتهم">
+                <button class="btn" onclick="executeRush()" style="background: #8e44ad;">تنفيذ الرشق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة غرفة الجروب الداخلية والشات والأدوات -->
+    <div id="room-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-modal-btn" onclick="closeRoom()">إغلاق</button>
+            <h2 id="room-title" style="margin-top:0;">عنوان الجروب</h2>
+            <p id="room-desc" style="color: #666;"></p>
+            <div id="room-meta"></div>
+            <hr style="margin: 15px 0;">
+
+            <!-- شريط الرسائل المثبتة -->
+            <div id="pinned-messages-container"></div>
+
+            <!-- صندوق الشات الخاص بالجروب -->
+            <div id="room-chat-box" style="height: 280px; overflow-y: auto; border: 1px solid #ddd; padding: 12px; background: #fafafa; border-radius: 6px; margin-bottom: 12px;"></div>
+
+            <div id="chat-input-area">
+                <textarea id="message-input" placeholder="اكتب رسالتك هنا... (ممنوع الروابط نهائياً)" rows="2"></textarea>
+                <button class="btn" onclick="sendGroupMessage()">إرسال الرسالة</button>
+            </div>
+
+            <!-- لوحة إعدادات الجروب للمشرفين والمالك -->
+            <div id="group-settings-area" class="hidden" style="margin-top: 25px; border-top: 2px dashed #bdc3c7; padding-top: 15px;">
+                <h4 style="margin-top:0; color: #2c3e50;">إعدادات الجروب والخصوصية للمشرفين</h4>
+                <label>خصوصية الجروب:</label>
+                <select id="setting-privacy" onchange="updateGroupPrivacy()">
+                    <option value="public">علني (يظهر في القائمة للجميع)</option>
+                    <option value="private">خاص (لا يظهر إلا للمشتركين وأنا)</option>
+                </select>
+                
+                <div style="margin: 10px 0;">
+                    <label style="cursor:pointer;"><input type="checkbox" id="setting-close-chat" onchange="toggleChatClose()"> إغلاق المحادثات الخاصة بالجروب نهائياً</label>
+                </div>
+
+                <h5 style="margin: 15px 0 5px 0;">ترقية عضو إلى مشرف</h5>
+                <select id="promote-user-select"></select>
+                <button class="btn" onclick="promoteUserToAdmin()" style="margin-top: 5px; background: #27ae60;">تعيين مشرف جديد</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة محادثاتي الفردية -->
+    <div id="my-chats-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-modal-btn" onclick="closeMyChatsModal()">إغلاق</button>
+            <h2 style="margin-top:0;">محادثاتي الفردية (1 لـ 1)</h2>
+            <hr>
+            <div id="direct-chats-list"></div>
+        </div>
+    </div>
+
+    <!-- نافذة الشات الفردي والتقييم والحظر -->
+    <div id="dm-room-modal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="close-modal-btn" onclick="closeDmRoom()">إغلاق</button>
+            <h3 id="dm-partner-name" style="margin-top:0;">محادثة مع</h3>
+            
+            <div id="dm-actions-bar" style="margin-bottom: 12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn" style="background:#27ae60; font-size:13px; padding:6px 12px;" onclick="addFriend()">إضافة صديق</button>
+                <button class="btn" style="background:#c0392b; font-size:13px; padding:6px 12px;" onclick="blockUser()">حظر المستخدم</button>
+                <button class="btn" style="background:#f39c12; font-size:13px; padding:6px 12px;" onclick="openRatingModal()">إضافة تقييم (نصاب / مضمون)</button>
+            </div>
+
+            <div id="dm-chat-box" style="height: 240px; overflow-y: auto; border: 1px solid #ddd; padding: 12px; background: #fff; border-radius: 6px; margin-bottom: 10px;"></div>
+            
+            <textarea id="dm-message-input" placeholder="اكتب رسالتك الخاصة هنا..." rows="2"></textarea>
+            <button class="btn" onclick="sendDmMessage()">إرسال</button>
+        </div>
+    </div>
+
+    <script>
+        // هيكل قاعدة البيانات الكامل
+        let db = JSON.parse(localStorage.getItem('hayday_complete_db')) || {
+            users: [], // {username, password, isGlobalAdmin}
+            currentUser: null,
+            groups: [], // {id, name, desc, img, owner, admins:[], members:[], status:'pending'/'approved', privacy:'public', isClosed:false, pinnedMessages:[], messages:[]}
+            channels: [], // {id, name, desc, img, owner, followersCount, link}
+            directChats: {} // key: user1_user2 -> [messages]
+        };
+
+        const MASTER_ADMIN = "gojoesultan@gmail.com";
+
+        window.onload = function() {
+            // ضمان وجود الحساب الأساسي للمشرف العام
+            if(!db.users.some(u => u.username === MASTER_ADMIN)) {
+                db.users.push({username: MASTER_ADMIN, password: "123", isGlobalAdmin: true});
+            }
+            checkAuthUI();
+            renderGroups();
+            renderChannels();
+            renderAdminPanel();
+        };
+
+        function saveData() {
+            localStorage.setItem('hayday_complete_db', JSON.stringify(db));
+        }
+
+        // --- نظام المصادقة والأسماء الفريدة وحظر الأسماء المأخوذة ---
+        function toggleAuthModal() {
+            if(db.currentUser) {
+                if(confirm("هل تريد تسجيل الخروج؟")) {
+                    db.currentUser = null;
+                    saveData();
+                    checkAuthUI();
+                    renderGroups();
+                    renderChannels();
+                    renderAdminPanel();
+                }
+            } else {
+                let username = prompt("أدخل اسم المستخدم الفريد (أو البريد الإلكتروني):");
+                if(!username) return;
+                username = username.trim();
+
+                let existingUser = db.users.find(u => u.username === username);
+                if(existingUser) {
+                    let pass = prompt("هذا الاسم مسجل مسبقاً. أدخل كلمة المرور الخاصة بحسابك:");
+                    if(pass === existingUser.password) {
+                        db.currentUser = existingUser.username;
+                        alert("تم تسجيل الدخول بنجاح!");
+                    } else {
+                        alert("كلمة المرور غير صحيحة!");
+                        return;
+                    }
+                } else {
+                    // منع أي شخص من استخدام اسم مأخوذ أو مشابه بطريقة خاطئة
+                    let pass = prompt("اسم مستخدم جديد. اختر كلمة مرور لتأمين حسابك:");
+                    if(!pass) return;
+                    
+                    db.users.push({
+                        username: username,
+                        password: pass,
+                        isGlobalAdmin: username === MASTER_ADMIN
+                    });
+                    db.currentUser = username;
+                    alert("تم إنشاء الحساب وتسجيل الدخول بنجاح!");
+                }
+                saveData();
+                checkAuthUI();
+                renderGroups();
+                renderChannels();
+                renderAdminPanel();
+            }
+        }
+
+        function checkAuthUI() {
+            let info = document.getElementById('user-display-info');
+            let authBtn = document.getElementById('auth-btn');
+            let adminTab = document.getElementById('admin-tab-btn');
+
+            if(db.currentUser) {
+                info.innerText = `مرحباً: ${db.currentUser}`;
+                authBtn.innerText = "تسجيل خروج";
+                let userObj = db.users.find(u => u.username === db.currentUser);
+                if(userObj && userObj.isGlobalAdmin) {
+                    adminTab.classList.remove('hidden');
+                } else {
+                    adminTab.classList.add('hidden');
+                }
+            } else {
+                info.innerText = "";
+                authBtn.innerText = "تسجيل / دخول";
+                adminTab.classList.add('hidden');
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            if(tabName === 'groups') {
+                document.getElementById('tab-groups').classList.remove('hidden');
+                event.target.classList.add('active');
+                renderGroups();
+            } else if(tabName === 'channels') {
+                document.getElementById('tab-channels').classList.remove('hidden');
+                event.target.classList.add('active');
+                renderChannels();
+            } else if(tabName === 'admin') {
+                document.getElementById('tab-admin').classList.remove('hidden');
+                event.target.classList.add('active');
+                renderAdminPanel();
+            }
+        }
+
+        // --- وظيفة التحقق من الروابط الممنوعة ---
+        function containsLink(text) {
+            return /(http:\/\/|https:\/\/|www\.|\.com|\.net|\.org|t\.me|wa\.me)/i.test(text);
+        }
+
+        // --- إنشاء الجروبات مع الشروط (الاسم إجباري وغير مملوك، الوصف والصورة اختياري، بدون روابط) ---
+        function openCreateGroupModal() {
+            if(!db.currentUser) { alert("يجب تسجيل الدخول أولاً لإنشاء جروب!"); return; }
+            
+            let name = prompt("أدخل اسم الجروب (إجباري وممنوع استخدام اسم مملوك مسبقاً):");
+            if(!name) return;
+            name = name.trim();
+
+            // فحص عدم تكرار الاسم في الجروبات أو القنوات
+            let nameExists = db.groups.some(g => g.name === name) || db.channels.some(c => c.name === name);
+            if(nameExists) {
+                alert("عذراً، هذا الاسم مملوك مسبقاً لقناة أو جروب آخر. يجيب اختيار اسم فريد!");
+                return;
             }
 
-        </div>
+            let desc = prompt("أدخل وصف الجروب (اختياري - ممنوع استخدام أي روابط نهائياً):") || "";
+            if(containsLink(desc)) {
+                alert("ممنوع استخدام الروابط في وصف الجروب!");
+                return;
+            }
 
-        ${
-            admin
-            ? `
+            let img = prompt("أدخل رابط صورة الجروب (اختياري):") || "";
 
-            <div class="message-tools">
+            let newGroup = {
+                id: 'g_' + Date.now(),
+                name: name,
+                desc: desc,
+                img: img,
+                owner: db.currentUser,
+                admins: [db.currentUser],
+                members: [db.currentUser],
+                status: 'pending', // معلق حتى يراجعه المشرف العام
+                privacy: 'public', // افتراضي علني
+                isClosed: false,
+                pinnedMessages: [],
+                messages: []
+            };
 
-                ${
-                    msg.pinned
-                    ? `
-                    <button
-                        onclick="unpinMessage('${msg.id}')">
-                        إلغاء التثبيت
-                    </button>
-                    `
-                    :
-                    `
-                    <button
-                        onclick="pinMessage('${msg.id}')">
-                        📌 تثبيت
-                    </button>
-                    `
+            db.groups.push(newGroup);
+            saveData();
+            alert("تم إرسال الجروب بنجاح! بانتظار مراجعة وموافقة المشرف العام لنشره في المجتمع.");
+            renderGroups();
+        }
+
+        // --- عرض الجروبات (الأعلى هو الأكبر في المشتركين، التعامل مع الـ 1K، والجروبات الخاصة) ---
+        function renderGroups() {
+            let container = document.getElementById('groups-list');
+            let query = document.getElementById('global-search').value.toLowerCase();
+            container.innerHTML = '';
+
+            let approvedGroups = db.groups.filter(g => g.status === 'approved');
+            // ترتيب الجروبات: الأعلى هو الأكثر مشتركين
+            approvedGroups.sort((a,b) => b.members.length - a.members.length);
+
+            approvedGroups.forEach(group => {
+                if(query && !group.name.toLowerCase().includes(query) && !group.desc.toLowerCase().includes(query)) return;
+
+                let isMember = db.currentUser && group.members.includes(db.currentUser);
+                let isGlobalAdmin = db.users.find(u => u.username === db.currentUser)?.isGlobalAdmin;
+
+                // لو الجروب خاص، لا يظهر إلا للمشتركين والمشرف العام
+                if(group.privacy === 'private' && !isMember && !isGlobalAdmin) {
+                    return;
                 }
 
-            </div>
+                // حساب عدد المشتركين مع صيغة 1K إذا ععدوا الألف
+                let countNum = group.members.length;
+                let countDisplay = countNum >= 1000 ? (countNum / 1000).toFixed(1) + 'K' : countNum;
 
-            `
-            :""
+                container.innerHTML += `
+                    <div class="card">
+                        <h3 style="margin-top:0;">${group.name} <span style="font-size:13px; color:#e67e22; font-weight:normal;">(المشتركين: ${countDisplay})</span></h3>
+                        <p style="color:#555;">${group.desc || 'بدون وصف'}</p>
+                        ${isMember ? 
+                            `<button class="btn" onclick="openGroupRoom('${group.id}')">دخول الجروب والشات</button>` : 
+                            `<button class="btn" style="background:var(--accent-color);" onclick="joinGroup('${group.id}')">انضمام للجروب</button>`
+                        }
+                    </div>
+                `;
+            });
         }
 
-    `;
+        function joinGroup(groupId) {
+            if(!db.currentUser) { alert("يجب تسجيل الدخول أولاً للانضمام!"); return; }
+            let group = db.groups.find(g => g.id === groupId);
+            if(group && !group.members.includes(db.currentUser)) {
+                group.members.push(db.currentUser);
+                saveData();
+                renderGroups();
+                openGroupRoom(groupId);
+            }
+        }
 
-    box.appendChild(div);
+        // --- غرفة الجروب والرسائل المثبتة (بحد أقصى 7 رسائل والضغط للانتقال السريع) ---
+        let activeRoomId = null;
 
-}
+        function openGroupRoom(groupId) {
+            let group = db.groups.find(g => g.id === groupId);
+            if(!group) return;
+            activeRoomId = groupId;
 
+            document.getElementById('room-title').innerText = group.name;
+            document.getElementById('room-desc').innerText = group.desc || 'لا يوجد وصف';
+            document.getElementById('room-modal').classList.remove('hidden');
 
-/* =========================================================
-   PIN MESSAGE
-========================================================= */
+            let isMod = group.admins.includes(db.currentUser) || (db.users.find(u => u.username === db.currentUser)?.isGlobalAdmin);
+            let settingsArea = document.getElementById('group-settings-area');
 
-async function pinMessage(messageId){
+            if(isMod) {
+                settingsArea.classList.remove('hidden');
+                document.getElementById('setting-privacy').value = group.privacy;
+                document.getElementById('setting-close-chat').checked = group.isClosed;
 
-    const ref =
-        db
-        .collection("groups")
-        .doc(currentCommunity.id)
-        .collection("messages")
-        .doc(messageId);
-
-    const pinned =
-        currentCommunity.pinnedMessages ||
-        [];
-
-    if(pinned.length>=7){
-
-        toast(
-            "يمكن تثبيت 7 رسائل فقط."
-        );
-
-        return;
-
-    }
-
-    await ref.update({
-        pinned:true
-    });
-
-    currentCommunity.pinnedMessages =
-        [
-            ...pinned,
-            messageId
-        ];
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .update({
-        pinnedMessages:
-            currentCommunity.pinnedMessages
-    });
-
-    toast("تم تثبيت الرسالة.");
-
-}
-
-
-/* =========================================================
-   UNPIN
-========================================================= */
-
-async function unpinMessage(messageId){
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .collection("messages")
-    .doc(messageId)
-    .update({
-
-        pinned:false
-
-    });
-
-    currentCommunity.pinnedMessages =
-        (
-            currentCommunity.pinnedMessages||[]
-        ).filter(
-            id=>id!==messageId
-        );
-
-    await db
-    .collection("groups")
-    .doc(currentCommunity.id)
-    .update({
-
-        pinnedMessages:
-            currentCommunity.pinnedMessages
-
-    });
-
-    toast("تم إلغاء التثبيت.");
-
-}
-
-
-/* =========================================================
-   RENDER PINNED
-========================================================= */
-
-async function renderPinnedMessages(){
-
-    const box =
-        document
-        .getElementById("pinnedMessages");
-
-    const ids =
-        currentCommunity.pinnedMessages||[];
-
-    if(ids.length===0){
-
-        box.classList.add("hidden");
-
-        return;
-
-    }
-
-    box.classList.remove("hidden");
-
-    box.innerHTML="";
-
-    for(
-        const id of ids
-    ){
-
-        const snap =
-            await db
-            .collection("groups")
-            .doc(currentCommunity.id)
-            .collection("messages")
-            .doc(id)
-            .get();
-
-        if(!snap.exists)
-            continue;
-
-        const msg=snap.data();
-
-        const item =
-            document.createElement("div");
-
-        item.className="pin-item";
-
-        item.innerText=
-            "📌 "+
-            String(msg.text||"")
-            .split(" ")
-            .slice(0,5)
-            .join(" ");
-
-        item.onclick=()=>{
-
-            const element =
-                document
-                .getElementById(
-                    "message-"+id
-                );
-
-            if(element){
-
-                element.scrollIntoView({
-                    behavior:"smooth",
-                    block:"center"
+                // تعبئة قائمة الأعضاء لترقيتهم لمشرفين
+                let promoteSelect = document.getElementById('promote-user-select');
+                promoteSelect.innerHTML = '';
+                group.members.forEach(m => {
+                    if(!group.admins.includes(m)) {
+                        promoteSelect.innerHTML += `<option value="${m}">${m}</option>`;
+                    }
                 });
-
+            } else {
+                settingsArea.classList.add('hidden');
             }
 
-        };
-
-        box.appendChild(item);
-
-    }
-
-}
-
-
-/* =========================================================
-   PRIVATE USERS
-========================================================= */
-
-async function searchUsers(){
-
-    const text =
-        document
-        .getElementById("userSearch")
-        .value
-        .trim()
-        .toLowerCase();
-
-    const snap =
-        await db
-        .collection("users")
-        .limit(50)
-        .get();
-
-    const users=[];
-
-    snap.forEach(doc=>{
-
-        if(
-            currentUser &&
-            doc.id===currentUser.uid
-        )
-            return;
-
-        const user=doc.data();
-
-        const searchable =
-            (
-                user.name+
-                " "+
-                user.username+
-                " "+
-                user.profileId
-            ).toLowerCase();
-
-        if(
-            !text ||
-            searchable.includes(text)
-        ){
-
-            users.push({
-                uid:doc.id,
-                ...user
-            });
-
+            renderPinnedMessages(group);
+            renderGroupMessages(group);
         }
 
-    });
-
-    renderPrivateUsers(users);
-
-}
-
-
-/* =========================================================
-   PRIVATE USERS LIST
-========================================================= */
-
-function renderPrivateUsers(users){
-
-    const box =
-        document
-        .getElementById("privateUsersList");
-
-    box.innerHTML="";
-
-    users.forEach(user=>{
-
-        const div =
-            document.createElement("div");
-
-        div.className="chat-user";
-
-        div.innerHTML=`
-
-            <img
-                class="avatar"
-                src="${
-                    user.avatar ||
-                    "https://i.pravatar.cc/100"
-                }">
-
-            <div>
-
-                <b>
-                    ${escapeHtml(user.name)}
-                </b>
-
-                <div
-                    style="
-                    font-size:10px;
-                    color:#888">
-
-                    @${escapeHtml(
-                        user.username||""
-                    )}
-
-                </div>
-
-            </div>
-
-        `;
-
-        div.onclick=()=>{
-
-            selectPrivateUser(user);
-
-        };
-
-        box.appendChild(div);
-
-    });
-
-}
-
-
-/* =========================================================
-   SELECT PRIVATE USER
-========================================================= */
-
-function selectPrivateUser(user){
-
-    if(!currentUser){
-
-        openModal("loginModal");
-
-        return;
-
-    }
-
-    selectedPrivateUser=user;
-
-    document
-        .getElementById("privateChatTitle")
-        .innerText=
-        user.name;
-
-    document
-        .getElementById("privateProfileButton")
-        .classList.remove("hidden");
-
-    document
-        .getElementById("privateInput")
-        .classList.remove("hidden");
-
-    listenPrivateMessages();
-
-}
-
-
-/* =========================================================
-   PRIVATE CHAT ID
-========================================================= */
-
-function privateChatId(a,b){
-
-    return [a,b]
-        .sort()
-        .join("_");
-
-}
-
-
-/* =========================================================
-   PRIVATE MESSAGES
-========================================================= */
-
-function listenPrivateMessages(){
-
-    if(
-        unsubscribePrivateMessages
-    )
-        unsubscribePrivateMessages();
-
-    const chatId =
-        privateChatId(
-            currentUser.uid,
-            selectedPrivateUser.uid
-        );
-
-    unsubscribePrivateMessages =
-        db
-        .collection("privateChats")
-        .doc(chatId)
-        .collection("messages")
-        .orderBy("createdAt","asc")
-        .onSnapshot(snapshot=>{
-
-            const box =
-                document
-                .getElementById(
-                    "privateMessages"
-                );
-
-            box.innerHTML="";
-
-            snapshot.forEach(doc=>{
-
-                renderMessage(
-                    box,
-                    {
-                        id:doc.id,
-                        ...doc.data()
-                    },
-                    "private"
-                );
-
-            });
-
-            box.scrollTop=
-                box.scrollHeight;
-
-        });
-
-}
-
-
-/* =========================================================
-   SEND PRIVATE MESSAGE
-========================================================= */
-
-async function sendPrivateMessage(){
-
-    if(!selectedPrivateUser)
-        return;
-
-    const input =
-        document
-        .getElementById(
-            "privateMessageInput"
-        );
-
-    const text =
-        input.value.trim();
-
-    if(!text)
-        return;
-
-    if(containsLink(text)){
-
-        toast("ممنوع إرسال الروابط.");
-
-        return;
-
-    }
-
-    const chatId =
-        privateChatId(
-            currentUser.uid,
-            selectedPrivateUser.uid
-        );
-
-    await db
-    .collection("privateChats")
-    .doc(chatId)
-    .collection("messages")
-    .add({
-
-        uid:currentUser.uid,
-
-        name:
-            currentProfile.name,
-
-        text,
-
-        createdAt:
-            firebase.firestore.FieldValue.serverTimestamp()
-
-    });
-
-    await db
-    .collection("privateChats")
-    .doc(chatId)
-    .set({
-
-        users:[
-            currentUser.uid,
-            selectedPrivateUser.uid
-        ],
-
-        updatedAt:
-            firebase.firestore.FieldValue.serverTimestamp()
-
-    },{
-        merge:true
-    });
-
-    input.value="";
-
-}
-
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-async function openProfile(uid){
-
-    const snap =
-        await db
-        .collection("users")
-        .doc(uid)
-        .get();
-
-    if(!snap.exists)
-        return;
-
-    const user={
-        uid,
-        ...snap.data()
-    };
-
-    selectedPrivateUser=user;
-
-    const box =
-        document
-        .getElementById("profileContent");
-
-    const ratingSnap =
-        await db
-        .collection("users")
-        .doc(uid)
-        .collection("ratings")
-        .get();
-
-    let total=0;
-
-    let count=0;
-
-    ratingSnap.forEach(doc=>{
-
-        total+=
-            Number(
-                doc.data().stars||0
-            );
-
-        count++;
-
-    });
-
-    const average =
-        count
-        ? (total/count).toFixed(1)
-        : "لا يوجد";
-
-    box.innerHTML=`
-
-        <img
-            class="profile-avatar"
-            src="${
-                user.avatar ||
-                "https://i.pravatar.cc/200"
-            }">
-
-        <h2>
-            ${escapeHtml(user.name)}
-        </h2>
-
-        <p>
-            @${escapeHtml(user.username||"")}
-        </p>
-
-        <p>
-            ID: ${user.profileId}
-        </p>
-
-        <div class="rating">
-            ⭐ ${average}
-        </div>
-
-        <br>
-
-        <button
-            class="primary"
-            onclick="startPrivateFromProfile()">
-
-            💬 محادثة خاصة
-
-        </button>
-
-        <button
-            class="secondary"
-            onclick="addFriend('${uid}')">
-
-            ➕ إضافة صديق
-
-        </button>
-
-        <button
-            class="danger"
-            onclick="blockUser('${uid}')">
-
-            🚫 حظر
-
-        </button>
-
-        <button
-            class="blue"
-            onclick="rateUser('${uid}')">
-
-            ⭐ إضافة تقييم
-
-        </button>
-
-    `;
-
-    openModal("profileModal");
-
-}
-
-
-/* =========================================================
-   START PRIVATE CHAT
-========================================================= */
-
-function startPrivateFromProfile(){
-
-    closeModal("profileModal");
-
-    showSection("private");
-
-    if(selectedPrivateUser)
-        selectPrivateUser(
-            selectedPrivateUser
-        );
-
-}
-
-
-/* =========================================================
-   SELECTED PROFILE
-========================================================= */
-
-function openSelectedProfile(){
-
-    if(selectedPrivateUser)
-        openProfile(
-            selectedPrivateUser.uid
-        );
-
-}
-
-
-/* =========================================================
-   ADD FRIEND
-========================================================= */
-
-async function addFriend(uid){
-
-    if(!currentUser)
-        return;
-
-    await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .update({
-
-        friends:
-            firebase.firestore.FieldValue.arrayUnion(
-                uid
-            )
-
-    });
-
-    toast("تمت إضافة الصديق.");
-
-}
-
-
-/* =========================================================
-   BLOCK
-========================================================= */
-
-async function blockUser(uid){
-
-    if(!currentUser)
-        return;
-
-    await db
-    .collection("users")
-    .doc(currentUser.uid)
-    .update({
-
-        blockedUsers:
-            firebase.firestore.FieldValue.arrayUnion(
-                uid
-            )
-
-    });
-
-    toast("تم حظر المستخدم.");
-
-}
-
-
-/* =========================================================
-   RATE USER
-========================================================= */
-
-function rateUser(uid){
-
-    const stars =
-        prompt(
-            "اكتب التقييم من 1 إلى 5:"
-        );
-
-    const number =
-        Number(stars);
-
-    if(
-        !number ||
-        number<1 ||
-        number>5
-    ){
-
-        toast("تقييم غير صحيح.");
-
-        return;
-
-    }
-
-    const text =
-        prompt(
-            "اكتب تعليقك: هل الشخص مضمون أم نصاب؟"
-        );
-
-    if(
-        text &&
-        containsLink(text)
-    ){
-
-        toast("ممنوع الروابط.");
-
-        return;
-
-    }
-
-    db
-    .collection("users")
-    .doc(uid)
-    .collection("ratings")
-    .doc(currentUser.uid)
-    .set({
-
-        stars:number,
-
-        text:text||"",
-
-        fromUid:
-            currentUser.uid,
-
-        fromName:
-            currentProfile.name,
-
-        createdAt:
-            firebase.firestore.FieldValue.serverTimestamp()
-
-    })
-    .then(()=>{
-
-        toast("تم إضافة التقييم.");
-
-        openProfile(uid);
-
-    });
-
-}
-
-
-/* =========================================================
-   REVIEW STORE
-========================================================= */
-
-async function submitReview(){
-
-    if(!currentUser){
-
-        toast("سجل الدخول أولًا.");
-
-        return;
-
-    }
-
-    const stars =
-        Number(
-            document
-            .getElementById("reviewStars")
-            .value
-        );
-
-    const text =
-        document
-        .getElementById("reviewText")
-        .value.trim();
-
-    if(!text){
-
-        toast("اكتب التقييم.");
-
-        return;
-
-    }
-
-    await db
-    .collection("reviews")
-    .add({
-
-        uid:currentUser.uid,
-
-        author:
-            currentProfile.name,
-
-        stars,
-
-        text,
-
-        createdAt:
-            firebase.firestore.FieldValue.serverTimestamp()
-
-    });
-
-    closeModal("reviewModal");
-
-    document
-        .getElementById("reviewText")
-        .value="";
-
-    loadReviews();
-
-    toast("تم إرسال التقييم.");
-
-}
-
-
-/* =========================================================
-   LOAD REVIEWS
-========================================================= */
-
-async function loadReviews(){
-
-    const snap =
-        await db
-        .collection("reviews")
-        .orderBy("createdAt","desc")
-        .limit(30)
-        .get();
-
-    const box =
-        document
-        .getElementById(
-            "reviewsContainer"
-        );
-
-    box.innerHTML="";
-
-    snap.forEach(doc=>{
-
-        const r=doc.data();
-
-        const div =
-            document.createElement("div");
-
-        div.className="review";
-
-        div.innerHTML=`
-
-            <div>
-                ${"⭐".repeat(
-                    Number(r.stars||0)
-                )}
-            </div>
-
-            <p>
-                "${escapeHtml(r.text)}"
-            </p>
-
-            <b>
-                - ${escapeHtml(r.author)}
-            </b>
-
-        `;
-
-        box.appendChild(div);
-
-    });
-
-}
-
-
-/* =========================================================
-   ADMIN PANEL
-========================================================= */
-
-function openAdmin(){
-
-    if(
-        !currentProfile ||
-        (
-            currentProfile.profileId !==
-            ADMIN_PROFILE_ID &&
-            currentProfile.email !==
-            ADMIN_EMAIL
-        )
-    ){
-
-        toast("غير مصرح.");
-
-        return;
-
-    }
-
-    openModal("adminModal");
-
-    loadAdminGroups();
-
-    loadAdminReturnRequests();
-
-    loadAdminUsers();
-
-    loadChannelsForRashq();
-
-}
-
-
-/* =========================================================
-   ADMIN GROUPS
-========================================================= */
-
-async function loadAdminGroups(){
-
-    const box =
-        document
-        .getElementById(
-            "adminGroupsList"
-        );
-
-    const snap =
-        await db
-        .collection("groups")
-        .where("status","==","pending")
-        .get();
-
-    box.innerHTML="";
-
-    if(snap.empty){
-
-        box.innerHTML=
-        "<p>لا توجد طلبات.</p>";
-
-        return;
-
-    }
-
-    snap.forEach(doc=>{
-
-        const g=doc.data();
-
-        const div =
-            document.createElement("div");
-
-        div.className="admin-item";
-
-        div.innerHTML=`
-
-            <div>
-
-                <b>
-                    ${escapeHtml(g.name)}
-                </b>
-
-                <br>
-
-                <small>
-                    المالك:
-                    ${escapeHtml(g.ownerName)}
-                </small>
-
-                <br>
-
-                <small>
-                    ${escapeHtml(
-                        g.description||""
-                    )}
-                </small>
-
-            </div>
-
-            <div class="admin-actions">
-
-                <button
-                    class="primary"
-                    onclick="approveGroup('${doc.id}')">
-
-                    موافقة
-
-                </button>
-
-                <button
-                    class="danger"
-                    onclick="rejectGroup('${doc.id}')">
-
-                    رفض
-
-                </button>
-
-            </div>
-
-        `;
-
-        box.appendChild(div);
-
-    });
-
-}
-
-
-/* =========================================================
-   APPROVE GROUP
-========================================================= */
-
-async function approveGroup(id){
-
-    await db
-    .collection("groups")
-    .doc(id)
-    .update({
-
-        status:"approved"
-
-    });
-
-    toast("تمت الموافقة على الجروب.");
-
-    loadAdminGroups();
-
-}
-
-
-/* =========================================================
-   REJECT GROUP
-========================================================= */
-
-async function rejectGroup(id){
-
-    await db
-    .collection("groups")
-    .doc(id)
-    .update({
-
-        status:"rejected"
-
-    });
-
-    toast("تم رفض الجروب.");
-
-    loadAdminGroups();
-
-}
-
-
-/* =========================================================
-   ADMIN RETURN REQUESTS
-========================================================= */
-
-async function loadAdminReturnRequests(){
-
-    const box =
-        document
-        .getElementById(
-            "adminReturnRequests"
-        );
-
-    const groups =
-        await db
-        .collection("groups")
-        .get();
-
-    box.innerHTML="";
-
-    for(
-        const groupDoc of groups.docs
-    ){
-
-        const group =
-            groupDoc.data();
-
-        if(
-            group.ownerUid !==
-            currentUser.uid &&
-            currentUser.email !==
-            ADMIN_EMAIL
-        )
-            continue;
-
-        const requests =
-            await db
-            .collection("groups")
-            .doc(groupDoc.id)
-            .collection("returnRequests")
-            .where("status","==","pending")
-            .get();
-
-        requests.forEach(req=>{
-
-            const r=req.data();
-
-            const div =
-                document.createElement("div");
-
-            div.className="admin-item";
-
-            div.innerHTML=`
-
-                <div>
-
-                    <b>
-                        ${escapeHtml(r.name)}
-                    </b>
-
-                    يريد العودة إلى:
-
-                    <strong>
-                        ${escapeHtml(group.name)}
-                    </strong>
-
-                </div>
-
-                <div class="admin-actions">
-
-                    <button
-                        class="primary"
-                        onclick="adminApproveReturn(
-                            '${groupDoc.id}',
-                            '${req.id}'
-                        )">
-
-                        قبول
-
-                    </button>
-
-                    <button
-                        class="danger"
-                        onclick="adminRejectReturn(
-                            '${groupDoc.id}',
-                            '${req.id}'
-                        )">
-
-                        رفض
-
-                    </button>
-
-                </div>
-
-            `;
-
-            box.appendChild(div);
-
-        });
-
-    }
-
-}
-
-
-/* =========================================================
-   ADMIN APPROVE RETURN
-========================================================= */
-
-async function adminApproveReturn(
-    groupId,
-    uid
-){
-
-    await db
-    .collection("groups")
-    .doc(groupId)
-    .update({
-
-        members:
-            firebase.firestore.FieldValue.arrayUnion(uid),
-
-        bannedUsers:
-            firebase.firestore.FieldValue.arrayRemove(uid),
-
-        memberCount:
-            firebase.firestore.FieldValue.increment(1)
-
-    });
-
-    await db
-    .collection("groups")
-    .doc(groupId)
-    .collection("returnRequests")
-    .doc(uid)
-    .update({
-
-        status:"approved"
-
-    });
-
-    toast("تم قبول طلب العودة.");
-
-    loadAdminReturnRequests();
-
-}
-
-
-/* =========================================================
-   ADMIN REJECT RETURN
-========================================================= */
-
-async function adminRejectReturn(
-    groupId,
-    uid
-){
-
-    await db
-    .collection("groups")
-    .doc(groupId)
-    .collection("returnRequests")
-    .doc(uid)
-    .update({
-
-        status:"rejected"
-
-    });
-
-    toast("تم رفض الطلب.");
-
-    loadAdminReturnRequests();
-
-}
-
-
-/* =========================================================
-   ADMIN USERS
-========================================================= */
-
-async function loadAdminUsers(){
-
-    const box =
-        document
-        .getElementById(
-            "adminUsersList"
-        );
-
-    const snap =
-        await db
-        .collection("users")
-        .limit(100)
-        .get();
-
-    box.innerHTML="";
-
-    snap.forEach(doc=>{
-
-        const u=doc.data();
-
-        const div =
-            document.createElement("div");
-
-        div.className="admin-item";
-
-        div.innerHTML=`
-
-            <div>
-
-                <b>
-                    ${escapeHtml(u.name)}
-                </b>
-
-                <br>
-
-                @${escapeHtml(
-                    u.username||""
-                )}
-
-                <br>
-
-                ID:
-                ${u.profileId}
-
-            </div>
-
-            <button
-                class="secondary"
-                onclick="openProfile('${doc.id}')">
-
-                عرض
-
-            </button>
-
-        `;
-
-        box.appendChild(div);
-
-    });
-
-}
-
-
-/* =========================================================
-   RASHQ CHANNELS
-========================================================= */
-
-async function loadChannelsForRashq(){
-
-    const select =
-        document
-        .getElementById(
-            "rashqChannel"
-        );
-
-    select.innerHTML="";
-
-    const snap =
-        await db
-        .collection("channels")
-        .get();
-
-    snap.forEach(doc=>{
-
-        const c=doc.data();
-
-        const option =
-            document.createElement("option");
-
-        option.value=doc.id;
-
-        option.innerText=
-            c.name;
-
-        select.appendChild(option);
-
-    });
-
-}
-
-
-/* =========================================================
-   RASHQ
-========================================================= */
-
-async function applyRashq(){
-
-    const id =
-        document
-        .getElementById(
-            "rashqChannel"
-        )
-        .value;
-
-    const count =
-        Number(
-            document
-            .getElementById(
-                "rashqCount"
-            )
-            .value
-        );
-
-    if(!id){
-
-        toast("اختر قناة.");
-
-        return;
-
-    }
-
-    if(
-        Number.isNaN(count) ||
-        count<0
-    ){
-
-        toast("عدد غير صحيح.");
-
-        return;
-
-    }
-
-    await db
-    .collection("channels")
-    .doc(id)
-    .update({
-
-        followerCount:count
-
-    });
-
-    toast(
-        "تم تحديث عدد المتابعين."
-    );
-
-}
-
-
-/* =========================================================
-   COPY COMMUNITY LINK
-========================================================= */
-
-async function copyCommunityLink(){
-
-    const url =
-        location.origin+
-        location.pathname+
-        "?community="+
-        encodeURIComponent(
-            currentCommunity.id
-        );
-
-    try{
-
-        await navigator.clipboard.writeText(
-            url
-        );
-
-        toast("تم نسخ رابط المشاركة.");
-
-    }catch{
-
-        prompt(
-            "انسخ الرابط:",
-            url
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   FOLLOW CHANNEL
-========================================================= */
-
-async function followChannel(){
-
-    if(!currentUser){
-
-        openModal("loginModal");
-
-        return;
-
-    }
-
-    await db
-    .collection("channels")
-    .doc(currentCommunity.id)
-    .update({
-
-        followers:
-            firebase.firestore.FieldValue.arrayUnion(
-                currentUser.uid
-            ),
-
-        followerCount:
-            firebase.firestore.FieldValue.increment(1)
-
-    });
-
-    toast("تمت متابعة القناة.");
-
-}
-
-
-/* =========================================================
-   BACK
-========================================================= */
-
-function backToCommunity(){
-
-    document
-        .getElementById("communityView")
-        .style.display="none";
-
-    document
-        .getElementById("communitySection")
-        .style.display="block";
-
-    document
-        .getElementById("productsSection")
-        .style.display="block";
-
-    currentCommunity=null;
-
-    if(
-        unsubscribeGroupMessages
-    ){
-
-        unsubscribeGroupMessages();
-
-        unsubscribeGroupMessages=null;
-
-    }
-
-}
-
-
-/* =========================================================
-   PRODUCTS
-========================================================= */
-
-let products =
-JSON.parse(
-    localStorage.getItem(
-        "hayday_products"
-    )
-) || [
-
-    {
-        id:1,
-
-        title:"حساب هاي داي لفل 75",
-
-        price:"$20",
-
-        desc:
-        "حساب ممتاز يضم أشجار نادرة وموارد وفيرة.",
-
-        images:[
-            "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=700&q=80"
-        ]
-
-    },
-
-    {
-        id:2,
-
-        title:"حساب هاي داي احترافي",
-
-        price:"$35",
-
-        desc:
-        "حساب جاهز للاستخدام.",
-
-        images:[
-            "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=700&q=80"
-        ]
-
-    }
-
-];
-
-
-function renderProducts(){
-
-    const box =
-        document
-        .getElementById(
-            "productsContainer"
-        );
-
-    box.innerHTML="";
-
-    products.forEach(p=>{
-
-        const div =
-            document.createElement("div");
-
-        div.className="product-card";
-
-        div.innerHTML=`
-
-            <img
-                class="product-image"
-                src="${
-                    p.images?.[0] ||
-                    ""
-                }">
-
-            <div class="product-info">
-
-                <h3>
-                    ${escapeHtml(p.title)}
-                </h3>
-
-                <div class="product-price">
-                    ${escapeHtml(p.price)}
-                </div>
-
-                <p>
-                    ${escapeHtml(p.desc)}
-                </p>
-
-                <button
-                    class="primary"
-                    style="margin-top:8px;width:100%"
-                    onclick="buyProduct('${p.id}')">
-
-                    إضافة للسلة
-
-                </button>
-
-            </div>
-
-        `;
-
-        box.appendChild(div);
-
-    });
-
-}
-
-
-function buyProduct(id){
-
-    if(!currentUser){
-
-        toast("سجل الدخول للشراء.");
-
-        openModal("loginModal");
-
-        return;
-
-    }
-
-    toast(
-        "تمت إضافة المنتج للسلة."
-    );
-
-}
-
-
-/* =========================================================
-   FORMAT COUNT
-========================================================= */
-
-function formatCount(number){
-
-    number=Number(number)||0;
-
-    if(number>=1000000000)
-        return (
-            (number/1000000000)
-            .toFixed(1)
-            .replace(".0","")
-            +"B"
-        );
-
-    if(number>=1000000)
-        return (
-            (number/1000000)
-            .toFixed(1)
-            .replace(".0","")
-            +"M"
-        );
-
-    if(number>=1000)
-        return (
-            (number/1000)
-            .toFixed(1)
-            .replace(".0","")
-            +"K"
-        );
-
-    return String(number);
-
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHtml(text){
-
-    return String(text||"")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-
-}
-
-
-/* =========================================================
-   INITIAL LOAD
-========================================================= */
-
-window.addEventListener(
-    "load",
-    ()=>{
-
-        loadGroups();
-
-        renderProducts();
-
-        loadReviews();
-
-        searchUsers();
-
-        const params =
-            new URLSearchParams(
-                location.search
-            );
-
-        const communityId =
-            params.get(
-                "community"
-            );
-
-        if(communityId){
-
-            setTimeout(
-                ()=>{
-                    openCommunity(
-                        communityId,
-                        "group"
-                    );
-                },
-                1000
-            );
-
+        function closeRoom() {
+            document.getElementById('room-modal').classList.add('hidden');
+            activeRoomId = null;
         }
 
-    }
-);
+        function renderPinnedMessages(group) {
+            let container = document.getElementById('pinned-messages-container');
+            container.innerHTML = '';
+            if(group.pinnedMessages && group.pinnedMessages.length > 0) {
+                group.pinnedMessages.forEach((msg, idx) => {
+                    // استخراج أول كلمة من الرسالة المثبتة
+                    let firstWord = msg.text.split(' ')[0] || '';
+                    container.innerHTML += `
+                        <div class="pinned-ticker" onclick="scrollToMessage(${idx})">
+                            <span>📌 <strong>رسالة مثبتة:</strong> ${firstWord}... (${msg.sender})</span>
+                            <span style="font-size:12px; color:#2980b9;">اضغط للقراءة</span>
+                        </div>
+                    `;
+                });
+            }
+        }
 
-</script>
+        function scrollToMessage(idx) {
+            let chatBox = document.getElementById('room-chat-box');
+            let targetDiv = document.getElementById(`msg-item-${idx}`);
+            if(targetDiv) {
+                chatBox.scrollTop = targetDiv.offsetTop - chatBox.offsetTop - 20;
+            }
+        }
 
+        function renderGroupMessages(group) {
+            let chatBox = document.getElementById('room-chat-box');
+            chatBox.innerHTML = '';
+
+            let isMod = group.admins.includes(db.currentUser) || (db.users.find(u => u.username === db.currentUser)?.isGlobalAdmin);
+
+            group.messages.forEach((msg, idx) => {
+                let canPin = isMod && group.pinnedMessages.length < 7 && !group.pinnedMessages.some(p => p.text === msg.text);
+                let pinBtn = canPin ? `<button onclick="pinMessage(${idx})" style="font-size:11px; padding:2px 6px; margin-right:10px; cursor:pointer;">تثبيت</button>` : '';
+
+                chatBox.innerHTML += `
+                    <div id="msg-item-${idx}" style="margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:6px;">
+                        <strong style="cursor:pointer; color:#2980b9;" onclick="openUserProfile('${msg.sender}')">${msg.sender}:</strong> 
+                        <span>${msg.text}</span>
+                        ${pinBtn}
+                    </div>
+                `;
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // التحقق إذا كان الشات مغلقاً من قبل المشرف
+            if(group.isClosed && !isMod) {
+                document.getElementById('chat-input-area').classList.add('hidden');
+                chatBox.innerHTML += `<p style="color:var(--danger-color); text-align:center; font-weight:bold;">عذراً، محادثات هذا الجروب مغلقة من قبل المشرفين حالياً.</p>`;
+            } else {
+                document.getElementById('chat-input-area').classList.remove('hidden');
+            }
+        }
+
+        function sendGroupMessage() {
+            if(!db.currentUser) return;
+            let group = db.groups.find(g => g.id === activeRoomId);
+            if(!group) return;
+
+            let text = document.getElementById('message-input').value.trim();
+            if(!text) return;
+            if(containsLink(text)) {
+                alert("ممنوع وضع أي روابط نهائياً في المحادثة!");
+                return;
+            }
+
+            group.messages.push({sender: db.currentUser, text: text});
+            document.getElementById('message-input').value = '';
+            saveData();
+            renderGroupMessages(group);
+        }
+
+        function pinMessage(msgIndex) {
+            let group = db.groups.find(g => g.id === activeRoomId);
+            if(!group) return;
+            let msg = group.messages[msgIndex];
+            
+            if(group.pinnedMessages.length < 7) {
+                group.pinnedMessages.push(msg);
+                saveData();
+                renderPinnedMessages(group);
+                renderGroupMessages(group);
+            } else {
+                alert("عذراً، الحد الأقصى للرسائل المثبتة في الجروب هو 7 رسائل فقط!");
+            }
+        }
+
+        // إعدادات المشرفين داخل الجروب (إغلاق الدردشة، الخصوصية، وترقية مشرفين)
+        function updateGroupPrivacy() {
+            let group = db.groups.find(g => g.id === activeRoomId);
+            if(!group) return;
+            group.privacy = document.getElementById('setting-privacy').value;
+            saveData();
+            alert("تم تحديث خصوصية الجروب بنجاح!");
+        }
+
+        function toggleChatClose() {
+            let group = db.groups.find(g => g.id === activeRoomId);
+            if(!group) return;
+            group.isClosed = document.getElementById('setting-close-chat').checked;
+            saveData();
+            openGroupRoom(group.id);
+        }
+
+        function promoteUserToAdmin() {
+            let group = db.groups.find(g => g.id === activeRoomId);
+            let userToPromote = document.getElementById('promote-user-select').value;
+            if(!group || !userToPromote) return;
+            
+            if(!group.admins.includes(userToPromote)) {
+                group.admins.push(userToPromote);
+                saveData();
+                alert(`تم ترقية ${userToPromote} إلى مشرف في الجروب بنجاح!`);
+                openGroupRoom(group.id);
+            }
+        }
+
+        // --- إدارة القنوات مع الروابط الخاصة وقسم الرشق ---
+        function openCreateChannelModal() {
+            if(!db.currentUser) { alert("يجب تسجيل الدخول أولاً!"); return; }
+            let name = prompt("أدخل اسم القناة (إجباري وممنوع التكرار):");
+            if(!name) return;
+            name = name.trim();
+
+            let nameExists = db.groups.some(g => g.name === name) || db.channels.some(c => c.name === name);
+            if(nameExists) {
+                alert("هذا الاسم مملوك مسبقاً!");
+                return;
+            }
+
+            let desc = prompt("أدخل وصف القناة (اختياري - بدون روابط):") || "";
+            let img = prompt("أدخل رابط صورة القناة (اختياري):") || "";
+            let customLink = 'https://hayday.comm/channel/' + Date.now();
+
+            let newChannel = {
+                id: 'c_' + Date.now(),
+                name: name,
+                desc: desc,
+                img: img,
+                owner: db.currentUser,
+                followersCount: 1,
+                link: customLink,
+                messages: []
+            };
+
+            db.channels.push(newChannel);
+            saveData();
+            alert(`تم إنشاء القناة بنجاح!\nرابط قناتك الخاص لمشاركته مع الآخرين:\n${customLink}`);
+            renderChannels();
+            renderAdminPanel();
+        }
+
+        function renderChannels() {
+            let container = document.getElementById('channels-list');
+            let query = document.getElementById('global-search').value.toLowerCase();
+            container.innerHTML = '';
+
+            db.channels.forEach(channel => {
+                if(query && !channel.name.toLowerCase().includes(query) && !channel.desc.toLowerCase().includes(query)) return;
+
+                container.innerHTML += `
+                    <div class="card">
+                        <h3 style="margin-top:0;">📢 ${channel.name} <span style="font-size:13px; color:#e67e22; font-weight:normal;">(المتابعين: ${channel.followersCount})</span></h3>
+                        <p style="color:#555;">${channel.desc || 'بدون وصف'}</p>
+                        <p style="font-size:12px; color:#2980b9;">رابط القناة الخاص: <code>${channel.link}</code></p>
+                        <button class="btn" style="background:var(--accent-color);" onclick="followChannel('${channel.id}')">متابعة القناة</button>
+                    </div>
+                `;
+            });
+        }
+
+        function followChannel(channelId) {
+            let channel = db.channels.find(c => c.id === channelId);
+            if(channel) {
+                channel.followersCount++;
+                saveData();
+                renderChannels();
+                alert("تمت متابعة القناة بنجاح!");
+            }
+        }
+
+        // --- محادثاتي الفردية والشات الفردي (1 لـ 1) والتقييم والحظر ---
+        let activeDmUser = null;
+
+        function openUserProfile(username) {
+            if(!db.currentUser || db.currentUser === username) return;
+            activeDmUser = username;
+            document.getElementById('dm-partner-name').innerText = `محادثة فردية مع: ${username}`;
+            document.getElementById('dm-room-modal').classList.remove('hidden');
+            renderDmMessages();
+        }
+
+        function closeDmRoom() {
+            document.getElementById('dm-room-modal').classList.add('hidden');
+            activeDmUser = null;
+        }
+
+        function getDmKey(u1, u2) {
+            return [u1, u2].sort().join('_');
+        }
+
+        function renderDmMessages() {
+            let chatBox = document.getElementById('dm-chat-box');
+            chatBox.innerHTML = '';
+            let key = getDmKey(db.currentUser, activeDmUser);
+            if(!db.directChats[key]) db.directChats[key] = [];
+
+            db.directChats[key].forEach(msg => {
+                chatBox.innerHTML += `<div style="margin-bottom:8px;"><strong>${msg.sender}:</strong> ${msg.text}</div>`;
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function sendDmMessage() {
+            if(!db.currentUser || !activeDmUser) return;
+            let text = document.getElementById('dm-message-input').value.trim();
+            if(!text) return;
+
+            let key = getDmKey(db.currentUser, activeDmUser);
+            if(!db.directChats[key]) db.directChats[key] = [];
+
+            db.directChats[key].push({sender: db.currentUser, text: text});
+            document.getElementById('dm-message-input').value = '';
+            saveData();
+            renderDmMessages();
+        }
+
+        function addFriend() {
+            alert(`تم إرسال طلب صداقة إلى ${activeDmUser} بنجاح!`);
+        }
+
+        function blockUser() {
+            if(confirm(`هل أنت متأكد من حظر المستخدم ${activeDmUser}؟`)) {
+                alert("تم حظر المستخدم ولن تتمكن من مراسلته بعد الآن.");
+                closeDmRoom();
+            }
+        }
+
+        function openRatingModal() {
+            let rating = prompt(`أدخل تقييمك للكتابة بحق ${activeDmUser} (مثال: نصاب، مضمون، محترم، صادق...):`);
+            if(rating) {
+                alert(`تم تسجيل تقييمك بنجاح بحق ${activeDmUser}: "${rating}"`);
+            }
+        }
+
+        function openMyChatsModal() {
+            if(!db.currentUser) { alert("يجب تسجيل الدخول أولاً لعرض محادثاتك!"); return; }
+            let list = document.getElementById('direct-chats-list');
+            list.innerHTML = '';
+
+            let foundAny = false;
+            for(let key in db.directChats) {
+                if(key.includes(db.currentUser)) {
+                    foundAny = true;
+                    let partner = key.split('_').find(u => u !== db.currentUser);
+                    list.innerHTML += `
+                        <div class="card" style="cursor:pointer; padding:12px; margin-bottom:8px;" onclick="closeMyChatsModal(); openUserProfile('${partner}')">
+                            <h4 style="margin:0;">💬 محادثة مع: ${partner}</h4>
+                        </div>
+                    `;
+                }
+            }
+
+            if(!foundAny) {
+                list.innerHTML = `<p style="color:#666;">لا توجد محادثات فردية سابقة حتى الآن.</p>`;
+            }
+            document.getElementById('my-chats-modal').classList.remove('hidden');
+        }
+
+        function closeMyChatsModal() {
+            document.getElementById('my-chats-modal').classList.add('hidden');
+        }
+
+        // --- لوحة المشرف العام والمراجعة وقسم الرشق ---
+        function renderAdminPanel() {
+            let userObj = db.users.find(u => u.username === db.currentUser);
+            if(!userObj || !userObj.isGlobalAdmin) return;
+
+            let pendingContainer = document.getElementById('admin-pending-groups');
+            pendingContainer.innerHTML = '';
+
+            let pendingGroups = db.groups.filter(g => g.status === 'pending');
+            if(pendingGroups.length === 0) {
+                pendingContainer.innerHTML = `<p style="color:#666;">لا توجد جروبات تنتظر المراجعة حالياً.</p>`;
+            } else {
+                pendingGroups.forEach(g => {
+                    pendingContainer.innerHTML += `
+                        <div class="card" style="background:#fff3cd;">
+                            <h4 style="margin-top:0;">${g.name} (بواسطة: ${g.owner})</h4>
+                            <p>${g.desc || 'بدون وصف'}</p>
+                            <button class="btn" style="background:var(--accent-color);" onclick="approveGroup('${g.id}')">موافقة ونشر</button>
+                            <button class="btn" style="background:var(--danger-color);" onclick="rejectGroup('${g.id}')">رفض وحذف</button>
+                        </div>
+                    `;
+                });
+            }
+
+            // تعبئة قائمة القنوات للرشق
+            let rushSelect = document.getElementById('rush-channel-select');
+            rushSelect.innerHTML = '';
+            db.channels.forEach(c => {
+                rushSelect.innerHTML += `<option value="${c.id}">${c.name} (المتابعين الحاليين: ${c.followersCount})</option>`;
+            });
+        }
+
+        function approveGroup(groupId) {
+            let g = db.groups.find(x => x.id === groupId);
+            if(g) {
+                g.status = 'approved';
+                saveData();
+                renderAdminPanel();
+                renderGroups();
+                alert("تمت الموافقة على نشر الجروب في المجتمع بنجاح!");
+            }
+        }
+
+        function rejectGroup(groupId) {
+            if(confirm("هل أنت متأكد من رفض وحذف هذا الجروب نهائياً؟")) {
+                db.groups = db.groups.filter(x => x.id !== groupId);
+                saveData();
+                renderAdminPanel();
+                renderGroups();
+            }
+        }
+
+        function executeRush() {
+            let channelId = document.getElementById('rush-channel-select').value;
+            let amount = parseInt(document.getElementById('rush-amount').value);
+            if(!channelId || isNaN(amount) || amount <= 0) {
+                alert("يرجى اختيار قناة وتحديد عدد صحيح وموجب للرشق!");
+                return;
+            }
+
+            let channel = db.channels.find(c => c.id === channelId);
+            if(channel) {
+                channel.followersCount += amount;
+                saveData();
+                renderAdminPanel();
+                renderChannels();
+                alert(`تم تنفيذ الرشق بنجاح وتمت إضافة ${amount} متابع للقناة!`);
+            }
+        }
+
+        function filterContent() {
+            renderGroups();
+            renderChannels();
+        }
+    </script>
 </body>
 </html>
