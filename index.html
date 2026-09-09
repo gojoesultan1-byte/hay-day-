@@ -347,8 +347,9 @@
                     <h2 id="authTitle" style="color: var(--primary);">تسجيل الدخول</h2>
                     <button onclick="closeAuthModal()" style="background: rgba(229,9,20,0.1); color: #ff4d4d; border: 1px solid rgba(229,9,20,0.3); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">إغلاق X</button>
                 </div>
-                <input type="email" id="authEmail" placeholder="البريد الإلكتروني (مثل: gojoesultan@gmail.com)">
-                <input type="password" id="authPassword" placeholder="كلمة المرور">
+                <!-- تم إضافة خصائص لمنع الملء التلقائي وإظهار الإيميل المخزن -->
+                <input type="text" id="authEmail" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" placeholder="البريد الإلكتروني">
+                <input type="password" id="authPassword" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" placeholder="كلمة المرور">
                 <button class="action-btn" onclick="handleAuth()">دخول</button>
                 <p id="authSwitchText" style="margin-top: 20px; text-align: center; cursor: pointer; color: var(--gray); font-size: 14px;" onclick="toggleAuthMode()">ليس لديك حساب؟ إنشاء حساب جديد</p>
             </div>
@@ -477,7 +478,7 @@
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyD-MOCK-API-KEY-FOR-DEMO-SECURE",
+            apiKey: "AIzaSy...ضع_المفتاح_الحقيقي_هنا",
             authDomain: "esultan-hayday.firebaseapp.com",
             projectId: "esultan-hayday",
             storageBucket: "esultan-hayday.appspot.com",
@@ -617,6 +618,14 @@
             document.getElementById('authModalOverlay').classList.remove('hidden');
             isLoginMode = (mode === 'login');
             document.getElementById('authTitle').innerText = isLoginMode ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
+            
+            // تفريغ الحقول ومنع أي بيانات قديمة عند فتح النافذة
+            const emailInput = document.getElementById('authEmail');
+            const passInput = document.getElementById('authPassword');
+            emailInput.value = '';
+            passInput.value = '';
+            emailInput.setAttribute('readonly', 'readonly');
+            passInput.setAttribute('readonly', 'readonly');
         }
 
         function closeAuthModal() {
